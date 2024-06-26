@@ -6,6 +6,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>Necnat.Abp.NnMgmtAuthorization</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>0.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Necnat.Abp.NnMgmtAuthorization.Domains;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -10,6 +11,8 @@ public class NnMgmtAuthorizationDbContext : AbpDbContext<NnMgmtAuthorizationDbCo
     /* Add DbSet for each Aggregate Root here. Example:
      * public DbSet<Question> Questions { get; set; }
      */
+
+    public DbSet<AuthEndpoint> AuthEndpoint { get; set; }
 
     public NnMgmtAuthorizationDbContext(DbContextOptions<NnMgmtAuthorizationDbContext> options)
         : base(options)

@@ -7,4 +7,6 @@ public class NnMgmtAuthorizationMenus
     //Add your menu items here...
     //public const string Home = Prefix + ".MyNewMenuItem";
 
+    public const string Configuration = Prefix + ".Configuration";
+    public const string Configuration_User = Configuration + ".User";
 }

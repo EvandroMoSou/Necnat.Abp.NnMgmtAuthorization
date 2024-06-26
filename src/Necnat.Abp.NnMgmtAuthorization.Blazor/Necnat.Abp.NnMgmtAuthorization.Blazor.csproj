@@ -1,18 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
-    <Import Project="..\..\common.props" />
+  <Import Project="..\..\common.props" />
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>0.1.1</Version>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Volo.Abp.AutoMapper" Version="8.1.4" />
-        <PackageReference Include="Volo.Abp.AspNetCore.Components.Web.Theming" Version="8.1.4" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Necnat.Abp.NnLibCommon.Blazor" Version="0.1.23" />
+    <PackageReference Include="Volo.Abp.AutoMapper" Version="8.1.4" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Components.Web.Theming" Version="8.1.4" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.Application.Contracts\Necnat.Abp.NnMgmtAuthorization.Application.Contracts.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.Application.Contracts\Necnat.Abp.NnMgmtAuthorization.Application.Contracts.csproj" />
+  </ItemGroup>
 </Project>

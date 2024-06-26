@@ -1,7 +1,11 @@
 {
   "culture": "en",
   "texts": {
-    "MyAccount":  "My account",
-    "SamplePageMessage": "A sample page for the NnMgmtAuthorization module"
+    "MyAccount": "My account",
+    "SamplePageMessage": "A sample page for the NnMgmtAuthorization module",
+
+    "Menu:NnMgmtAuthorization": "Authorization",
+    "Menu:NnMgmtAuthorization:Configuration": "Configuration",
+    "Menu:NnMgmtAuthorization:Configuration:User": "User"
   }
 }

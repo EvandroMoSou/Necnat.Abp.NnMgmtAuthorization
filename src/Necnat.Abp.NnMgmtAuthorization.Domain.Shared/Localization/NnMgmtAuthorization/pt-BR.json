@@ -2,6 +2,10 @@
   "culture": "pt-BR",
   "texts": {
     "MyAccount": "Minha conta",
-    "SamplePageMessage": "Uma página de amostra para o módulo NnMgmtAuthorization"
+    "SamplePageMessage": "Uma página de amostra para o módulo NnMgmtAuthorization",
+
+    "Menu:NnMgmtAuthorization": "Autorização",
+    "Menu:NnMgmtAuthorization:Configuration": "Configuração",
+    "Menu:NnMgmtAuthorization:Configuration:User": "Usuário"
   }
 }
