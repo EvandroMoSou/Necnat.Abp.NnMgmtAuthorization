@@ -12,7 +12,7 @@ using Volo.Abp.Users;
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     [Authorize]
-    public abstract class MgmtAuthorizationAppService : NnMgmtAuthorizationAppService, IMgmtAuthorizationAppService
+    public class MgmtAuthorizationAppService : NnMgmtAuthorizationAppService, IMgmtAuthorizationAppService
     {
         protected readonly IAuthEndpointRepository _authEndpointRepository;
         protected readonly ICurrentUser _currentUser;
@@ -66,7 +66,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
             var roleList = await _identityUserManager.GetRolesAsync(adminUser);
             await _identityUserManager.RemoveFromRolesAsync(adminUser, roleList);
-            await _identityUserManager.DeleteAsync(adminUser);
+            await _nnIdentityUserRepository.DeleteAsync(adminUser.Id);
             await _nnIdentityUserRepository.InsertAsync(newAdmin, true);
 
             adminUser = await _identityUserManager.FindByNameAsync("admin");
