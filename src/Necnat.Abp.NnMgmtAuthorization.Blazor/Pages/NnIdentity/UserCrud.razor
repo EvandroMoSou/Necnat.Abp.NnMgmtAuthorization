@@ -1,4 +1,4 @@
-﻿@page "/NnMgmtBilling/Configuration/IdentityUsers"
+﻿@page "/NnMgmtAuthorization/Configuration/Users"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
 @using System.Collections.ObjectModel
@@ -106,7 +106,7 @@
     <ModalContent Centered Size="ModalSize.Large">
         <Form>
             <ModalHeader>
-                <ModalTitle>@L["Endpoint"] - @EditingEntity.UserName</ModalTitle>
+                <ModalTitle>@L["User"] - @EditingEntity.UserName</ModalTitle>
                 <CloseButton Clicked="CloseEditModalAsync" />
             </ModalHeader>
             <ModalBody>

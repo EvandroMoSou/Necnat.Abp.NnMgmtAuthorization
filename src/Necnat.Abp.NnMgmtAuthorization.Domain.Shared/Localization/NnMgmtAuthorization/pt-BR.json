@@ -6,6 +6,48 @@
 
     "Menu:NnMgmtAuthorization": "Autorização",
     "Menu:NnMgmtAuthorization:Configuration": "Configuração",
-    "Menu:NnMgmtAuthorization:Configuration:User": "Usuário"
+    "Menu:NnMgmtAuthorization:Configuration:User": "Usuário",
+
+    "With Hierarchy": "Com Hierarquia",
+    "WITH HIERARCHY": "COM HIERARQUIA",
+    "Permission:HierarchyManagement": "Gerenciamento de Hierarquia",
+
+    "Hierarchy": "Hierarquia",
+    "Hierarchies": "Hierarquias",
+    "Permission:Hierarchy:Default": "Visualizar Hierarquias",
+    "Permission:Hierarchy:Create": "Criar Hierarquias",
+    "Permission:Hierarchy:Edit": "Editar Hierarquias",
+    "Permission:Hierarchy:Delete": "Excluir Hierarquias",
+
+    "Hierarchy Component Group": "Grupo de Componente de Hierarquia",
+    "Hierarchy Component Groups": "Grupos de Componente de Hierarquia",
+    "Permission:HierarchyComponentGroup:Default": "Visualizar Grupos de Componentes da Hierarquia",
+    "Permission:HierarchyComponentGroup:Create": "Criar Grupos de Componentes da Hierarquia",
+    "Permission:HierarchyComponentGroup:Edit": "Editar Grupos de Componentes da Hierarquia",
+    "Permission:HierarchyComponentGroup:Delete": "Excluir Grupos de Componentes da Hierarquia",
+
+    "Hierarchical Structure": "Estrutura Hierárquica",
+    "Hierarchical Structures": "Estruturas Hierárquicas",
+    "Permission:HierarchicalStructure:Default": "Visualizar Estruturas Hierárquicas",
+    "Permission:HierarchicalStructure:Create": "Criar Estruturas Hierárquicas",
+    "Permission:HierarchicalStructure:Delete": "Excluir Estruturas Hierárquicas",
+    "Permission:HierarchicalStructure:HierarchyComponent": "Visualizar Componentes da Hierarquia",
+    "Hierarchy Component": "Componente da Hierarquia",
+    "Hierarchy Component Type": "Tipo de Componente da Hierarquia",
+    "This hierarchy has no components.": "Essa hierarquia não possui componentes.",
+
+    "Hierarchical Access": "Acesso Hierárquico",
+    "Hierarchical Accesses": "Acessos Hierárquicos",
+    "Permission:HierarchicalAccess:Default": "Visualizar Acessos Hierárquicos",
+    "Permission:HierarchicalAccess:Create": "Criar Acessos Hierárquicos",
+    "Permission:HierarchicalAccess:Edit": "Editar Acessos Hierárquicos",
+    "Permission:HierarchicalAccess:Delete": "Excluir Acessos Hierárquicos",
+
+    "Hierarchy Management": "Gerenciamento de Hierarquia",
+    "Menu:HierarchyManagement": "Gerenciamento de Hierarquia",
+    "Menu:HierarchyManagement:Hierarchy": "Hierarquia",
+    "Menu:HierarchyManagement:HierarchyComponentGroup": "Grupo de Componentes de Hierarquia",
+    "Menu:HierarchyManagement:HierarchicalStructure": "Estrutura Hierárquica",
+    "Menu:HierarchyManagement:HierarchicalAccess": "Acesso Hierárquico"
   }
 }

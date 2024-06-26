@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Necnat.Abp.NnLibCommon.Blazor" Version="0.1.23" />
+    <PackageReference Include="Necnat.Abp.NnLibCommon.Blazor" Version="0.1.24" />
     <PackageReference Include="Volo.Abp.AutoMapper" Version="8.1.4" />
     <PackageReference Include="Volo.Abp.AspNetCore.Components.Web.Theming" Version="8.1.4" />
   </ItemGroup>

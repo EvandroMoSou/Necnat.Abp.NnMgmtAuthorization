@@ -12,6 +12,9 @@ public interface INnMgmtAuthorizationDbContext : IEfCoreDbContext
      * DbSet<Question> Questions { get; }
      */
 
-    //AuthorizationManagement
     DbSet<AuthEndpoint> AuthEndpoint { get; }
+    DbSet<HierarchicalAccess> HierarchicalAccess { get; }
+    DbSet<HierarchicalStructure> HierarchicalStructure { get; }
+    DbSet<Hierarchy> Hierarchy { get; }
+    DbSet<HierarchyComponentGroup> HierarchyComponentGroup { get; }
 }

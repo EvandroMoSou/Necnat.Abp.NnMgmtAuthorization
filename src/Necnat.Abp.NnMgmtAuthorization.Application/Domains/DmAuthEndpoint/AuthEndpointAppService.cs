@@ -9,7 +9,14 @@ using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmAuthEndpoint
 {
-    public class AuthEndpointAppService : NecnatAppService<AuthEndpoint, AuthEndpointDto, Guid, AuthEndpointResultRequestDto, IAuthEndpointRepository>, IAuthEndpointAppService
+    public class AuthEndpointAppService : 
+        NecnatAppService<
+            AuthEndpoint,
+            AuthEndpointDto,
+            Guid,
+            AuthEndpointResultRequestDto,
+            IAuthEndpointRepository>,
+        IAuthEndpointAppService
     {
         public AuthEndpointAppService(
             ICurrentUser currentUser,

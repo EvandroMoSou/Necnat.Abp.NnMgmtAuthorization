@@ -3,10 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnLibCommon.Utils;
+using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Volo.Abp.Identity;
+using Volo.Abp.PermissionManagement;
 using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
@@ -16,25 +20,46 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     {
         protected readonly IAuthEndpointRepository _authEndpointRepository;
         protected readonly ICurrentUser _currentUser;
+        protected readonly IHierarchicalAccessRepository _hierarchicalAccessRepository;
+        protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
+        protected readonly IHierarchicalStructureRepository _hierarchicalStructureRepository;
+        protected readonly IHierarchyComponentService _hierarchyComponentService;
+        protected readonly IHierarchyRepository _hierarchyRepository;
         protected readonly IHttpContextAccessor _httpContextAccessor;
         protected readonly IdentityUserManager _identityUserManager;
+        protected readonly IIdentityRoleRepository _identityRoleRepository;
         protected readonly INnIdentityUserRepository _nnIdentityUserRepository;
+        protected readonly IPermissionGrantRepository _permissionGrantRepository;
 
         public MgmtAuthorizationAppService(
             IAuthEndpointRepository authEndpointRepository,
             ICurrentUser currentUser,
+            IHierarchicalAccessRepository hierarchicalAccessRepository,
+            IHierarchicalStructureRecursiveService hierarchicalStructureRecursiveService,
+            IHierarchicalStructureRepository hierarchicalStructureRepository,
+            IHierarchyComponentService hierarchyComponentService,
+            IHierarchyRepository hierarchyRepository,
             IHttpContextAccessor httpContextAccessor,
             IdentityUserManager identityUserManager,
-            INnIdentityUserRepository nnIdentityUserRepository)
+            IIdentityRoleRepository identityRoleRepository,
+            INnIdentityUserRepository nnIdentityUserRepository,
+            IPermissionGrantRepository permissionGrantRepository)
         {
             _authEndpointRepository = authEndpointRepository;
             _currentUser = currentUser;
+            _hierarchicalAccessRepository = hierarchicalAccessRepository;
+            _hierarchicalStructureRecursiveService = hierarchicalStructureRecursiveService;
+            _hierarchicalStructureRepository = hierarchicalStructureRepository;
+            _hierarchyComponentService = hierarchyComponentService;
+            _hierarchyRepository = hierarchyRepository;
             _httpContextAccessor = httpContextAccessor;
             _identityUserManager = identityUserManager;
+            _identityRoleRepository = identityRoleRepository;
             _nnIdentityUserRepository = nnIdentityUserRepository;
+            _permissionGrantRepository = permissionGrantRepository;
         }
 
-        public async Task CallConsolidateAdminUserEndpointAsync(Guid adminUserId)
+        public virtual async Task CallConsolidateAdminUserEndpointAsync(Guid adminUserId)
         {
             if (!_currentUser.IsInRole("admin"))
                 return;
@@ -52,7 +77,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             }
         }
 
-        public async Task ConsolidateAdminUserAsync(Guid adminUserId)
+        public virtual async Task ConsolidateAdminUserAsync(Guid adminUserId)
         {
             if (!_currentUser.IsInRole("admin"))
                 return;
@@ -71,6 +96,83 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
             adminUser = await _identityUserManager.FindByNameAsync("admin");
             await _identityUserManager.AddToRolesAsync(adminUser!, roleList);
+        }
+
+        public virtual async Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationAsync()
+        {
+            var ha = new HierarchicalAuthorizationModel();
+            ha.UserId = (Guid)CurrentUser.Id!;
+
+            //HierarchicalAccess
+            var lHierarchicalAccess = await _hierarchicalAccessRepository.GetListAsync(x => x.UserId == CurrentUser.Id);
+            foreach (var iHierarchicalAccess in lHierarchicalAccess)
+            {
+                var ahc = ha.LHAC.Where(x => x.RId == iHierarchicalAccess.RoleId).FirstOrDefault();
+                if (ahc != null)
+                {
+                    ahc.LHSId.Add(iHierarchicalAccess.HierarchicalStructureId);
+                    continue;
+                }
+
+                var ah = new HAC
+                {
+                    LHSId = new List<Guid> { iHierarchicalAccess.HierarchicalStructureId },
+                    RId = iHierarchicalAccess.RoleId
+                };
+
+                var role = await _identityRoleRepository.GetAsync(iHierarchicalAccess.RoleId);
+                var lPermissionGrant = await _permissionGrantRepository.GetListAsync("R", role.Name);
+                foreach (var iPermissionGrant in lPermissionGrant)
+                    ah.LPN.Add(iPermissionGrant.Name);
+
+                ha.LHAC.Add(ah);
+            }
+
+            //HierarchicalStructure
+            var lHierarchicalStructure = await _hierarchicalStructureRepository.GetListAsync();
+            foreach (var lHierarchicalStructureId in ha.LHAC.Select(x => x.LHSId))
+                foreach (var iHierarchicalStructureId in lHierarchicalStructureId)
+                {
+                    var hierarchicalStructure = lHierarchicalStructure.First(x => x.Id == iHierarchicalStructureId);
+                    if (!ha.LHSC.Any(x => x.Id == iHierarchicalStructureId))
+                        ha.LHSC.Add(
+                            new HSC
+                            {
+                                Id = iHierarchicalStructureId,
+                                HId = hierarchicalStructure.HierarchyId,
+                                LChl = (await _hierarchicalStructureRecursiveService.SearchHierarchicalStructureRecursiveAsync(iHierarchicalStructureId)).ToList()
+                            });
+                }
+
+            //Hierarchy
+            foreach (var iHierarchyId in ha.LHSC.Select(x => x.HId).Distinct())
+            {
+                var hierarchy = await _hierarchyRepository.GetAsync(iHierarchyId);
+                ha.LH.Add(FromHierarchy(hierarchy));
+            }
+
+            return await LoadHierarchyComponentNameAsync(ha);
+        }
+
+        protected virtual async Task<HierarchicalAuthorizationModel> LoadHierarchyComponentNameAsync(HierarchicalAuthorizationModel ahModel)
+        {
+            var lHierarchyComponent = await _hierarchyComponentService.GetListHierarchyComponentAsync();
+
+            foreach (var iHierarchicalStructure in ahModel.LHSC)
+                foreach (var iFilho in iHierarchicalStructure.LChl)
+                    iFilho.HCNm = lHierarchyComponent.Where(x => x.Id == iFilho.HCId).First().Name;
+
+            return ahModel;
+        }
+
+        private H FromHierarchy(Hierarchy h)
+        {
+            return new H
+            {
+                Id = h.Id,
+                Nm = h.Name,
+                At = h.IsActive
+            };
         }
     }
 }
