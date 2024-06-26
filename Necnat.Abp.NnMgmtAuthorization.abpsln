@@ -1,0 +1,7 @@
+{
+  "modules": {
+    "Necnat.Abp.NnMgmtAuthorization": {
+      "path": "Necnat.Abp.NnMgmtAuthorization.abpmdl"
+    }
+  }
+}

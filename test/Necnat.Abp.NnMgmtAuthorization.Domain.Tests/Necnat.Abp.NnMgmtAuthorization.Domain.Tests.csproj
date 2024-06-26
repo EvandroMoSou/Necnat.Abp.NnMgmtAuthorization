@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Necnat.Abp.NnMgmtAuthorization</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Necnat.Abp.NnMgmtAuthorization.Domain\Necnat.Abp.NnMgmtAuthorization.Domain.csproj" />
+    <ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.TestBase\Necnat.Abp.NnMgmtAuthorization.TestBase.csproj" />
+  </ItemGroup>
+
+
+</Project>

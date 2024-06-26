@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.prod.json",
+  "compilerOptions": {
+    "paths": {
+      "@necnat.Abp/nn-mgmt-authorization": [
+        "projects/nn-mgmt-authorization/src/public-api.ts"
+      ],
+      "@necnat.Abp/nn-mgmt-authorization/config": [
+        "projects/nn-mgmt-authorization/config/src/public-api.ts"
+      ],
+      "@proxy": ["projects/nn-mgmt-authorization/src/lib/proxy/index.ts"],
+      "@proxy/*": ["projects/nn-mgmt-authorization/src/lib/proxy/*"]
+    }
+  }
+}

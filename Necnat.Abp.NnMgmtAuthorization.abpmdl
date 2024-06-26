@@ -1,0 +1,111 @@
+{
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {},
+      "host": {}
+    }
+  },
+  "packages": {
+    "Necnat.Abp.NnMgmtAuthorization.Domain.Shared": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.Domain.Shared/Necnat.Abp.NnMgmtAuthorization.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Domain": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.Domain/Necnat.Abp.NnMgmtAuthorization.Domain.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Application.Contracts": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.Application.Contracts/Necnat.Abp.NnMgmtAuthorization.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Application": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.Application/Necnat.Abp.NnMgmtAuthorization.Application.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.EntityFrameworkCore": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.EntityFrameworkCore/Necnat.Abp.NnMgmtAuthorization.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.MongoDB": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.MongoDB/Necnat.Abp.NnMgmtAuthorization.MongoDB.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.HttpApi": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.HttpApi/Necnat.Abp.NnMgmtAuthorization.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.HttpApi.Client": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.HttpApi.Client/Necnat.Abp.NnMgmtAuthorization.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.TestBase": {
+      "path": "test/Necnat.Abp.NnMgmtAuthorization.TestBase/Necnat.Abp.NnMgmtAuthorization.TestBase.abppkg",
+      "folder": "test"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.EntityFrameworkCore.Tests": {
+      "path": "test/Necnat.Abp.NnMgmtAuthorization.EntityFrameworkCore.Tests/Necnat.Abp.NnMgmtAuthorization.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.MongoDB.Tests": {
+      "path": "test/Necnat.Abp.NnMgmtAuthorization.MongoDB.Tests/Necnat.Abp.NnMgmtAuthorization.MongoDB.Tests.abppkg",
+      "folder": "test"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Domain.Tests": {
+      "path": "test/Necnat.Abp.NnMgmtAuthorization.Domain.Tests/Necnat.Abp.NnMgmtAuthorization.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Application.Tests": {
+      "path": "test/Necnat.Abp.NnMgmtAuthorization.Application.Tests/Necnat.Abp.NnMgmtAuthorization.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.HttpApi.Host": {
+      "path": "host/Necnat.Abp.NnMgmtAuthorization.HttpApi.Host/Necnat.Abp.NnMgmtAuthorization.HttpApi.Host.abppkg",
+      "folder": "host"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Web": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.Web/Necnat.Abp.NnMgmtAuthorization.Web.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/Necnat.Abp.NnMgmtAuthorization.HttpApi.Client.ConsoleTestApp/Necnat.Abp.NnMgmtAuthorization.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Web.Host": {
+      "path": "host/Necnat.Abp.NnMgmtAuthorization.Web.Host/Necnat.Abp.NnMgmtAuthorization.Web.Host.abppkg",
+      "folder": "host"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.AuthServer": {
+      "path": "host/Necnat.Abp.NnMgmtAuthorization.AuthServer/Necnat.Abp.NnMgmtAuthorization.AuthServer.abppkg",
+      "folder": "host"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Host.Shared": {
+      "path": "host/Necnat.Abp.NnMgmtAuthorization.Host.Shared/Necnat.Abp.NnMgmtAuthorization.Host.Shared.abppkg",
+      "folder": "host"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Web.Unified": {
+      "path": "host/Necnat.Abp.NnMgmtAuthorization.Web.Unified/Necnat.Abp.NnMgmtAuthorization.Web.Unified.abppkg",
+      "folder": "host"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Blazor": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.Blazor/Necnat.Abp.NnMgmtAuthorization.Blazor.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Blazor.Host": {
+      "path": "host/Necnat.Abp.NnMgmtAuthorization.Blazor.Host/Necnat.Abp.NnMgmtAuthorization.Blazor.Host.abppkg",
+      "folder": "host"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Blazor.Server": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.Blazor.Server/Necnat.Abp.NnMgmtAuthorization.Blazor.Server.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly": {
+      "path": "src/Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly/Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.abppkg",
+      "folder": "src"
+    },
+    "Necnat.Abp.NnMgmtAuthorization.Blazor.Server.Host": {
+      "path": "host/Necnat.Abp.NnMgmtAuthorization.Blazor.Server.Host/Necnat.Abp.NnMgmtAuthorization.Blazor.Server.Host.abppkg",
+      "folder": "host"
+    }
+  }
+}
