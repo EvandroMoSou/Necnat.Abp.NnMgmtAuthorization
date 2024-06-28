@@ -13,6 +13,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
             lError.AddIfNotIsNullOrWhiteSpace(ValidateDisplayName(dto.DisplayName, stringLocalizer));
             lError.AddIfNotIsNullOrWhiteSpace(ValidateEndpoint(dto.Endpoint, stringLocalizer));
+            lError.AddIfNotIsNullOrWhiteSpace(ValidateIsAuthentication(dto.IsAuthentication, stringLocalizer));
+            lError.AddIfNotIsNullOrWhiteSpace(ValidateIsActive(dto.IsActive, stringLocalizer));
 
             if (lError.Count > 0)
                 return lError;

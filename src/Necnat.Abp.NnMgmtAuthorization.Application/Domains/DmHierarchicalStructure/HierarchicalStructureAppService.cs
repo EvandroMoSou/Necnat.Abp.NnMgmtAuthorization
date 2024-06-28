@@ -12,7 +12,7 @@ using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 {
-    public abstract class HierarchicalStructureAppService :
+    public class HierarchicalStructureAppService :
         NecnatAppService<
             HierarchicalStructure,
             HierarchicalStructureDto,

@@ -15,7 +15,7 @@ using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
 {
-    public abstract class HierarchicalAccessAppService :
+    public class HierarchicalAccessAppService :
         NecnatAppService<
             HierarchicalAccess,
             HierarchicalAccessDto,

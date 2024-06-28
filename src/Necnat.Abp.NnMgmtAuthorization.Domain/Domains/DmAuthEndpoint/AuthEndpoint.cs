@@ -1,5 +1,6 @@
 ﻿using System;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {

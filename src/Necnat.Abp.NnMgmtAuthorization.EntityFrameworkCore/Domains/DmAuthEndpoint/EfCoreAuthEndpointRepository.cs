@@ -9,9 +9,9 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
-    public class EfCoreAuthEndpointRepository : EfCoreRepository<NnMgmtAuthorizationDbContext, AuthEndpoint, Guid>, IAuthEndpointRepository
+    public class EfCoreAuthEndpointRepository : EfCoreRepository<INnMgmtAuthorizationDbContext, AuthEndpoint, Guid>, IAuthEndpointRepository
     {
-        public EfCoreAuthEndpointRepository(IDbContextProvider<NnMgmtAuthorizationDbContext> dbContextProvider) : base(dbContextProvider)
+        public EfCoreAuthEndpointRepository(IDbContextProvider<INnMgmtAuthorizationDbContext> dbContextProvider) : base(dbContextProvider)
         {
 
         }

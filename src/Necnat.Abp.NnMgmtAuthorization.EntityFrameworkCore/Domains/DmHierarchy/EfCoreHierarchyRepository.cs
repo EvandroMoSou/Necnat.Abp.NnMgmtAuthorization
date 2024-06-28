@@ -8,9 +8,9 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchy
 {
-    public class EfCoreHierarchyRepository : EfCoreRepository<NnMgmtAuthorizationDbContext, Hierarchy, Guid>, IHierarchyRepository
+    public class EfCoreHierarchyRepository : EfCoreRepository<INnMgmtAuthorizationDbContext, Hierarchy, Guid>, IHierarchyRepository
     {
-        public EfCoreHierarchyRepository(IDbContextProvider<NnMgmtAuthorizationDbContext> dbContextProvider) : base(dbContextProvider)
+        public EfCoreHierarchyRepository(IDbContextProvider<INnMgmtAuthorizationDbContext> dbContextProvider) : base(dbContextProvider)
         {
 
         }

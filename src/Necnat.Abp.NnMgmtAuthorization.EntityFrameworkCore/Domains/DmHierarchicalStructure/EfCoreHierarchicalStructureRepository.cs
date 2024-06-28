@@ -10,9 +10,9 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 {
-    public class EfCoreHierarchicalStructureRepository : EfCoreRepository<NnMgmtAuthorizationDbContext, HierarchicalStructure, Guid>, IHierarchicalStructureRepository
+    public class EfCoreHierarchicalStructureRepository : EfCoreRepository<INnMgmtAuthorizationDbContext, HierarchicalStructure, Guid>, IHierarchicalStructureRepository
     {
-        public EfCoreHierarchicalStructureRepository(IDbContextProvider<NnMgmtAuthorizationDbContext> dbContextProvider) : base(dbContextProvider)
+        public EfCoreHierarchicalStructureRepository(IDbContextProvider<INnMgmtAuthorizationDbContext> dbContextProvider) : base(dbContextProvider)
         {
         }
 

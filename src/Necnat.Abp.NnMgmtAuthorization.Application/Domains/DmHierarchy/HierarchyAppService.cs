@@ -9,7 +9,7 @@ using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchy
 {
-    public abstract class HierarchyAppService :
+    public class HierarchyAppService :
         NecnatAppService<
             Hierarchy,
             HierarchyDto,

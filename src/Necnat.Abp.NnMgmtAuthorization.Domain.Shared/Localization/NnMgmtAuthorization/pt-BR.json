@@ -6,7 +6,11 @@
 
     "Menu:NnMgmtAuthorization": "Autorização",
     "Menu:NnMgmtAuthorization:Configuration": "Configuração",
-    "Menu:NnMgmtAuthorization:Configuration:User": "Usuário",
+    "Menu:NnMgmtAuthorization:Configuration:AuthEndpoint": "Endpoint",
+    "Menu:NnMgmtAuthorization:Configuration:Hierarchy": "Hierarquia",
+    "Menu:NnMgmtAuthorization:Configuration:HierarchyComponentGroup": "Grupo de Componentes de Hierarquia",
+    "Menu:NnMgmtAuthorization:Configuration:HierarchicalStructure": "Estrutura Hierárquica",
+    "Menu:NnMgmtAuthorization:User": "Usuário",
 
     "With Hierarchy": "Com Hierarquia",
     "WITH HIERARCHY": "COM HIERARQUIA",
@@ -41,13 +45,6 @@
     "Permission:HierarchicalAccess:Default": "Visualizar Acessos Hierárquicos",
     "Permission:HierarchicalAccess:Create": "Criar Acessos Hierárquicos",
     "Permission:HierarchicalAccess:Edit": "Editar Acessos Hierárquicos",
-    "Permission:HierarchicalAccess:Delete": "Excluir Acessos Hierárquicos",
-
-    "Hierarchy Management": "Gerenciamento de Hierarquia",
-    "Menu:HierarchyManagement": "Gerenciamento de Hierarquia",
-    "Menu:HierarchyManagement:Hierarchy": "Hierarquia",
-    "Menu:HierarchyManagement:HierarchyComponentGroup": "Grupo de Componentes de Hierarquia",
-    "Menu:HierarchyManagement:HierarchicalStructure": "Estrutura Hierárquica",
-    "Menu:HierarchyManagement:HierarchicalAccess": "Acesso Hierárquico"
+    "Permission:HierarchicalAccess:Delete": "Excluir Acessos Hierárquicos"
   }
 }

@@ -10,9 +10,9 @@ using Volo.Abp.PermissionManagement;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.NnPermission
 {
-    public class EfCoreNnPermissionGrantRepository : EfCoreRepository<NnMgmtAuthorizationDbContext, PermissionGrant, Guid>, INnPermissionGrantRepository
+    public class EfCoreNnPermissionGrantRepository : EfCoreRepository<INnMgmtAuthorizationDbContext, PermissionGrant, Guid>, INnPermissionGrantRepository
     {
-        public EfCoreNnPermissionGrantRepository(IDbContextProvider<NnMgmtAuthorizationDbContext> dbContextProvider) : base(dbContextProvider)
+        public EfCoreNnPermissionGrantRepository(IDbContextProvider<INnMgmtAuthorizationDbContext> dbContextProvider) : base(dbContextProvider)
         {
 
         }

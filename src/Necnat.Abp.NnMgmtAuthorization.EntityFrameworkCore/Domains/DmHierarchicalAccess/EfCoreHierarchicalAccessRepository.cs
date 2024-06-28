@@ -13,14 +13,14 @@ using Volo.Abp.Identity;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
 {
-    public class EfCoreHierarchicalAccessRepository : EfCoreRepository<NnMgmtAuthorizationDbContext, HierarchicalAccess, Guid>, IHierarchicalAccessRepository
+    public class EfCoreHierarchicalAccessRepository : EfCoreRepository<INnMgmtAuthorizationDbContext, HierarchicalAccess, Guid>, IHierarchicalAccessRepository
     {
         protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
         protected readonly IPermissionRoleIdService _permissionRoleIdService;
         protected readonly UserManager<IdentityUser> _userManager;
 
         public EfCoreHierarchicalAccessRepository(
-            IDbContextProvider<NnMgmtAuthorizationDbContext> dbContextProvider,
+            IDbContextProvider<INnMgmtAuthorizationDbContext> dbContextProvider,
             IHierarchicalStructureRecursiveService hierarchicalStructureRecursiveService,
             IPermissionRoleIdService permissionRoleIdService,
             UserManager<IdentityUser> userManager) : base(dbContextProvider)
