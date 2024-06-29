@@ -1,0 +1,113 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Necnat.Abp.NnMgmtAuthorization.Domains
+@using Necnat.Abp.NnMgmtAuthorization.Models
+
+<div>
+    @if (HierarchicalStructureNode.HasChild)
+    {
+        <InputCheckbox @bind-Value="Expanded" class="@(Expanded ? "fas fa-chevron-down" : "fas fa-chevron-right")" style="appearance: none; -webkit-appearance: none; margin-right: 6px;" />
+    }
+    else
+    {
+        <span style="margin-left: 15px" />
+    }
+    <span class="span-tree-view">
+        @if (HierarchicalStructureNode.HierarchicalStructure.HierarchyComponentType == null || HierarchyComponentTypeList == null || (!HierarchyComponentTypeList.Any(x => x.Id == (HierarchicalStructureNode.HierarchicalStructure.HierarchyComponentType == null ? null : (int)HierarchicalStructureNode.HierarchicalStructure.HierarchyComponentType))))
+        {
+            <i class="fas fa-star-of-life"></i>
+        }
+        else
+        {
+            <i class="@HierarchyComponentTypeList.Where(x => x.Id == (HierarchicalStructureNode.HierarchicalStructure.HierarchyComponentType == null ? null : (int)HierarchicalStructureNode.HierarchicalStructure.HierarchyComponentType)).First().Icon"></i>
+        }
+        <Span Class="ps-1">@HierarchicalStructureNode.HierarchicalStructure.HierarchyComponentName</Span>
+        <Icon Class="ps-1" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.PlusCircle" Clicked="@(async () => await InvokeOpenCreateModalAsync(HierarchicalStructureNode))" />
+        @if (!HierarchicalStructureNode.HasChild)
+        {
+            <Icon Class="ps-1" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.TimesCircle" Clicked="@(async () => await InvokeDeleteAsync(HierarchicalStructureNode))" />
+        }
+    </span>
+</div>
+<div style="margin-left: 18px">
+    @if (Expanded)
+    {
+        @foreach (var iChild in HierarchicalStructureNode.Children)
+        {
+            <HierarchicalStructureNodeInline HierarchicalStructureNode="iChild"
+                                             HierarchyComponentTypeList="HierarchyComponentTypeList"
+                                             SearchHierarchicalStructureNodeAsyncMethod="SearchHierarchicalStructureNodeAsyncMethod!"
+                                             OpenCreateModalAsyncMethod="OpenCreateModalAsyncMethod!"
+                                             DeleteAsyncMethod="DeleteAsyncMethod!" />
+        }
+    }
+</div>
+
+@namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Components
+@code {
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Expanded = HierarchicalStructureNode.Children.Count > 0;
+        base.OnAfterRender(firstRender);
+    }
+
+    [Parameter]
+    public HierarchicalStructureNode HierarchicalStructureNode { get; set; } = new HierarchicalStructureNode();
+
+    [Parameter]
+    public List<HierarchyComponentTypeModel> HierarchyComponentTypeList { get; set; } = new List<HierarchyComponentTypeModel>();
+
+    [Parameter]
+    public Func<HierarchicalStructureNode, Task<List<HierarchicalStructureNode>>>? SearchHierarchicalStructureNodeAsyncMethod { get; set; }
+
+    [Parameter]
+    public Func<HierarchicalStructureNode, Task>? OpenCreateModalAsyncMethod { get; set; }
+
+    [Parameter]
+    public Func<HierarchicalStructureNode, Task>? DeleteAsyncMethod { get; set; }
+
+    private async Task InvokeSearchHierarchicalStructureNodeAsync(HierarchicalStructureNode hierarchicalStructureNode)
+    {
+        await SearchHierarchicalStructureNodeAsyncMethod!.Invoke(hierarchicalStructureNode);
+    }
+
+    private async Task InvokeOpenCreateModalAsync(HierarchicalStructureNode hierarchicalStructureNode)
+    {
+        await OpenCreateModalAsyncMethod!.Invoke(hierarchicalStructureNode);
+    }
+
+    private async Task InvokeDeleteAsync(HierarchicalStructureNode hierarchicalStructureNode)
+    {
+        await DeleteAsyncMethod!.Invoke(hierarchicalStructureNode);
+    }
+
+    private bool _expanded;
+    private bool Expanded
+    {
+        get => _expanded;
+        set
+        {
+            if (_expanded == value)
+                return;
+
+            _expanded = value;
+            InvokeAsync(ExpandedChanged);
+        }
+    }
+    private async Task ExpandedChanged()
+    {
+        if (_expanded)
+        {
+            var lHierarchicalStructureNode = await SearchHierarchicalStructureNodeAsyncMethod!.Invoke(HierarchicalStructureNode);
+            foreach (var iHierarchicalStructureNode in lHierarchicalStructureNode)
+            {
+                if (!HierarchicalStructureNode.Children.Any(x => x.HierarchicalStructure.Id == iHierarchicalStructureNode.HierarchicalStructure.Id))
+                    HierarchicalStructureNode.Children.Add(iHierarchicalStructureNode);
+            }
+        }
+        else
+            HierarchicalStructureNode.Children = new List<HierarchicalStructureNode>();
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

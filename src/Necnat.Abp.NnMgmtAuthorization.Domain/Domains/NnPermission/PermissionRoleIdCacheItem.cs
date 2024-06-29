@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Domains.NnPermission
+namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     public class PermissionRoleIdCacheItem
     {

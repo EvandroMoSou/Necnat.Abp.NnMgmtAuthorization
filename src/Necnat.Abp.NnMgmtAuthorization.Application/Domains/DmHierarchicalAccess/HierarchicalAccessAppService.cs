@@ -29,7 +29,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
         protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
         protected readonly INnIdentityUserRoleRepository _nnIdentityUserRoleRepository;
 
-        protected HierarchicalAccessAppService(
+        public HierarchicalAccessAppService(
             ICurrentUser currentUser,
             IStringLocalizer<NnLibCommonResource> necnatLocalizer,
             IHierarchicalAccessRepository repository,

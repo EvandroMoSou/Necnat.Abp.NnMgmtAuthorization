@@ -1,0 +1,60 @@
+﻿@using Microsoft.Extensions.Localization;
+@using System.Collections.ObjectModel
+@using Necnat.Abp.NnLibCommon.Blazor.Extensions
+@using Necnat.Abp.NnLibCommon.Localization
+@using Necnat.Abp.NnMgmtAuthorization.Domains
+@using Necnat.Abp.NnMgmtAuthorization.Localization
+@using Volo.Abp.AspNetCore.Components
+@using Volo.Abp.Identity
+@inherits AbpComponentBase
+@inject IStringLocalizer<NnLibCommonResource> NL
+
+<Fields>
+    <Validation Validator="@ValidateDisplayName">
+        <Field ColumnSize="ColumnSize.Is10">
+            <FieldLabel>@L[HierarchyComponentGroupConsts.NameDisplay]</FieldLabel>
+            <TextEdit @bind-Text="@Entity!.Name">
+                <Feedback>
+                    <ValidationError />
+                </Feedback>
+            </TextEdit>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidateIsActive">
+        <Field ColumnSize="ColumnSize.Is2">
+            <FieldLabel>@L[HierarchyComponentGroupConsts.IsActiveDisplay]</FieldLabel>
+            <Check TValue="bool?" @bind-Checked="@Entity!.IsActive">
+                <Feedback>
+                    <ValidationError />
+                </Feedback>
+            </Check>
+        </Field>
+    </Validation>
+</Fields>
+
+
+@namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Components
+@code {
+
+    [Parameter]
+    public HierarchyComponentGroupDto? Entity { get; set; }
+
+    [Parameter]
+    public EventCallback<HierarchyComponentGroupDto?> EntityChanged { get; set; }
+
+    public HierarchyComponentGroupWrapper()
+    {
+        LocalizationResource = typeof(NnMgmtAuthorizationResource);
+    }
+
+    void ValidateDisplayName(ValidatorEventArgs e)
+    {
+        e.WithError(HierarchyComponentGroupValidator.ValidateName((string?)e.Value, NL));
+    }
+
+    void ValidateIsActive(ValidatorEventArgs e)
+    {
+        e.WithError(HierarchyComponentGroupValidator.ValidateIsActive((bool?)e.Value, NL));
+    }
+
+}

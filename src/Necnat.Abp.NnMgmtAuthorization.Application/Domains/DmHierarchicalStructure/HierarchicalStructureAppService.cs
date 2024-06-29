@@ -23,7 +23,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
     {
         protected readonly IHierarchyComponentService _hierarchyComponentService;
 
-        protected HierarchicalStructureAppService(
+        public HierarchicalStructureAppService(
             ICurrentUser currentUser,
             IStringLocalizer<NnLibCommonResource> necnatLocalizer,
             IHierarchicalStructureRepository repository,

@@ -1,0 +1,36 @@
+﻿@using Blazorise.Components
+@using Microsoft.Extensions.Localization
+@using Necnat.Abp.NnLibCommon.Blazor.Components
+@using Necnat.Abp.NnLibCommon.Localization
+@using Necnat.Abp.NnMgmtAuthorization.Domains
+@using Necnat.Abp.NnMgmtAuthorization.Localization
+@using Volo.Abp.Identity
+@inherits SelectCmptBase<IHierarchyAppService, HierarchyDto, Guid, HierarchyResultRequestDto>
+@inject IStringLocalizer<NnLibCommonResource> NL
+
+@if (_isLoading)
+{
+    <div class="animated-background loading-input-height"></div>
+}
+else
+{
+    <SelectList TItem="HierarchyDto"
+                TValue="Guid"
+                Data="@Data"
+                TextField="@((item) => item.Name)"
+                ValueField="@((item) => item.Id)"
+                SelectedValue="@_internalSelectedValue"
+                SelectedValueChanged="@OnSelectedValueChangedAsync"
+                DefaultItemText="@NL["Select..."]"
+                DefaultItemValue="default(Guid)" />
+}
+
+@namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Components
+@code {
+
+    public HierarchySelectList()
+    {
+        LocalizationResource = typeof(NnMgmtAuthorizationResource);
+    }
+
+}

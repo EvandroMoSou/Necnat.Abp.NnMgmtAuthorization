@@ -18,7 +18,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchy
             IHierarchyRepository>,
         IHierarchyAppService
     {
-        protected HierarchyAppService(
+        public HierarchyAppService(
             ICurrentUser currentUser,
             IStringLocalizer<NnLibCommonResource> necnatLocalizer,
             IHierarchyRepository repository) : base(currentUser, necnatLocalizer, repository)

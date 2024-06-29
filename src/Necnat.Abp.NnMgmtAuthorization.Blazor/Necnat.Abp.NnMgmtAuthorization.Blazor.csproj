@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\DmHierarchyComponentGroup\HierarchyComponentGroupCrud.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.4.1" />
+    <PackageReference Include="Blazorise.TreeView" Version="1.4.1" />
     <PackageReference Include="Necnat.Abp.NnLibCommon.Blazor" Version="0.1.25" />
     <PackageReference Include="Volo.Abp.AutoMapper" Version="8.1.4" />
     <PackageReference Include="Volo.Abp.AspNetCore.Components.Web.Theming" Version="8.1.4" />
@@ -20,9 +26,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\DmHierarchicalStructure\" />
-    <Folder Include="Components\DmHierarchyComponentGroup\" />
-    <Folder Include="Pages\DmHierarchyComponentGroup\" />
-    <Folder Include="Pages\DmHierarchicalStructure\" />
+    <UpToDateCheckInput Remove="Pages\DmHierarchyComponentGroup\HierarchyComponentGroupCrud.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\DmHierarchyComponentGroup\HierarchyComponentGroupCrud.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\DmHierarchyComponentGroup\HierarchyComponentGroupCrud.razor" />
   </ItemGroup>
 </Project>

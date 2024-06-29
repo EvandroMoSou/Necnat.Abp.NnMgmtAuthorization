@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.PermissionManagement;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Domains.NnPermission
+namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     public interface INnPermissionGrantRepository : IRepository<PermissionGrant, Guid>
     {

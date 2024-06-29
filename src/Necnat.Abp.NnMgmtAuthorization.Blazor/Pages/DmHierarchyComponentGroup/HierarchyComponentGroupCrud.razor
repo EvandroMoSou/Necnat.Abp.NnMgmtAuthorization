@@ -1,4 +1,4 @@
-﻿@page "/NnMgmtAuthorization/Configuration/Hierarchies"
+﻿@page "/NnMgmtAuthorization/Configuration/HierarchyComponentGroups"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
 @using System.Collections.ObjectModel
@@ -12,16 +12,16 @@
 @using Volo.Abp.AspNetCore.Components.Web
 @using Volo.Abp.BlazoriseUI.Components
 @using Volo.Abp.Identity
-@attribute [Authorize(NnMgmtAuthorizationPermissions.PrmHierarchy.Default)]
-@inherits AbpCrudPageBase<IHierarchyAppService, HierarchyDto, Guid, HierarchyResultRequestDto>
+@attribute [Authorize(NnMgmtAuthorizationPermissions.PrmHierarchyComponentGroup.Default)]
+@inherits AbpCrudPageBase<IHierarchyComponentGroupAppService, HierarchyComponentGroupDto, Guid, HierarchyComponentGroupResultRequestDto>
 @inject IStringLocalizer<NnLibCommonResource> NL
-@inject IHierarchyAppService AppService
+@inject IHierarchyComponentGroupAppService AppService
 
 <Card>
     <CardHeader>
         <Row Class="justify-content-between">
             <Column ColumnSize="ColumnSize.IsAuto">
-                <h2>@L["Hierarchies"]</h2>
+                <h2>@L["Hierarchy Component Groups"]</h2>
             </Column>
             <Column ColumnSize="ColumnSize.IsAuto">
                 @if (HasCreatePermission)
@@ -35,7 +35,7 @@
         </Row>
     </CardHeader>
     <CardBody>
-        <DataGrid TItem="HierarchyDto"
+        <DataGrid TItem="HierarchyComponentGroupDto"
                   Data="Entities"
                   ReadData="OnDataGridReadAsync"
                   CurrentPage="CurrentPage"
@@ -43,14 +43,14 @@
                   ShowPager="true"
                   PageSize="PageSize">
             <DataGridColumns>
-                <DataGridEntityActionsColumn TItem="HierarchyDto" @ref="@EntityActionsColumn">
+                <DataGridEntityActionsColumn TItem="HierarchyComponentGroupDto" @ref="@EntityActionsColumn">
                     <DisplayTemplate>
-                        <EntityActions TItem="HierarchyDto" EntityActionsColumn="@EntityActionsColumn">
-                            <EntityAction TItem="HierarchyDto"
+                        <EntityActions TItem="HierarchyComponentGroupDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="HierarchyComponentGroupDto"
                                           Text="@NL["Edit"]"
                                           Visible=HasUpdatePermission
                                           Clicked="() => OpenEditModalAsync(context)" />
-                            <EntityAction TItem="HierarchyDto"
+                            <EntityAction TItem="HierarchyComponentGroupDto"
                                           Text="@NL["Delete"]"
                                           Visible=HasDeletePermission
                                           Clicked="() => DeleteEntityAsync(context)"
@@ -58,12 +58,12 @@
                         </EntityActions>
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
-                <DataGridColumn TItem="HierarchyDto"
-                                Field="@nameof(HierarchyDto.Name)"
-                                Caption="@L[HierarchyConsts.NameDisplay]"></DataGridColumn>
-                <DataGridCheckColumn TItem="HierarchyDto"
-                                     Field="@nameof(HierarchyDto.IsActive)"
-                                     Caption="@L[HierarchyConsts.IsActiveDisplay]"></DataGridCheckColumn>
+                <DataGridColumn TItem="HierarchyComponentGroupDto"
+                                Field="@nameof(HierarchyComponentGroupDto.DisplayName)"
+                                Caption="@L[HierarchyComponentGroupConsts.DisplayNameDisplay]"></DataGridColumn>
+                <DataGridCheckColumn TItem="HierarchyComponentGroupDto"
+                                     Field="@nameof(HierarchyComponentGroupDto.IsActive)"
+                                     Caption="@L[HierarchyComponentGroupConsts.IsActiveDisplay]"></DataGridCheckColumn>
             </DataGridColumns>
         </DataGrid>
     </CardBody>
@@ -73,12 +73,12 @@
     <ModalContent Centered Size="ModalSize.Large">
         <Form>
             <ModalHeader>
-                <ModalTitle>@NL["New"] @L["Hierarchy"]</ModalTitle>
+                <ModalTitle>@NL["New"] @L["Hierarchy Component Group"]</ModalTitle>
                 <CloseButton Clicked="CloseCreateModalAsync" />
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="true">
-                    <HierarchyWrapper @bind-Entity="NewEntity" />
+                    <HierarchyComponentGroupWrapper @bind-Entity="NewEntity" />
                 </Validations>
             </ModalBody>
             <ModalFooter>
@@ -101,12 +101,12 @@
     <ModalContent Centered Size="ModalSize.Large">
         <Form>
             <ModalHeader>
-                <ModalTitle>@L["Hierarchy"] - @EditingEntity.Name</ModalTitle>
+                <ModalTitle>@L["Hierarchy Component Group"] - @EditingEntity.DisplayName</ModalTitle>
                 <CloseButton Clicked="CloseEditModalAsync" />
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="@EditValidationsRef" Model="@EditingEntity" ValidateOnLoad="false">
-                    <HierarchyWrapper @bind-Entity="EditingEntity" />
+                    <HierarchyComponentGroupWrapper @bind-Entity="EditingEntity" />
                 </Validations>
             </ModalBody>
             <ModalFooter>
@@ -128,13 +128,13 @@
 @namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Pages
 @code
 {
-    public HierarchyCrud() // Constructor
+    public HierarchyComponentGroupCrud() // Constructor
     {
         LocalizationResource = typeof(NnMgmtAuthorizationResource);
 
-        CreatePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchy.Create;
-        UpdatePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchy.Update;
-        DeletePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchy.Delete;
+        CreatePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchyComponentGroup.Create;
+        UpdatePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchyComponentGroup.Update;
+        DeletePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchyComponentGroup.Delete;
     }
 
     protected override async Task OpenCreateModalAsync()
@@ -148,7 +148,7 @@
 
             await CheckCreatePolicyAsync();
 
-            NewEntity = new HierarchyDto();
+            NewEntity = new HierarchyComponentGroupDto();
             NewEntity.IsActive = true;
 
             // Mapper will not notify Blazor that binded values are changed

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Caching;
 using Volo.Abp.DependencyInjection;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Domains.NnPermission
+namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     public class PermissionRoleIdServiceCache : IPermissionRoleIdService, ITransientDependency
     {

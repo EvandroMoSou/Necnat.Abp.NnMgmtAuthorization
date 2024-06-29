@@ -1,0 +1,131 @@
+﻿@using Blazorise.Components
+@using Microsoft.Extensions.Localization
+@using Necnat.Abp.NnLibCommon.Localization
+@using Necnat.Abp.NnMgmtAuthorization.Localization
+@using Necnat.Abp.NnMgmtAuthorization.Models
+@using Volo.Abp.AspNetCore.Components
+@inherits AbpComponentBase
+@inject IStringLocalizer<NnLibCommonResource> NL
+
+@if (ListaHierarchyComponentType == null)
+{
+    <div class="animated-background loading-input-height"></div>
+}
+else
+{
+    <Fields>
+        <Field ColumnSize="ColumnSize.Is4.OnDesktop">
+            <FieldLabel>@L["Hierarchy Component Type"]</FieldLabel>
+            <SelectList TItem="HierarchyComponentTypeModel"
+                        TValue="int?"
+                        Data="@ListaHierarchyComponentType"
+                        TextField="@((item)=> L[item.Name!])"
+                        ValueField="@((item)=>item.Id)"
+                        @bind-SelectedValue="@SelectedHierarchyComponentTypeId"
+                        DefaultItemText="@NL["Select..."]"
+                        DefaultItemValue="null" />
+        </Field>
+        @if (listaFilteredHierarchyComponent != null)
+        {
+            <Field ColumnSize="ColumnSize.Is8.OnDesktop">
+                <FieldLabel>@L["Hierarchy Component"]</FieldLabel>
+                @if (listaFilteredHierarchyComponent.Count < 20)
+                {
+                    <SelectList TItem="HierarchyComponentModel"
+                                TValue="Guid?"
+                                Data="@listaFilteredHierarchyComponent"
+                                TextField="@((item)=>item.Name)"
+                                ValueField="@((item)=>item.Id)"
+                                @bind-SelectedValue="@SelectedHierarchyComponentId"
+                                DefaultItemText="@NL["Select..."]"
+                                DefaultItemValue="null" />
+                }
+                else
+                {
+                    <Autocomplete TItem="HierarchyComponentModel"
+                                  TValue="Guid?"
+                                  Data="@listaFilteredHierarchyComponent"
+                                  TextField="@(( item ) => item.Name)"
+                                  ValueField="@(( item ) => item.Id)"
+                                  @bind-SelectedValue="@SelectedHierarchyComponentId"
+                                  Placeholder="@NL["Select..."]"
+                                  Filter="AutocompleteFilter.Contains">
+                        <NotFoundContent>@string.Format(NL["Sorry... {0} was not found!"], context)</NotFoundContent>
+                    </Autocomplete>
+                }
+            </Field>
+        }
+    </Fields>
+}
+
+@namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Components
+@code {
+
+    [Parameter]
+    public HierarchyComponentModel? SelectedHierarchyComponent { get; set; }
+
+    [Parameter]
+    public EventCallback<HierarchyComponentModel?> SelectedHierarchyComponentChanged { get; set; }
+
+    [Parameter]
+    public List<HierarchyComponentTypeModel>? ListaHierarchyComponentType { get; set; }
+
+    [Parameter]
+    public List<HierarchyComponentModel>? ListaHierarchyComponent { get; set; }
+
+    int? _selectedHierarchyComponentTypeId;
+    int? SelectedHierarchyComponentTypeId
+    {
+        get => _selectedHierarchyComponentTypeId;
+        set
+        {
+            if (_selectedHierarchyComponentTypeId == value)
+                return;
+
+            _selectedHierarchyComponentTypeId = value;
+            SelectedHierarchyComponentTypeIdChanged();
+        }
+    }
+
+    Guid? _selectedHierarchyComponentId;
+    Guid? SelectedHierarchyComponentId
+    {
+        get => _selectedHierarchyComponentId;
+        set
+        {
+            if (_selectedHierarchyComponentId == value)
+                return;
+
+            _selectedHierarchyComponentId = value;
+            SelectedHierarchyComponentIdChanged();
+        }
+    }
+
+    List<HierarchyComponentModel>? listaFilteredHierarchyComponent;
+
+    public HierarchyComponentSelectList()
+    {
+        LocalizationResource = typeof(NnMgmtAuthorizationResource);
+    }
+
+    protected void SelectedHierarchyComponentTypeIdChanged()
+    {
+        if (_selectedHierarchyComponentTypeId != null && ListaHierarchyComponent != null)
+            listaFilteredHierarchyComponent = ListaHierarchyComponent.Where(x => x.HierarchyComponentType == _selectedHierarchyComponentTypeId).OrderBy(x => x.Name).ToList();
+        else
+            listaFilteredHierarchyComponent = null;
+
+        SelectedHierarchyComponentId = null;
+    }
+
+    protected void SelectedHierarchyComponentIdChanged()
+    {
+        SelectedHierarchyComponent = ListaHierarchyComponent!.Where(x => x.Id == _selectedHierarchyComponentId).FirstOrDefault();
+        SelectedHierarchyComponentChanged.InvokeAsync(SelectedHierarchyComponent);
+    }
+
+    public void Clear()
+    {
+        SelectedHierarchyComponentTypeId = null;
+    }
+}
