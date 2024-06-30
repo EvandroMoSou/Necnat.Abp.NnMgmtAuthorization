@@ -1,6 +1,6 @@
 ﻿using Volo.Abp.Ui.Branding;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Host;
+namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Host.Client;
 
 public class NnMgmtAuthorizationHostBrandingProvider : DefaultBrandingProvider
 {

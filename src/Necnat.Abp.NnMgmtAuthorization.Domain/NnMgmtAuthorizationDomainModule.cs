@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
-using Necnat.Abp.NnMgmtAuthorization.Domains;
-using Volo.Abp.Domain;
+﻿using Volo.Abp.Domain;
 using Volo.Abp.Modularity;
 
 namespace Necnat.Abp.NnMgmtAuthorization;
@@ -12,10 +9,5 @@ namespace Necnat.Abp.NnMgmtAuthorization;
 )]
 public class NnMgmtAuthorizationDomainModule : AbpModule
 {
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
-        context.Services.AddTransient<IRoleNameService, RoleNameServiceCache>();
-        context.Services.AddTransient<IHierarchyComponentService, HierarchyComponentService>();
-        context.Services.AddTransient<IHierarchicalStructureRecursiveService, HierarchicalStructureRecursiveServiceCache>();        
-    }
+
 }

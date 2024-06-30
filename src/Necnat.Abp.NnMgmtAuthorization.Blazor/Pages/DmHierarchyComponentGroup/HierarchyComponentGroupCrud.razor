@@ -59,8 +59,8 @@
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
                 <DataGridColumn TItem="HierarchyComponentGroupDto"
-                                Field="@nameof(HierarchyComponentGroupDto.DisplayName)"
-                                Caption="@L[HierarchyComponentGroupConsts.DisplayNameDisplay]"></DataGridColumn>
+                                Field="@nameof(HierarchyComponentGroupDto.Name)"
+                                Caption="@L[HierarchyComponentGroupConsts.NameDisplay]"></DataGridColumn>
                 <DataGridCheckColumn TItem="HierarchyComponentGroupDto"
                                      Field="@nameof(HierarchyComponentGroupDto.IsActive)"
                                      Caption="@L[HierarchyComponentGroupConsts.IsActiveDisplay]"></DataGridCheckColumn>
@@ -101,7 +101,7 @@
     <ModalContent Centered Size="ModalSize.Large">
         <Form>
             <ModalHeader>
-                <ModalTitle>@L["Hierarchy Component Group"] - @EditingEntity.DisplayName</ModalTitle>
+                <ModalTitle>@L["Hierarchy Component Group"] - @EditingEntity.Name</ModalTitle>
                 <CloseButton Clicked="CloseEditModalAsync" />
             </ModalHeader>
             <ModalBody>

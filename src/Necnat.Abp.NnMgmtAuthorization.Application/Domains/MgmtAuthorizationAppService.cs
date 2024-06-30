@@ -5,12 +5,10 @@ using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnLibCommon.Utils;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Volo.Abp.Identity;
-using Volo.Abp.PermissionManagement;
 using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
@@ -29,7 +27,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         protected readonly IdentityUserManager _identityUserManager;
         protected readonly IIdentityRoleRepository _identityRoleRepository;
         protected readonly INnIdentityUserRepository _nnIdentityUserRepository;
-        protected readonly IPermissionGrantRepository _permissionGrantRepository;
 
         public MgmtAuthorizationAppService(
             IAuthEndpointRepository authEndpointRepository,
@@ -42,8 +39,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             IHttpContextAccessor httpContextAccessor,
             IdentityUserManager identityUserManager,
             IIdentityRoleRepository identityRoleRepository,
-            INnIdentityUserRepository nnIdentityUserRepository,
-            IPermissionGrantRepository permissionGrantRepository)
+            INnIdentityUserRepository nnIdentityUserRepository)
         {
             _authEndpointRepository = authEndpointRepository;
             _currentUser = currentUser;
@@ -56,7 +52,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             _identityUserManager = identityUserManager;
             _identityRoleRepository = identityRoleRepository;
             _nnIdentityUserRepository = nnIdentityUserRepository;
-            _permissionGrantRepository = permissionGrantRepository;
         }
 
         public virtual async Task CallConsolidateAdminUserEndpointAsync(Guid adminUserId)

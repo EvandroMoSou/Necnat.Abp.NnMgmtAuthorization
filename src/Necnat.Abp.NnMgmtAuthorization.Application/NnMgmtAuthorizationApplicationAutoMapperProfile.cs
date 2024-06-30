@@ -41,7 +41,7 @@ public class NnMgmtAuthorizationApplicationAutoMapperProfile : Profile
             .ForMember(x => x.CreationTime, opt => opt.Ignore())
             .ForMember(x => x.CreatorId, opt => opt.Ignore())
             .ForMember(x => x.ExtraProperties, opt => opt.Ignore())
-            .ForMember(x => x.ConcurrencyStamp, opt => opt.Ignore());            
+            .ForMember(x => x.ConcurrencyStamp, opt => opt.Ignore());
 
         CreateMap<Hierarchy, HierarchyDto>();
         CreateMap<HierarchyDto, Hierarchy>()

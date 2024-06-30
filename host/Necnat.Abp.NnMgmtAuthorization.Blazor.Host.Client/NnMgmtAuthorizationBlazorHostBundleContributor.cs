@@ -1,6 +1,6 @@
 ﻿using Volo.Abp.Bundling;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Host;
+namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Host.Client;
 
 public class NnMgmtAuthorizationBlazorHostBundleContributor : IBundleContributor
 {

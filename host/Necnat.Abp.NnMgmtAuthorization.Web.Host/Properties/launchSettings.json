@@ -3,8 +3,8 @@
     "windowsAuthentication": false, 
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:44335",
-      "sslPort": 44335
+      "applicationUrl": "https://localhost:44361",
+      "sslPort": 44361
     }
   },
   "profiles": {
@@ -18,7 +18,7 @@
     "Necnat.Abp.NnMgmtAuthorization.Web.Host": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:44335",
+      "applicationUrl": "https://localhost:44361",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

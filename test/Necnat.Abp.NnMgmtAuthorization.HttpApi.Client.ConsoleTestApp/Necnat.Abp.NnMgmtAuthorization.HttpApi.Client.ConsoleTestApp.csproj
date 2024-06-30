@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Http.Client.IdentityModel" Version="8.1.4" />
-    <PackageReference Include="Volo.Abp.Autofac" Version="8.1.4" />
+    <PackageReference Include="Volo.Abp.Http.Client.IdentityModel" Version="8.2.0" />
+    <PackageReference Include="Volo.Abp.Autofac" Version="8.2.0" />
     <ProjectReference Include="..\..\src\Necnat.Abp.NnMgmtAuthorization.HttpApi.Client\Necnat.Abp.NnMgmtAuthorization.HttpApi.Client.csproj" />
   </ItemGroup>
 
