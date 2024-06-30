@@ -100,58 +100,60 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
         public virtual async Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationAsync()
         {
-            var ha = new HierarchicalAuthorizationModel();
-            ha.UserId = (Guid)CurrentUser.Id!;
+            throw new NotImplementedException();
 
-            //HierarchicalAccess
-            var lHierarchicalAccess = await _hierarchicalAccessRepository.GetListAsync(x => x.UserId == CurrentUser.Id);
-            foreach (var iHierarchicalAccess in lHierarchicalAccess)
-            {
-                var ahc = ha.LHAC.Where(x => x.RId == iHierarchicalAccess.RoleId).FirstOrDefault();
-                if (ahc != null)
-                {
-                    ahc.LHSId.Add(iHierarchicalAccess.HierarchicalStructureId);
-                    continue;
-                }
+            //var ha = new HierarchicalAuthorizationModel();
+            //ha.UserId = (Guid)CurrentUser.Id!;
 
-                var ah = new HAC
-                {
-                    LHSId = new List<Guid> { iHierarchicalAccess.HierarchicalStructureId },
-                    RId = iHierarchicalAccess.RoleId
-                };
+            ////HierarchicalAccess
+            //var lHierarchicalAccess = await _hierarchicalAccessRepository.GetListAsync(x => x.UserId == CurrentUser.Id);
+            //foreach (var iHierarchicalAccess in lHierarchicalAccess)
+            //{
+            //    var ahc = ha.LHAC.Where(x => x.RId == iHierarchicalAccess.RoleId).FirstOrDefault();
+            //    if (ahc != null)
+            //    {
+            //        ahc.LHSId.Add(iHierarchicalAccess.HierarchicalStructureId!);
+            //        continue;
+            //    }
 
-                var role = await _identityRoleRepository.GetAsync(iHierarchicalAccess.RoleId);
-                var lPermissionGrant = await _permissionGrantRepository.GetListAsync("R", role.Name);
-                foreach (var iPermissionGrant in lPermissionGrant)
-                    ah.LPN.Add(iPermissionGrant.Name);
+            //    var ah = new HAC
+            //    {
+            //        LHSId = new List<Guid> { iHierarchicalAccess.HierarchicalStructureId },
+            //        RId = iHierarchicalAccess.RoleId
+            //    };
 
-                ha.LHAC.Add(ah);
-            }
+            //    var role = await _identityRoleRepository.GetAsync(iHierarchicalAccess.RoleId);
+            //    var lPermissionGrant = await _permissionGrantRepository.GetListAsync("R", role.Name);
+            //    foreach (var iPermissionGrant in lPermissionGrant)
+            //        ah.LPN.Add(iPermissionGrant.Name);
 
-            //HierarchicalStructure
-            var lHierarchicalStructure = await _hierarchicalStructureRepository.GetListAsync();
-            foreach (var lHierarchicalStructureId in ha.LHAC.Select(x => x.LHSId))
-                foreach (var iHierarchicalStructureId in lHierarchicalStructureId)
-                {
-                    var hierarchicalStructure = lHierarchicalStructure.First(x => x.Id == iHierarchicalStructureId);
-                    if (!ha.LHSC.Any(x => x.Id == iHierarchicalStructureId))
-                        ha.LHSC.Add(
-                            new HSC
-                            {
-                                Id = iHierarchicalStructureId,
-                                HId = hierarchicalStructure.HierarchyId,
-                                LChl = (await _hierarchicalStructureRecursiveService.SearchHierarchicalStructureRecursiveAsync(iHierarchicalStructureId)).ToList()
-                            });
-                }
+            //    ha.LHAC.Add(ah);
+            //}
 
-            //Hierarchy
-            foreach (var iHierarchyId in ha.LHSC.Select(x => x.HId).Distinct())
-            {
-                var hierarchy = await _hierarchyRepository.GetAsync(iHierarchyId);
-                ha.LH.Add(FromHierarchy(hierarchy));
-            }
+            ////HierarchicalStructure
+            //var lHierarchicalStructure = await _hierarchicalStructureRepository.GetListAsync();
+            //foreach (var lHierarchicalStructureId in ha.LHAC.Select(x => x.LHSId))
+            //    foreach (var iHierarchicalStructureId in lHierarchicalStructureId)
+            //    {
+            //        var hierarchicalStructure = lHierarchicalStructure.First(x => x.Id == iHierarchicalStructureId);
+            //        if (!ha.LHSC.Any(x => x.Id == iHierarchicalStructureId))
+            //            ha.LHSC.Add(
+            //                new HSC
+            //                {
+            //                    Id = iHierarchicalStructureId,
+            //                    HId = hierarchicalStructure.HierarchyId,
+            //                    LChl = (await _hierarchicalStructureRecursiveService.GetListHierarchicalStructureRecursiveAsync(iHierarchicalStructureId)).ToList()
+            //                });
+            //    }
 
-            return await LoadHierarchyComponentNameAsync(ha);
+            ////Hierarchy
+            //foreach (var iHierarchyId in ha.LHSC.Select(x => x.HId).Distinct())
+            //{
+            //    var hierarchy = await _hierarchyRepository.GetAsync(iHierarchyId);
+            //    ha.LH.Add(FromHierarchy(hierarchy));
+            //}
+
+            //return await LoadHierarchyComponentNameAsync(ha);
         }
 
         protected virtual async Task<HierarchicalAuthorizationModel> LoadHierarchyComponentNameAsync(HierarchicalAuthorizationModel ahModel)

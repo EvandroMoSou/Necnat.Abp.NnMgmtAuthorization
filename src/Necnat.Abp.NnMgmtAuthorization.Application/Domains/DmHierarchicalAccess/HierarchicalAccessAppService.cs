@@ -61,21 +61,22 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
             if (input.RoleId != null)
                 q = q.Where(x => x.RoleId == input.RoleId);
 
-            if (input.HierarchicalStructureIdList != null)
-            {
-                var l = new List<Guid>();
-                if (input.WithHierarchy == true)
-                    l = await _hierarchicalStructureRecursiveService.SearchHierarchicalStructureIdRecursiveAsync(input.HierarchicalStructureIdList!);
-                else
-                    l = input.HierarchicalStructureIdList;
+            throw new NotImplementedException();
+            //if (input.HierarchicalStructureIdList != null)
+            //{
+            //    var l = new List<Guid>();
+            //    if (input.WithHierarchy == true)
+            //        l = await _hierarchicalStructureRecursiveService.GetListHierarchicalStructureIdRecursiveAsync(input.HierarchicalStructureIdList!);
+            //    else
+            //        l = input.HierarchicalStructureIdList;
 
-                q = q.Where(x => l.Contains(x.HierarchicalStructureId));
-            }
+            //    q = q.Where(x => l.Contains(x.HierarchicalStructureId));
+            //}
 
-            var lHierarchicalStructureId = await Repository.SearchHierarchicalStructureIdAsync((Guid)CurrentUser.Id!, GetListPolicyName!);
-            q = q.Where(x => lHierarchicalStructureId.Contains(x.HierarchicalStructureId));
+            //var lHierarchicalStructureId = await Repository.SearchHierarchicalStructureIdAsync((Guid)CurrentUser.Id!, GetListPolicyName!);
+            //q = q.Where(x => lHierarchicalStructureId.Contains(x.HierarchicalStructureId));
 
-            return q;
+            //return q;
         }
 
         public override async Task<HierarchicalAccessDto> GetAsync(Guid id)
@@ -113,21 +114,22 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
 
         public override async Task DeleteAsync(Guid id)
         {
-            var e = await Repository.GetAsync(id);
-            await Repository.CheckByHierarchicalStructureIdWithHierarchyAsync((Guid)CurrentUser.Id!, DeletePolicyName!, e.HierarchicalStructureId);
+            throw new NotImplementedException();
+            //var e = await Repository.GetAsync(id);
+            //await Repository.CheckByHierarchicalStructureIdWithHierarchyAsync((Guid)CurrentUser.Id!, DeletePolicyName!, e.HierarchicalStructureId);
 
-            var user = await _identityUserManager.GetByIdAsync(e.UserId);
-            var role = await _identityRoleRepository.GetAsync(e.RoleId);
+            //var user = await _identityUserManager.GetByIdAsync(e.UserId);
+            //var role = await _identityRoleRepository.GetAsync(e.RoleId);
 
-            var lUserRole = await _nnIdentityUserRoleRepository.GetListAsync(x => x.UserId == e.UserId && x.RoleId == e.RoleId);
-            if (lUserRole.Count() == 1)
-            {
-                var lRole = await _identityUserManager.GetRolesAsync(user);
-                lRole.Remove(role.Name);
-                (await _identityUserManager.SetRolesAsync(user, lRole)).CheckErrors();
-            }
+            //var lUserRole = await _nnIdentityUserRoleRepository.GetListAsync(x => x.UserId == e.UserId && x.RoleId == e.RoleId);
+            //if (lUserRole.Count() == 1)
+            //{
+            //    var lRole = await _identityUserManager.GetRolesAsync(user);
+            //    lRole.Remove(role.Name);
+            //    (await _identityUserManager.SetRolesAsync(user, lRole)).CheckErrors();
+            //}
 
-            await base.DeleteAsync(id);
+            //await base.DeleteAsync(id);
         }
     }
 }

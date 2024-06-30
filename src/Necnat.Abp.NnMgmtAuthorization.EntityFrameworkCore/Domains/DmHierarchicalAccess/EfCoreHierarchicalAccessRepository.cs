@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Necnat.Abp.NnMgmtAuthorization.Domains.NnPermission;
 using Necnat.Abp.NnMgmtAuthorization.EntityFrameworkCore;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
@@ -16,32 +15,35 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
     public class EfCoreHierarchicalAccessRepository : EfCoreRepository<INnMgmtAuthorizationDbContext, HierarchicalAccess, Guid>, IHierarchicalAccessRepository
     {
         protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
-        protected readonly IPermissionRoleIdService _permissionRoleIdService;
         protected readonly UserManager<IdentityUser> _userManager;
 
         public EfCoreHierarchicalAccessRepository(
             IDbContextProvider<INnMgmtAuthorizationDbContext> dbContextProvider,
             IHierarchicalStructureRecursiveService hierarchicalStructureRecursiveService,
-            IPermissionRoleIdService permissionRoleIdService,
             UserManager<IdentityUser> userManager) : base(dbContextProvider)
         {
             _hierarchicalStructureRecursiveService = hierarchicalStructureRecursiveService;
-            _permissionRoleIdService = permissionRoleIdService;
             _userManager = userManager;
         }
 
-        public virtual async Task<List<HierarchicalAccess>> SearchByUserIdAndRoleIdAsync(Guid userId, Guid roleId)
+        public virtual async Task<List<HierarchicalAccess>> GetListByUserIdAsync(Guid userId)
+        {
+            return await(await GetDbSetAsync()).Where(x => x.UserId == userId).ToListAsync();
+        }
+
+        public virtual async Task<List<HierarchicalAccess>> GetListByUserIdAndRoleIdAsync(Guid userId, Guid roleId)
         {
             return await (await GetDbSetAsync()).Where(x => x.UserId == userId && x.RoleId == roleId).ToListAsync();
         }
 
         public virtual async Task<List<Guid>> SearchHierarchicalStructureIdAsync(Guid userId, string permissionName)
         {
-            var lRoleId = await _permissionRoleIdService.SearchRoleIdAsync(permissionName);
-            if (lRoleId == null || lRoleId.Count < 1)
-                throw new AccessViolationException($"User: {userId} does not have permission: {permissionName}.");
+            throw new NotImplementedException();
+            //var lRoleId = await _permissionRoleIdService.SearchRoleIdAsync(permissionName);
+            //if (lRoleId == null || lRoleId.Count < 1)
+            //    throw new AccessViolationException($"User: {userId} does not have permission: {permissionName}.");
 
-            return await (await GetDbContextAsync()).HierarchicalAccess.Where(x => x.UserId == userId && lRoleId.Contains(x.RoleId)).Select(x => x.HierarchicalStructureId).ToListAsync();
+            //return await (await GetDbContextAsync()).HierarchicalAccess.Where(x => x.UserId == userId && lRoleId.Contains(x.RoleId)).Select(x => x.HierarchicalStructureId).ToListAsync();
         }
 
         public virtual async Task<List<Guid>> SearchHierarchicalStructureIdWithHierarchyAsync(Guid userId, string permissionName)
@@ -50,7 +52,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
 
             var l = new List<Guid>();
             foreach (var iHierarchicalStructureId in lHierarchicalStructureId)
-                l.AddRange(await _hierarchicalStructureRecursiveService.SearchHierarchicalStructureIdRecursiveAsync(iHierarchicalStructureId));
+                l.AddRange(await _hierarchicalStructureRecursiveService.GetListHierarchicalStructureIdRecursiveAsync(iHierarchicalStructureId));
 
             return l.Distinct().ToList();
         }
@@ -61,7 +63,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
 
             var l = new List<Guid>();
             foreach (var iHierarchicalStructureId in lHierarchicalStructureId)
-                l.AddRange(await _hierarchicalStructureRecursiveService.SearchHierarchyComponentIdRecursiveAsync(iHierarchicalStructureId));
+                l.AddRange(await _hierarchicalStructureRecursiveService.GetListHierarchyComponentIdRecursiveAsync(iHierarchicalStructureId));
 
             return l.Distinct().ToList();
         }

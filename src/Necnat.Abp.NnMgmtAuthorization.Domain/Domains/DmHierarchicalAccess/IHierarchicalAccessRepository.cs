@@ -1,7 +1,6 @@
 ﻿using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
@@ -9,7 +8,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     public interface IHierarchicalAccessRepository : IRepository<HierarchicalAccess, Guid>
     {
-        Task<List<HierarchicalAccess>> SearchByUserIdAndRoleIdAsync(Guid userId, Guid roleId);
+        Task<List<HierarchicalAccess>> GetListByUserIdAsync(Guid userId);
+        Task<List<HierarchicalAccess>> GetListByUserIdAndRoleIdAsync(Guid userId, Guid roleId);
         Task<HierarchicalAccess> InsertIfNotExistsAsync(HierarchicalAccess entity, bool autoSave = false);
         Task CheckByHierarchyComponentIdWithHierarchyAsync(Guid userId, string permissionName, Guid hierarchyComponentId);
         Task CheckByHierarchicalStructureIdAsync(Guid userId, string permissionName, Guid hierarchicalStructureId);
