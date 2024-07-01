@@ -12,7 +12,6 @@ public class NnMgmtAuthorizationDbContext : AbpDbContext<NnMgmtAuthorizationDbCo
      * public DbSet<Question> Questions { get; set; }
      */
 
-    public DbSet<AuthEndpoint> AuthEndpoint { get; set; }
     public DbSet<HierarchicalAccess> HierarchicalAccess { get; set; }
     public DbSet<HierarchicalStructure> HierarchicalStructure { get; set; }
     public DbSet<Hierarchy> Hierarchy { get; set; }

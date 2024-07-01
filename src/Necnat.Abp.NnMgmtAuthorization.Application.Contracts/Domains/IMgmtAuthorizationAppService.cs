@@ -9,7 +9,5 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     public interface IMgmtAuthorizationAppService : IApplicationService, IRemoteService
     {
         Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationAsync();
-        Task CallConsolidateAdminUserEndpointAsync(Guid adminUserId);
-        Task ConsolidateAdminUserAsync(Guid adminUserId);
     }
 }

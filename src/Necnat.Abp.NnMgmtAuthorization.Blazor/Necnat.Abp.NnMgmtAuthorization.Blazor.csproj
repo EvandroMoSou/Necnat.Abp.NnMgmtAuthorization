@@ -6,13 +6,13 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.2.0</Version>
+	  <Version>0.2.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.5.2" />
     <PackageReference Include="Blazorise.TreeView" Version="1.5.2" />
-    <PackageReference Include="Necnat.Abp.NnLibCommon.Blazor" Version="0.2.0" />
+    <PackageReference Include="Necnat.Abp.NnLibCommon.Blazor" Version="0.2.1" />
     <PackageReference Include="Volo.Abp.AutoMapper" Version="8.2.0" />
     <PackageReference Include="Volo.Abp.AspNetCore.Components.Web.Theming" Version="8.2.0" />
   </ItemGroup>

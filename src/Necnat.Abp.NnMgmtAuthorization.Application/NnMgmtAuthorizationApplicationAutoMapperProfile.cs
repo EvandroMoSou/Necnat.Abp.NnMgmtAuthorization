@@ -11,15 +11,6 @@ public class NnMgmtAuthorizationApplicationAutoMapperProfile : Profile
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
 
-        CreateMap<AuthEndpoint, AuthEndpointDto>();
-        CreateMap<AuthEndpointDto, AuthEndpoint>()
-            .ForMember(x => x.LastModificationTime, opt => opt.Ignore())
-            .ForMember(x => x.LastModifierId, opt => opt.Ignore())
-            .ForMember(x => x.CreationTime, opt => opt.Ignore())
-            .ForMember(x => x.CreatorId, opt => opt.Ignore())
-            .ForMember(x => x.ExtraProperties, opt => opt.Ignore())
-            .ForMember(x => x.ConcurrencyStamp, opt => opt.Ignore());
-
         CreateMap<HierarchicalAccess, HierarchicalAccessDto>();
         CreateMap<HierarchicalAccessDto, HierarchicalAccess>()
             .ForMember(x => x.TenantId, opt => opt.Ignore())
