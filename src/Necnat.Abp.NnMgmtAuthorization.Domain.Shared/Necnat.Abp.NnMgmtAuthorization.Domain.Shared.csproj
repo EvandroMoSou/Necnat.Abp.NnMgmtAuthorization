@@ -8,7 +8,7 @@
 		<RootNamespace>Necnat.Abp.NnMgmtAuthorization</RootNamespace>
 		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>0.2.2</Version>
+		<Version>0.2.3</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
