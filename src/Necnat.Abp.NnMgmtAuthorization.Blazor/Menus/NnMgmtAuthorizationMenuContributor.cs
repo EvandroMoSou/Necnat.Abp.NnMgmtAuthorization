@@ -34,24 +34,13 @@ public class NnMgmtAuthorizationMenuContributor : IMenuContributor
             order: 1
         );
 
-        if (await context.IsGrantedAsync(NnMgmtAuthorizationPermissions.PrmAuthEndpoint.Default))
-        {
-            authorizationConfiguracaoMenu.AddItem(new ApplicationMenuItem(
-                NnMgmtAuthorizationMenus.Configuration_AuthEndpoint,
-                l["Menu:NnMgmtAuthorization:Configuration:AuthEndpoint"],
-                url: "/NnMgmtAuthorization/Configuration/AuthEndpoints",
-                order: 1
-            ));
-            displayAuthorizationConfiguracaoMenu = true;
-        }
-
         if (await context.IsGrantedAsync(NnMgmtAuthorizationPermissions.PrmHierarchy.Default))
         {
             authorizationConfiguracaoMenu.AddItem(new ApplicationMenuItem(
                 NnMgmtAuthorizationMenus.Configuration_Hierarchy,
                 l["Menu:NnMgmtAuthorization:Configuration:Hierarchy"],
                 url: "/NnMgmtAuthorization/Configuration/Hierarchies",
-                order: 2
+                order: 1
             ));
             displayAuthorizationConfiguracaoMenu = true;
         }
@@ -62,7 +51,7 @@ public class NnMgmtAuthorizationMenuContributor : IMenuContributor
                 NnMgmtAuthorizationMenus.Configuration_HierarchyComponentGroup,
                 l["Menu:NnMgmtAuthorization:Configuration:HierarchyComponentGroup"],
                 url: "/NnMgmtAuthorization/Configuration/HierarchyComponentGroups",
-                order: 3
+                order: 2
             ));
             displayAuthorizationConfiguracaoMenu = true;
         }
@@ -73,7 +62,7 @@ public class NnMgmtAuthorizationMenuContributor : IMenuContributor
                 NnMgmtAuthorizationMenus.Configuration_HierarchicalStructure,
                 l["Menu:NnMgmtAuthorization:Configuration:HierarchicalStructure"],
                 url: "/NnMgmtAuthorization/Configuration/HierarchicalStructure",
-                order: 4
+                order: 3
             ));
             displayAuthorizationConfiguracaoMenu = true;
         }

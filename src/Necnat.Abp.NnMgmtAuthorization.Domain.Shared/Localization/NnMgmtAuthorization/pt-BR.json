@@ -6,7 +6,6 @@
 
     "Menu:NnMgmtAuthorization": "Autorização",
     "Menu:NnMgmtAuthorization:Configuration": "Configuração",
-    "Menu:NnMgmtAuthorization:Configuration:AuthEndpoint": "Endpoint",
     "Menu:NnMgmtAuthorization:Configuration:Hierarchy": "Hierarquia",
     "Menu:NnMgmtAuthorization:Configuration:HierarchyComponentGroup": "Grupo de Componentes de Hierarquia",
     "Menu:NnMgmtAuthorization:Configuration:HierarchicalStructure": "Estrutura Hierárquica",

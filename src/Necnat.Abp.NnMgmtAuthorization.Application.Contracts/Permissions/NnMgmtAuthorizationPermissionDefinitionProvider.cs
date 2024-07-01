@@ -10,11 +10,6 @@ public class NnMgmtAuthorizationPermissionDefinitionProvider : PermissionDefinit
     {
         var myGroup = context.AddGroup(NnMgmtAuthorizationPermissions.GroupName, L("Permission:NnMgmtAuthorization"));
 
-        var pgAuthEndpoint = myGroup.AddPermission(NnMgmtAuthorizationPermissions.PrmAuthEndpoint.Default, L("Permission:AuthEndpoint:Default"));
-        pgAuthEndpoint.AddChild(NnMgmtAuthorizationPermissions.PrmAuthEndpoint.Create, L("Permission:AuthEndpoint:Create"));
-        pgAuthEndpoint.AddChild(NnMgmtAuthorizationPermissions.PrmAuthEndpoint.Update, L("Permission:AuthEndpoint:Update"));
-        pgAuthEndpoint.AddChild(NnMgmtAuthorizationPermissions.PrmAuthEndpoint.Delete, L("Permission:AuthEndpoint:Delete"));
-
         var pgHierarchy = myGroup.AddPermission(NnMgmtAuthorizationPermissions.PrmHierarchy.Default, L("Permission:Hierarchy:Default"));
         pgHierarchy.AddChild(NnMgmtAuthorizationPermissions.PrmHierarchy.Create, L("Permission:Hierarchy:Create"));
         pgHierarchy.AddChild(NnMgmtAuthorizationPermissions.PrmHierarchy.Update, L("Permission:Hierarchy:Edit"));
