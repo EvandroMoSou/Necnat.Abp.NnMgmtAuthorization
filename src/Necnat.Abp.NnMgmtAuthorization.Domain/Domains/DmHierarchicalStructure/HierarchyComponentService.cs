@@ -9,7 +9,7 @@ using Volo.Abp;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using Necnat.Abp.NnMgmtAuthorization.Localization;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Domains
+namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 {
     public class HierarchyComponentService : IHierarchyComponentService
     {

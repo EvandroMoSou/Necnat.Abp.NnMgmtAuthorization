@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Domains
+namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 {
     public interface IHierarchyComponentService
     {

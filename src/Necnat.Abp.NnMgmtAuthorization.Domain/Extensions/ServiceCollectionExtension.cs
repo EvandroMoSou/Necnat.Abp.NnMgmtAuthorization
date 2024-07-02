@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnMgmtAuthorization.Domains;
+using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Extensions
 {
