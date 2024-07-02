@@ -33,17 +33,6 @@ public static class NnMgmtAuthorizationDbContextModelCreatingExtensions
         });
         */
 
-        builder.Entity<AuthEndpoint>(b =>
-        {
-            b.ToTable(NnMgmtAuthorizationDbProperties.DbTablePrefix + "AuthEndpoint",
-                NnMgmtAuthorizationDbProperties.DbSchema);
-            b.ConfigureByConvention(); //auto configure for the base class props
-            b.Property(x => x.DisplayName).HasMaxLength(AuthEndpointConsts.MaxDisplayNameLength);
-            b.Property(x => x.Endpoint).IsRequired().HasMaxLength(AuthEndpointConsts.MaxEndpointLength);
-            b.Property(x => x.IsAuthentication).IsRequired();
-            b.Property(x => x.IsActive).IsRequired();
-        });
-
         builder.Entity<HierarchicalAccess>(b =>
         {
             b.ToTable(NnMgmtAuthorizationDbProperties.DbTablePrefix + "HierarchicalAccess",

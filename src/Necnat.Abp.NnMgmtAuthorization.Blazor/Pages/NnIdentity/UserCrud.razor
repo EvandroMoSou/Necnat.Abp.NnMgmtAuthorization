@@ -47,12 +47,6 @@
                 <DataGridEntityActionsColumn TItem="IdentityUserDto" @ref="@EntityActionsColumn">
                     <DisplayTemplate>
                         <EntityActions TItem="IdentityUserDto" EntityActionsColumn="@EntityActionsColumn">
-                            @if (context.UserName == "admin")
-                            {
-                                <EntityAction TItem="IdentityUserDto"
-                                              Text="@NL["Consolidate"]"
-                                              Clicked="() => ConsolidateAsync(context.Id)" />
-                            }
                             @*<EntityAction TItem="IdentityUserDto"
                             Text="@NL["Edit"]"
                             Visible=HasUpdatePermission
@@ -140,17 +134,5 @@
         CreatePolicyName = IdentityPermissions.Users.Create;
         UpdatePolicyName = IdentityPermissions.Users.Update;
         DeletePolicyName = IdentityPermissions.Users.Delete;
-    }
-
-    protected virtual async Task ConsolidateAsync(Guid adminUserId)
-    {
-        try
-        {
-            await MgmtAuthorizationAppService.CallConsolidateAdminUserEndpointAsync(adminUserId);
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
     }
 }

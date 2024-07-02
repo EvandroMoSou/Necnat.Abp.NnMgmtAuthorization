@@ -11,7 +11,7 @@ using Necnat.Abp.NnMgmtAuthorization.Localization;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 {
-    public class HierarchyComponentService : IHierarchyComponentService
+    public class HierarchyComponentService : IHierarchyComponentService, ITransientDependency
     {
         #region Localization
 

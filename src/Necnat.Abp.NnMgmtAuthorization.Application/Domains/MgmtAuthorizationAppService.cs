@@ -17,7 +17,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     [Authorize]
     public class MgmtAuthorizationAppService : NnMgmtAuthorizationAppService, IMgmtAuthorizationAppService
     {
-        protected readonly IAuthEndpointRepository _authEndpointRepository;
         protected readonly ICurrentUser _currentUser;
         protected readonly IHierarchicalAccessRepository _hierarchicalAccessRepository;
         protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
@@ -30,7 +29,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         protected readonly INnIdentityUserRepository _nnIdentityUserRepository;
 
         public MgmtAuthorizationAppService(
-            IAuthEndpointRepository authEndpointRepository,
             ICurrentUser currentUser,
             IHierarchicalAccessRepository hierarchicalAccessRepository,
             IHierarchicalStructureRecursiveService hierarchicalStructureRecursiveService,
@@ -42,7 +40,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             IIdentityRoleRepository identityRoleRepository,
             INnIdentityUserRepository nnIdentityUserRepository)
         {
-            _authEndpointRepository = authEndpointRepository;
             _currentUser = currentUser;
             _hierarchicalAccessRepository = hierarchicalAccessRepository;
             _hierarchicalStructureRecursiveService = hierarchicalStructureRecursiveService;
@@ -55,44 +52,44 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             _nnIdentityUserRepository = nnIdentityUserRepository;
         }
 
-        public virtual async Task CallConsolidateAdminUserEndpointAsync(Guid adminUserId)
-        {
-            if (!_currentUser.IsInRole("admin"))
-                return;
+        //public virtual async Task CallConsolidateAdminUserEndpointAsync(Guid adminUserId)
+        //{
+        //    if (!_currentUser.IsInRole("admin"))
+        //        return;
 
-            var lAuthorizationEndpoint = await _authEndpointRepository.GetListAsync(x => x.IsActive && !x.IsAuthentication);
-            foreach (var iAuthorizationEndpoint in lAuthorizationEndpoint)
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                    var httpResponseMessage = await client.GetAsync($"{iAuthorizationEndpoint.Endpoint}/api/app/mgmt-authorization/consolidate-admin-user?adminUserId=" + adminUserId);
-                    if (!httpResponseMessage.IsSuccessStatusCode)
-                        throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
-                }
-            }
-        }
+        //    var lAuthorizationEndpoint = await _authEndpointRepository.GetListAsync(x => x.IsActive && !x.IsAuthentication);
+        //    foreach (var iAuthorizationEndpoint in lAuthorizationEndpoint)
+        //    {
+        //        using (HttpClient client = new HttpClient())
+        //        {
+        //            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
+        //            var httpResponseMessage = await client.GetAsync($"{iAuthorizationEndpoint.Endpoint}/api/app/mgmt-authorization/consolidate-admin-user?adminUserId=" + adminUserId);
+        //            if (!httpResponseMessage.IsSuccessStatusCode)
+        //                throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+        //        }
+        //    }
+        //}
 
-        public virtual async Task ConsolidateAdminUserAsync(Guid adminUserId)
-        {
-            if (!_currentUser.IsInRole("admin"))
-                return;
+        //public virtual async Task ConsolidateAdminUserAsync(Guid adminUserId)
+        //{
+        //    if (!_currentUser.IsInRole("admin"))
+        //        return;
 
-            var adminUser = await _identityUserManager.FindByNameAsync("admin");
-            if (adminUser == null || adminUser.Id == adminUserId)
-                return;
+        //    var adminUser = await _identityUserManager.FindByNameAsync("admin");
+        //    if (adminUser == null || adminUser.Id == adminUserId)
+        //        return;
 
-            var newAdmin = new IdentityUser(adminUserId, adminUser.UserName, adminUser.Email);
-            newAdmin = ReflectionUtil.Clone(adminUser, newAdmin);
+        //    var newAdmin = new IdentityUser(adminUserId, adminUser.UserName, adminUser.Email);
+        //    newAdmin = ReflectionUtil.Clone(adminUser, newAdmin);
 
-            var roleList = await _identityUserManager.GetRolesAsync(adminUser);
-            await _identityUserManager.RemoveFromRolesAsync(adminUser, roleList);
-            await _nnIdentityUserRepository.DeleteAsync(adminUser.Id);
-            await _nnIdentityUserRepository.InsertAsync(newAdmin, true);
+        //    var roleList = await _identityUserManager.GetRolesAsync(adminUser);
+        //    await _identityUserManager.RemoveFromRolesAsync(adminUser, roleList);
+        //    await _nnIdentityUserRepository.DeleteAsync(adminUser.Id);
+        //    await _nnIdentityUserRepository.InsertAsync(newAdmin, true);
 
-            adminUser = await _identityUserManager.FindByNameAsync("admin");
-            await _identityUserManager.AddToRolesAsync(adminUser!, roleList);
-        }
+        //    adminUser = await _identityUserManager.FindByNameAsync("admin");
+        //    await _identityUserManager.AddToRolesAsync(adminUser!, roleList);
+        //}
 
         public virtual async Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationAsync()
         {
