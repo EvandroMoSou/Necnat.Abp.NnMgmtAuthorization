@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnLibCommon.Utils;
+using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
 using System.Collections.Generic;

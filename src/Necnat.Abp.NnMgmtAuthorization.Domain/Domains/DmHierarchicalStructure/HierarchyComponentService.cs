@@ -8,7 +8,7 @@ using Volo.Abp;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Localization;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Domains
+namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 {
     public class HierarchyComponentService : IHierarchyComponentService, ITransientDependency
     {
