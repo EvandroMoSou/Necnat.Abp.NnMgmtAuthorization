@@ -5,7 +5,9 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Localization
 @using Necnat.Abp.NnLibCommon.Blazor.Components
+@using Necnat.Abp.NnLibCommon.Localization
 @using Necnat.Abp.NnMgmtAuthorization.Blazor.Components
 @using Necnat.Abp.NnMgmtAuthorization.Domains
 @using Necnat.Abp.NnMgmtAuthorization.Localization
@@ -14,6 +16,7 @@
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.AspNetCore.Components
 @attribute [Authorize(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default)]
+@inject IStringLocalizer<NnLibCommonResource> NL
 @inject IHierarchicalStructureAppService AppService
 @inject IHierarchyAppService HierarchyAppService
 @inject SweetAlertService Swal
@@ -26,7 +29,7 @@
 else
 {
     <div class="container">
-        <h2 class="page-title">@L["Edit"] @L["Hierarchical Structures"]</h2>
+        <h2 class="page-title">@NL["Edit"] @L["Hierarchical Structures"]</h2>
         <Card>
             <CardBody>
                 <Fields>
@@ -60,7 +63,7 @@ else
         <ModalContent Size="ModalSize.ExtraLarge" Centered="true">
             <Form>
                 <ModalHeader>
-                    <ModalTitle>@L["Add"] @L["Hierarchy Component"]</ModalTitle>
+                    <ModalTitle>@NL["Add"] @L["Hierarchy Component"]</ModalTitle>
                     <CloseButton Clicked="CloseCreateModalAsync" />
                 </ModalHeader>
                 <ModalBody>
@@ -76,13 +79,13 @@ else
                 <ModalFooter>
                     <Button Color="Color.Secondary"
                             Clicked="CloseCreateModalAsync">
-                        @L["Cancel"]
+                        @NL["Cancel"]
                     </Button>
                     <Button Color="Color.Primary"
                             Type="@ButtonType.Submit"
                             PreventDefaultOnSubmit="true"
                             Clicked="CreateEntityAsync">
-                        @L["Save"]
+                        @NL["Save"]
                     </Button>
                 </ModalFooter>
             </Form>

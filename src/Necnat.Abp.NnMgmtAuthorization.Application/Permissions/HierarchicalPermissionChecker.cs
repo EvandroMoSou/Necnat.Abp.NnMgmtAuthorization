@@ -14,6 +14,8 @@
 
 //namespace Necnat.Abp.NnMgmtAuthorization.Permissions
 //{
+//    [Dependency(ReplaceServices = true)]
+//    [ExposeServices(typeof(IPermissionChecker), typeof(PermissionChecker))]
 //    public class HierarchicalPermissionChecker : PermissionChecker, IPermissionChecker, ITransientDependency
 //    {
 //        protected readonly IHierarchicalAccessRepository _hierarchicalAccessRepository;
@@ -124,8 +126,8 @@
 //            var multiplePermissionGrantResult = new MultiplePermissionGrantResult();
 //            foreach (var name in names)
 //                multiplePermissionGrantResult.Result.Add(name, (await IsGrantedAsync(claimsPrincipal, name)) ? PermissionGrantResult.Granted : PermissionGrantResult.Prohibited);
-            
-//            return multiplePermissionGrantResult;            
+
+//            return multiplePermissionGrantResult;
 //        }
 //    }
 //}
