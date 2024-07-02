@@ -98,8 +98,8 @@ else
     HierarchySelectList? _hierarchySelectListRef;
 
     List<HierarchyDto> _lHierarchy = new List<HierarchyDto>();
-    List<HierarchyComponentTypeModel> _lHierarchyComponentType = new List<HierarchyComponentTypeModel>();
     List<HierarchyComponentModel> _lHierarchyComponent = new List<HierarchyComponentModel>();
+    List<HierarchyComponentTypeModel> _lHierarchyComponentType = new List<HierarchyComponentTypeModel>();
     List<HierarchicalStructureNode> _lHierarchicalStructureNode = new List<HierarchicalStructureNode>();
     HierarchicalStructureNode? _selectedHierarchicalStructureNode;
 
@@ -119,9 +119,17 @@ else
     protected async Task SelectedHierarchyIdChanged()
     {
         if (_selectedHierarchy == null)
+        {
             _lHierarchicalStructureNode = new List<HierarchicalStructureNode>();
+            _lHierarchyComponent = new List<HierarchyComponentModel>();
+            _lHierarchyComponentType = new List<HierarchyComponentTypeModel>();
+        }
         else
+        {
+            _lHierarchyComponent = await AppService.GetListHierarchyComponentAsync(_selectedHierarchy.Id);
+            _lHierarchyComponentType = await AppService.GetListHierarchyComponentTypeAsync(_selectedHierarchy.Id);
             _lHierarchicalStructureNode = await SearchHierarchicalStructureNodeAsync(null);
+        }
 
         await InvokeAsync(StateHasChanged);
     }
@@ -133,9 +141,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _lHierarchyComponent = await AppService.GetListHierarchyComponentAsync();
         _lHierarchy = (await HierarchyAppService.GetListAsync(new HierarchyResultRequestDto { IsPaged = false })).Items.ToList();
-        _lHierarchyComponentType = await AppService.GetListHierarchyComponentTypeAsync();
 
         await base.OnInitializedAsync();
         IsLoading = false;

@@ -23,7 +23,6 @@ public class NnMgmtAuthorizationPermissionDefinitionProvider : PermissionDefinit
         var pgHierarchicalStructure = myGroup.AddPermission(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default, L("Permission:HierarchicalStructure:Default"));
         pgHierarchicalStructure.AddChild(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Create, L("Permission:HierarchicalStructure:Create"));
         pgHierarchicalStructure.AddChild(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Delete, L("Permission:HierarchicalStructure:Delete"));
-        pgHierarchicalStructure.AddChild(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.HierarchyComponent, L("Permission:HierarchicalStructure:HierarchyComponent"));
 
         var pgHierarchicalAccess = myGroup.AddPermission(NnMgmtAuthorizationPermissions.PrmHierarchicalAccess.Default, L("Permission:HierarchicalAccess:Default"));
         pgHierarchicalAccess.AddChild(NnMgmtAuthorizationPermissions.PrmHierarchicalAccess.Create, L("Permission:HierarchicalAccess:Create"));

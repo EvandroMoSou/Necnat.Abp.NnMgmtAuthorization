@@ -75,15 +75,15 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             return base.UpdateAsync(id, input);
         }
 
-        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync()
+        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid hierarchyId)
         {
-            await CheckPolicyAsync(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.HierarchyComponent);
-            return await _hierarchyComponentService.GetListHierarchyComponentAsync();
+            await CheckPolicyAsync(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default);
+            return await _hierarchyComponentService.GetListHierarchyComponentAsync(hierarchyId);
         }
 
-        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync()
+        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid hierarchyId)
         {
-            return await _hierarchyComponentService.GetListHierarchyComponentTypeAsync();
+            return await _hierarchyComponentService.GetListHierarchyComponentTypeAsync(hierarchyId);
         }
     }
 }

@@ -27,7 +27,6 @@ public class NnMgmtAuthorizationPermissions
         public const string Default = GroupName + ".HierarchicalStructure";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
-        public const string HierarchyComponent = Default + ".HierarchyComponent";
     }
 
     public static class PrmHierarchicalAccess

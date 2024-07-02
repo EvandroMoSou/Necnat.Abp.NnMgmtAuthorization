@@ -5,6 +5,7 @@ using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnLibCommon.Utils;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -150,11 +151,19 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
         protected virtual async Task<HierarchicalAuthorizationModel> LoadHierarchyComponentNameAsync(HierarchicalAuthorizationModel ahModel)
         {
-            var lHierarchyComponent = await _hierarchyComponentService.GetListHierarchyComponentAsync();
+            Guid lastHierarchyId = Guid.Empty;
+            List<HierarchyComponentModel> lHierarchyComponent = new List<HierarchyComponentModel>();
+            foreach (var iHierarchicalStructure in ahModel.LHSC.OrderBy(x => x.HId).ThenBy(x => x.Id))
+            {
+                if(lastHierarchyId != iHierarchicalStructure.HId)
+                {
+                    lastHierarchyId = iHierarchicalStructure.HId;
+                    lHierarchyComponent = await _hierarchyComponentService.GetListHierarchyComponentAsync(lastHierarchyId);
+                }
 
-            foreach (var iHierarchicalStructure in ahModel.LHSC)
                 foreach (var iFilho in iHierarchicalStructure.LChl)
                     iFilho.HCNm = lHierarchyComponent.Where(x => x.Id == iFilho.HCId).First().Name;
+            }
 
             return ahModel;
         }

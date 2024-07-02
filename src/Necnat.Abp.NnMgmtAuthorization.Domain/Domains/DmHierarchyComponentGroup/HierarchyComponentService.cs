@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Localization;
+using Necnat.Abp.NnMgmtAuthorization.Localization;
+using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Localization;
-using Volo.Abp;
-using Necnat.Abp.NnMgmtAuthorization.Models;
-using Necnat.Abp.NnMgmtAuthorization.Localization;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
@@ -74,7 +73,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             _hierarchyRepository = hierarchyRepository;
         }
 
-        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync()
+        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid hierarchyId)
         {
             var l = new List<HierarchyComponentModel>();
 
@@ -90,7 +89,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync()
+        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid hierarchyId)
         {
             return new List<HierarchyComponentTypeModel>
             {

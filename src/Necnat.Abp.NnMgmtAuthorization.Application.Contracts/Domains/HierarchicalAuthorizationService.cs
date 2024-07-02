@@ -240,7 +240,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         private async Task InitializeLastSelectedAsync(HSC hierarchicalStructure)
         {
             var lFilhoId = hierarchicalStructure.LChl.Select(x => x.Id).ToList();
-            var lHierarchyComponentType = await _hierarchicalStructureAppService.GetListHierarchyComponentTypeAsync();
+            var lHierarchyComponentType = await _hierarchicalStructureAppService.GetListHierarchyComponentTypeAsync(hierarchicalStructure.HId);
             lHierarchyComponentType.Add(new HierarchyComponentTypeModel { Name = "Hierarchy Component" });
             foreach (var iHierarchyComponentType in lHierarchyComponentType)
             {
