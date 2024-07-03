@@ -7,11 +7,11 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>Necnat.Abp.NnMgmtAuthorization</RootNamespace>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.2.6</Version>
+    <Version>0.2.7</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Necnat.Abp.NnLibCommon.Application" Version="0.2.5" />
+		<PackageReference Include="Necnat.Abp.NnLibCommon.Application" Version="0.2.7" />
 		<PackageReference Include="Volo.Abp.AutoMapper" Version="8.2.0" />
 		<PackageReference Include="Volo.Abp.Ddd.Application" Version="8.2.0" />
 		<ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.Application.Contracts\Necnat.Abp.NnMgmtAuthorization.Application.Contracts.csproj" />

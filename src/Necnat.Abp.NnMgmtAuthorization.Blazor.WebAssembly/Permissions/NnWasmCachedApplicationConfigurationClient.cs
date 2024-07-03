@@ -1,5 +1,6 @@
 ﻿using Microsoft.JSInterop;
 using Necnat.Abp.NnMgmtAuthorization.Domains;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Web.Security;
 using Volo.Abp.AspNetCore.Components.WebAssembly;
@@ -49,11 +50,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.Permissions
             configurationDto.Localization.Resources = localizationDto.Resources;
 
             if (configurationDto.CurrentUser.IsAuthenticated)
-            {
-                configurationDto.Auth.GrantedPolicies.Clear();
-                var permissionList = await mgmtAuthorizationAppService.GetFromEndpointsPermissionListAsync();
-                foreach (var iPermission in permissionList)
-                    configurationDto.Auth.GrantedPolicies.Add(iPermission, true);
+            {                
+                var hierarchicalAuthorization = await mgmtAuthorizationAppService.GetHierarchicalAuthorizationMyAsync();
+                configurationDto.Setting.Values.Add("UserAuthorization", JsonSerializer.Serialize(hierarchicalAuthorization));
             }
 
             Cache.Set(configurationDto);

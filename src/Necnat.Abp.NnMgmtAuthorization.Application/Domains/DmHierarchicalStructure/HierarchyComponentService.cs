@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
+using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnMgmtAuthorization.Localization;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
@@ -62,18 +64,24 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 
         protected readonly IHierarchyComponentGroupRepository _hierarchyComponentGroupRepository;
         protected readonly IHierarchyRepository _hierarchyRepository;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
+        protected readonly INecnatEndpointStore _necnatEndpointStore;
 
         public HierarchyComponentService(
             IHierarchyComponentGroupRepository hierarchyComponentGroupRepository,
-            IHierarchyRepository hierarchyRepository)
+            IHierarchyRepository hierarchyRepository,
+            IHttpContextAccessor httpContextAccessor,
+            INecnatEndpointStore necnatEndpointStore)
         {
             LocalizationResource = typeof(NnMgmtAuthorizationResource);
 
             _hierarchyComponentGroupRepository = hierarchyComponentGroupRepository;
             _hierarchyRepository = hierarchyRepository;
+            _httpContextAccessor = httpContextAccessor;
+            _necnatEndpointStore = necnatEndpointStore;
         }
 
-        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid hierarchyId)
+        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null)
         {
             var l = new List<HierarchyComponentModel>();
 
@@ -85,11 +93,25 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             foreach (var iHierarchyComponentGroup in lHierarchyComponentGroup)
                 l.Add(new HierarchyComponentModel { HierarchyComponentType = 2, Id = iHierarchyComponentGroup.Id, Name = iHierarchyComponentGroup.Name });
 
+            //var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
+            //foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsAuthz == true))
+            //{
+            //    using (HttpClient client = new HttpClient())
+            //    {
+            //        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
+            //        var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/mgmt-authorization/permission-my");
+            //        if (!httpResponseMessage.IsSuccessStatusCode)
+            //            throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+
+            //        permissionList.AddRange(JsonSerializer.Deserialize<List<string>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+            //    }
+            //}
+
             return l;
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid hierarchyId)
+        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null)
         {
             return new List<HierarchyComponentTypeModel>
             {

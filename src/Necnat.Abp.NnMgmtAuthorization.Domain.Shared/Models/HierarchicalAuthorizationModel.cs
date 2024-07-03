@@ -8,7 +8,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Models
         public Guid UserId { get; set; }
         public List<H> LH { get; set; } = new List<H>();
         public List<HAC> LHAC { get; set; } = new List<HAC>();
-        public List<HSC> LHSC { get; set; } = new List<HSC>();
+        public List<HS> LHS { get; set; } = new List<HS>();
+        public List<HC> LHC { get; set; } = new List<HC>();
     }
 
     public class H
@@ -25,19 +26,16 @@ namespace Necnat.Abp.NnMgmtAuthorization.Models
         public List<string> LPN { get; set; } = new List<string>();
     }
 
-    public class HSC
-    {
-        public Guid Id { get; set; }
-        public Guid HId { get; set; }
-        public List<HS> LChl { get; set; } = new List<HS>();
-    }
-
     public class HS
     {
         public Guid Id { get; set; }
-        public Guid? IdParent { get; set; }
-        public int HCT { get; set; }
-        public Guid HCId { get; set; }
-        public string? HCNm { get; set; }
+        public List<Guid> LHCId { get; set; } = new List<Guid>();
+    }
+
+    public class HC
+    {
+        public Guid Id { get; set; }
+        public int? Tp { get; set; }
+        public string? Nm { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
     [ExposeServices(typeof(IPermissionChecker), typeof(PermissionChecker))]
     public class ServerPermissionChecker : PermissionChecker, IPermissionChecker, ITransientDependency
     {
-        protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
+        protected readonly IHierarchicalStructureStore _hierarchicalStructureRecursiveService;
         protected readonly IMgmtAuthorizationService _mgmtAuthorizationService;
         protected readonly IPermissionStore _permissionStore;
 
@@ -28,7 +28,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
             ICurrentTenant currentTenant,
             IPermissionValueProviderManager permissionValueProviderManager,
             ISimpleStateCheckerManager<PermissionDefinition> stateCheckerManager,
-            IHierarchicalStructureRecursiveService hierarchicalStructureRecursiveService,
+            IHierarchicalStructureStore hierarchicalStructureRecursiveService,
             IMgmtAuthorizationService mgmtAuthorizationService,
             IPermissionStore permissionStore) : base(principalAccessor, permissionDefinitionManager, currentTenant, permissionValueProviderManager, stateCheckerManager)
         {
@@ -88,9 +88,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
                 return false;
 
             var hierarchicalStructureIdList = await _mgmtAuthorizationService.GetListHierarchicalStructureIdByUserIdAndPermissionNameAsync(new Guid(userId), permissionName);
-            if (hierarchicalStructureIdList.Contains(null))
-                return true;
-
             foreach (var iHierarchicalStructureId in hierarchicalStructureIdList)
             {
                 var hierarchyComponentIdList = await _hierarchicalStructureRecursiveService.GetListHierarchyComponentIdRecursiveAsync((Guid)iHierarchicalStructureId!);

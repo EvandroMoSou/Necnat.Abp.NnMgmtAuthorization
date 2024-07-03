@@ -8,6 +8,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     public interface IMgmtAuthorizationService : ITransientDependency
     {
         Task<List<string>> GetListPermissionByUserIdAsync(Guid userId);
-        Task<List<Guid?>> GetListHierarchicalStructureIdByUserIdAndPermissionNameAsync(Guid userId, string permissionName);
+        Task<List<Guid>> GetListHierarchicalStructureIdByUserIdAndPermissionNameAsync(Guid userId, string permissionName);
     }
 }

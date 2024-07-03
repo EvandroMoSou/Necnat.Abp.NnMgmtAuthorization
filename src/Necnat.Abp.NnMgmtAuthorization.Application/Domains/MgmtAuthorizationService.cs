@@ -11,23 +11,23 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     public class MgmtAuthorizationService : IMgmtAuthorizationService
     {
         protected readonly IHierarchicalAccessRepository _hierarchicalAccessRepository;
-        protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
+        protected readonly IHierarchicalStructureStore _hierarchicalStructureRecursiveService;
         protected readonly IPermissionGrantRepository _permissionGrantRepository;
         protected readonly IPermissionStore _permissionStore;
-        protected readonly IRoleNameService _roleNameService;
+        protected readonly INnRoleStore _nnRoleStore;
 
         public MgmtAuthorizationService(
             IHierarchicalAccessRepository hierarchicalAccessRepository,
-            IHierarchicalStructureRecursiveService hierarchicalStructureRecursiveService,
+            IHierarchicalStructureStore hierarchicalStructureRecursiveService,
             IPermissionGrantRepository permissionGrantRepository,
             IPermissionStore permissionStore,
-            IRoleNameService roleNameService)
+            INnRoleStore nnRoleStore)
         {
             _hierarchicalAccessRepository = hierarchicalAccessRepository;
             _hierarchicalStructureRecursiveService = hierarchicalStructureRecursiveService;
             _permissionGrantRepository = permissionGrantRepository;
             _permissionStore = permissionStore;
-            _roleNameService = roleNameService;
+            _nnRoleStore = nnRoleStore;
         }
 
         public async Task<List<string>> GetListPermissionByUserIdAsync(Guid userId)
@@ -36,18 +36,18 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
             var permissionList = new List<string>();
             foreach (var iDbHierarchicalAccess in dbHierarchicalAccessList)
-                permissionList.AddRange((await _permissionGrantRepository.GetListAsync("R", await _roleNameService.GetByIdAsync(iDbHierarchicalAccess.RoleId))).Select(x => x.Name));
+                permissionList.AddRange((await _permissionGrantRepository.GetListAsync("R", await _nnRoleStore.GetNameByIdAsync(iDbHierarchicalAccess.RoleId))).Select(x => x.Name));
 
             return permissionList.Distinct().ToList();
         }
 
-        public async Task<List<Guid?>> GetListHierarchicalStructureIdByUserIdAndPermissionNameAsync(Guid userId, string permissionName)
+        public async Task<List<Guid>> GetListHierarchicalStructureIdByUserIdAndPermissionNameAsync(Guid userId, string permissionName)
         {
             var dbHierarchicalAccessList = await _hierarchicalAccessRepository.GetListByUserIdAsync((Guid)userId);
 
             List<HierarchicalAccess> hierarchicalAccessList = new List<HierarchicalAccess>();
             foreach (var iDbHierarchicalAccess in dbHierarchicalAccessList)
-                if (await _permissionStore.IsGrantedAsync(permissionName, "R", await _roleNameService.GetByIdAsync(iDbHierarchicalAccess.RoleId)))
+                if (await _permissionStore.IsGrantedAsync(permissionName, "R", await _nnRoleStore.GetNameByIdAsync(iDbHierarchicalAccess.RoleId)))
                     hierarchicalAccessList.Add(iDbHierarchicalAccess);
 
             return hierarchicalAccessList.Select(x => x.HierarchicalStructureId).Distinct().ToList();

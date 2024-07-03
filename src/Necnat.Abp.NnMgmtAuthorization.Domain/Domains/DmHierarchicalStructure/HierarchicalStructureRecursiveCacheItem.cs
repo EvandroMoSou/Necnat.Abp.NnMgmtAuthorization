@@ -1,7 +1,5 @@
 ﻿using Necnat.Abp.NnMgmtAuthorization.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {

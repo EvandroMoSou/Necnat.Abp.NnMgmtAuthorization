@@ -7,7 +7,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 {
     public interface IHierarchyComponentService
     {
-        Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid hierarchyId);
-        Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid hierarchyId);
+        Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null);
+        Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null);
     }
 }

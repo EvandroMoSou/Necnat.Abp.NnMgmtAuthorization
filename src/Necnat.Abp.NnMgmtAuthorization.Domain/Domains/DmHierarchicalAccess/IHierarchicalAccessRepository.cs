@@ -8,7 +8,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     public interface IHierarchicalAccessRepository : IRepository<HierarchicalAccess, Guid>
     {
-        Task<List<HierarchicalAccess>> GetListByUserIdAsync(Guid userId);
+        Task<List<HierarchicalAccess>> GetListByIdListAsync(List<Guid> idList);
+        Task<List<HierarchicalAccess>> GetListByUserIdAsync(Guid userId);        
         Task<List<HierarchicalAccess>> GetListByUserIdAndRoleIdAsync(Guid userId, Guid roleId);
         Task<HierarchicalAccess> InsertIfNotExistsAsync(HierarchicalAccess entity, bool autoSave = false);
         Task CheckByHierarchyComponentIdWithHierarchyAsync(Guid userId, string permissionName, Guid hierarchyComponentId);

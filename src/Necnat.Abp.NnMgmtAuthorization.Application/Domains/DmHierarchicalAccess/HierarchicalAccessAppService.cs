@@ -26,7 +26,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
     {
         protected readonly IIdentityRoleRepository _identityRoleRepository;
         protected readonly IdentityUserManager _identityUserManager;
-        protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
+        protected readonly IHierarchicalStructureStore _hierarchicalStructureRecursiveService;
         protected readonly INnIdentityUserRoleRepository _nnIdentityUserRoleRepository;
 
         public HierarchicalAccessAppService(
@@ -35,7 +35,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
             IHierarchicalAccessRepository repository,
             IIdentityRoleRepository identityRoleRepository,
             IdentityUserManager identityUserManager,
-            IHierarchicalStructureRecursiveService hierarchicalStructureRecursiveService,
+            IHierarchicalStructureStore hierarchicalStructureRecursiveService,
             INnIdentityUserRoleRepository nnIdentityUserRoleRepository) : base(currentUser, necnatLocalizer, repository)
         {
             _identityRoleRepository = identityRoleRepository;

@@ -9,12 +9,12 @@ using Volo.Abp.DependencyInjection;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
-    public class HierarchicalStructureRecursiveServiceCache : IHierarchicalStructureRecursiveService, ITransientDependency
+    public class HierarchicalStructureStore : IHierarchicalStructureStore, ITransientDependency
     {
         readonly IDistributedCache<HierarchicalStructureRecursiveCacheItem> _hierarchicalStructureRecursiveCache;
         readonly IHierarchicalStructureRepository _hierarchicalStructureRepository;
 
-        public HierarchicalStructureRecursiveServiceCache(
+        public HierarchicalStructureStore(
             IDistributedCache<HierarchicalStructureRecursiveCacheItem> hierarchicalStructureRecursiveCache,
             IHierarchicalStructureRepository hierarchicalStructureRepository)
         {
@@ -22,31 +22,15 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             _hierarchicalStructureRepository = hierarchicalStructureRepository;
         }
 
-        public async Task<List<Guid>> GetHierarchyComponentIdAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null)
-        {
-            var lHierarchyComponentId = new List<Guid>();
-
-            foreach (var iHierarchicalStructureId in lHierarchicalStructureId)
-            {
-                var q = (await GetCacheItemAsync(iHierarchicalStructureId)).LHSR.Where(x => x.Id == iHierarchicalStructureId).AsQueryable();
-
-                if (hierarchyComponentType != null)
-                    q = q.Where(x => x.HCT == hierarchyComponentType);
-
-                lHierarchyComponentId.Add(q.Select(x => x.HCId).First());
-            }
-
-            return lHierarchyComponentId.Distinct().ToList();
-        }
-
         public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId, int? hierarchyComponentType = null)
         {
             var q = (await GetListHierarchicalStructureRecursiveAsync(hierarchicalStructureId)).AsQueryable();
 
-            if (hierarchyComponentType != null)
-                q = q.Where(x => x.HCT == hierarchyComponentType);
+            var l = new List<Guid>();
+            foreach (var e in q.Select(x => x.LHCId))
+                l.AddRange(e);
 
-            return q.Select(x => x.HCId).ToList();
+            return l;
         }
 
         public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null)
@@ -109,11 +93,13 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         {
             return new HS
             {
-                Id = eh.Id,
-                IdParent = eh.HierarchicalStructureIdParent,
-                HCT = (int)eh.HierarchyComponentType,
-                HCId = eh.HierarchyComponentId
+                Id = eh.Id
             };
+        }
+
+        public Task<List<Guid>> GetHierarchyComponentIdAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

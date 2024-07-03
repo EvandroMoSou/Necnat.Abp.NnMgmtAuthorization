@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
-    public interface IHierarchicalStructureRecursiveService
+    public interface IHierarchicalStructureStore
     {
         Task<List<Guid>> GetHierarchyComponentIdAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null);
         Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId, int? hierarchyComponentType = null);

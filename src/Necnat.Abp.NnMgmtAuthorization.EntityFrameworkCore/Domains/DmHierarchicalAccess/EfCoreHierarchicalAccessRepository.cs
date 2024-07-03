@@ -14,16 +14,21 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
 {
     public class EfCoreHierarchicalAccessRepository : EfCoreRepository<INnMgmtAuthorizationDbContext, HierarchicalAccess, Guid>, IHierarchicalAccessRepository
     {
-        protected readonly IHierarchicalStructureRecursiveService _hierarchicalStructureRecursiveService;
+        protected readonly IHierarchicalStructureStore _hierarchicalStructureRecursiveService;
         protected readonly UserManager<IdentityUser> _userManager;
 
         public EfCoreHierarchicalAccessRepository(
             IDbContextProvider<INnMgmtAuthorizationDbContext> dbContextProvider,
-            IHierarchicalStructureRecursiveService hierarchicalStructureRecursiveService,
+            IHierarchicalStructureStore hierarchicalStructureRecursiveService,
             UserManager<IdentityUser> userManager) : base(dbContextProvider)
         {
             _hierarchicalStructureRecursiveService = hierarchicalStructureRecursiveService;
             _userManager = userManager;
+        }
+
+        public virtual async Task<List<HierarchicalAccess>> GetListByIdListAsync(List<Guid> idList)
+        {
+            return await (await GetDbSetAsync()).Where(x => idList.Contains(x.Id)).ToListAsync();
         }
 
         public virtual async Task<List<HierarchicalAccess>> GetListByUserIdAsync(Guid userId)
@@ -158,5 +163,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
             if (await _userManager.IsInRoleAsync(user, roleName))
                 await _userManager.RemoveFromRoleAsync(user, roleName);
         }
+
+
     }
 }
