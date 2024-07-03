@@ -10,5 +10,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     {
         Task<List<string>> GetListPermissionMyAsync();
         Task<List<Guid?>> GetListHierarchyComponentIdByPermissionNameAndHierarchyComponentTypeAsync(string permissionName, int hierarchyComponentType);
+        Task<List<string>> GetFromEndpointsPermissionListAsync();
     }
 }

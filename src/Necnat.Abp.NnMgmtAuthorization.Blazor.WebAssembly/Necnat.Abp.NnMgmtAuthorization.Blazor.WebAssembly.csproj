@@ -1,19 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-    <Import Project="..\..\common.props" />
+  <Import Project="..\..\common.props" />
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>0.2.6</Version>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.Theming" Version="8.2.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.Theming" Version="8.2.0" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.Blazor\Necnat.Abp.NnMgmtAuthorization.Blazor.csproj" />
-        <ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.HttpApi.Client\Necnat.Abp.NnMgmtAuthorization.HttpApi.Client.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.Blazor\Necnat.Abp.NnMgmtAuthorization.Blazor.csproj" />
+    <ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.HttpApi.Client\Necnat.Abp.NnMgmtAuthorization.HttpApi.Client.csproj" />
+  </ItemGroup>
 
 </Project>
