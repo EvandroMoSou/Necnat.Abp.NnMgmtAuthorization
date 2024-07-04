@@ -39,7 +39,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponentGroup
             if (!string.IsNullOrWhiteSpace(input.NameContains))
             {
                 if (input.NameContains.Length > HierarchyComponentGroupConsts.MaxNameLength)
-                    throw new OverflowException($"[NameContains] MaxNameLength: {HierarchyComponentGroupConsts.MaxNameLength}");
+                    throw new ArgumentException($"[NameContains] MaxNameLength: {HierarchyComponentGroupConsts.MaxNameLength}");
 
                 q = q.Where(x => x.Name.Contains(input.NameContains));
             }
