@@ -75,7 +75,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
                 var partialModel = JsonSerializer.Deserialize<HierarchicalAuthorizationModel>(await httpResponseMessage.Content.ReadAsStringAsync())!;
-                model.LH = partialModel.LH;
                 model.LHS = partialModel.LHS;
                 model.LHC = partialModel.LHC;
             }
@@ -108,18 +107,16 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         {
             var model = new HierarchicalAuthorizationModel();
 
-            var dbHierarchicalAccessList = await _hierarchicalAccessRepository.GetListByIdListAsync(hierarchicalStructureIdList);
-
             var allHierarchyComponentIdList = new List<Guid>();
-            foreach (var iDbHierarchicalAccess in dbHierarchicalAccessList)
+            foreach (var iHierarchicalStructureId in hierarchicalStructureIdList)
             {
-                if (model.LHS.Any(x => x.Id == iDbHierarchicalAccess.HierarchicalStructureId))
+                if (model.LHS.Any(x => x.Id == iHierarchicalStructureId))
                     continue;
 
-                var hierarchyComponentIdList = await _hierarchicalStructureStore.GetListHierarchyComponentIdRecursiveAsync(iDbHierarchicalAccess.HierarchicalStructureId);
+                var hierarchyComponentIdList = await _hierarchicalStructureStore.GetListHierarchyComponentIdRecursiveAsync(iHierarchicalStructureId);
                 allHierarchyComponentIdList.AddRange(hierarchyComponentIdList);
 
-                model.LHS.Add(new HS { Id = iDbHierarchicalAccess.HierarchicalStructureId, LHCId = hierarchyComponentIdList });
+                model.LHS.Add(new HS { Id = iHierarchicalStructureId, LHCId = hierarchyComponentIdList });
             }
 
             var hierarchyComponentList = await _hierarchyComponentService.GetListHierarchyComponentAsync();
@@ -130,6 +127,12 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             }
 
             return model;
+        }
+
+        [HttpPost]
+        public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId)
+        {
+            return await _hierarchicalStructureStore.GetListHierarchyComponentIdRecursiveAsync(hierarchicalStructureId);
         }
 
         //public virtual async Task<List<string>> GetListPermissionMyAsync()

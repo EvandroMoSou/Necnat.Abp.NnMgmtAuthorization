@@ -14,11 +14,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.Permissions
 {
     [Dependency(ReplaceServices = true)]
     [ExposeServices(typeof(ICachedApplicationConfigurationClient), typeof(WebAssemblyCachedApplicationConfigurationClient))]
-    public class NnWasmCachedApplicationConfigurationClient : WebAssemblyCachedApplicationConfigurationClient, ICachedApplicationConfigurationClient, ITransientDependency
+    public class WasmCachedApplicationConfigurationClient : WebAssemblyCachedApplicationConfigurationClient, ICachedApplicationConfigurationClient, ITransientDependency
     {
         protected readonly IMgmtAuthorizationAppService mgmtAuthorizationAppService;
 
-        public NnWasmCachedApplicationConfigurationClient(
+        public WasmCachedApplicationConfigurationClient(
             AbpApplicationConfigurationClientProxy applicationConfigurationClientProxy,
             ApplicationConfigurationCache cache,
             ICurrentTenantAccessor currentTenantAccessor,
@@ -50,9 +50,12 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.Permissions
             configurationDto.Localization.Resources = localizationDto.Resources;
 
             if (configurationDto.CurrentUser.IsAuthenticated)
-            {                
+            {
                 var hierarchicalAuthorization = await mgmtAuthorizationAppService.GetHierarchicalAuthorizationMyAsync();
-                configurationDto.Setting.Values.Add("UserAuthorization", JsonSerializer.Serialize(hierarchicalAuthorization));
+                configurationDto.Setting.Values.Add("ua:userId", JsonSerializer.Serialize(hierarchicalAuthorization.UserId));
+                configurationDto.Setting.Values.Add("ua:lhac", JsonSerializer.Serialize(hierarchicalAuthorization.LHAC));
+                configurationDto.Setting.Values.Add("ua:lhs", JsonSerializer.Serialize(hierarchicalAuthorization.LHS));
+                configurationDto.Setting.Values.Add("ua:lhc", JsonSerializer.Serialize(hierarchicalAuthorization.LHC));
             }
 
             Cache.Set(configurationDto);

@@ -16,16 +16,16 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
 {
     [Dependency(ReplaceServices = true)]
     [ExposeServices(typeof(IPermissionChecker), typeof(PermissionChecker))]
-    public class ServerPermissionChecker : PermissionChecker, IPermissionChecker, ITransientDependency
+    public class AppPermissionChecker : PermissionChecker, IPermissionChecker, ITransientDependency
     {
         protected readonly IHierarchicalAccessStore _hierarchicalAccessStore;
         protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
         protected readonly INnRoleStore _nnRoleStore;
         protected readonly IPermissionStore _permissionStore;
 
-        public virtual string Separator { get; set; } = "&";
+        public const string _separator = "&";
 
-        public ServerPermissionChecker(
+        public AppPermissionChecker(
             ICurrentPrincipalAccessor principalAccessor,
             IPermissionDefinitionManager permissionDefinitionManager,
             ICurrentTenant currentTenant,
@@ -50,9 +50,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
 
             var permissionName = name;
             Guid? hierarchyComponentId = null;
-            if (name.Contains(Separator))
+            if (name.Contains(_separator))
             {
-                var splitName = name.Split(Separator);
+                var splitName = name.Split(_separator);
                 permissionName = splitName[0];
                 hierarchyComponentId = new Guid(splitName[1]);
             }
