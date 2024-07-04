@@ -14,11 +14,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.Permissions
 {
     [Dependency(ReplaceServices = true)]
     [ExposeServices(typeof(ICachedApplicationConfigurationClient), typeof(WebAssemblyCachedApplicationConfigurationClient))]
-    public class WasmCachedApplicationConfigurationClient : WebAssemblyCachedApplicationConfigurationClient, ICachedApplicationConfigurationClient, ITransientDependency
+    public class NnWasmCachedApplicationConfigurationClient : WebAssemblyCachedApplicationConfigurationClient, ICachedApplicationConfigurationClient, ITransientDependency
     {
         protected readonly IMgmtAuthorizationAppService mgmtAuthorizationAppService;
 
-        public WasmCachedApplicationConfigurationClient(
+        public NnWasmCachedApplicationConfigurationClient(
             AbpApplicationConfigurationClientProxy applicationConfigurationClientProxy,
             ApplicationConfigurationCache cache,
             ICurrentTenantAccessor currentTenantAccessor,

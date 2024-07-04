@@ -1,4 +1,5 @@
 ﻿using System;
+using Volo.Abp.Domain.Entities.Events.Distributed;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Models
 {

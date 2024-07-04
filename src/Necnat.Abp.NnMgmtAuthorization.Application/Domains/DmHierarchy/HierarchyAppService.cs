@@ -36,6 +36,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchy
 
             var q = await ReadOnlyRepository.GetQueryableAsync();
 
+            if (input.IdList != null)
+                q = q.Where(x => input.IdList.Contains(x.Id));            
+
             if (!string.IsNullOrWhiteSpace(input.NameContains))
             {
                 if (input.NameContains.Length > HierarchyConsts.MaxNameLength)

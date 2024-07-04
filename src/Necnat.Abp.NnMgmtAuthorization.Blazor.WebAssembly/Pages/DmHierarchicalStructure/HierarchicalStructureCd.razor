@@ -9,94 +9,93 @@
 @using Necnat.Abp.NnLibCommon.Blazor.Components
 @using Necnat.Abp.NnLibCommon.Localization
 @using Necnat.Abp.NnMgmtAuthorization.Blazor.Components
+@using Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.Services
 @using Necnat.Abp.NnMgmtAuthorization.Domains
 @using Necnat.Abp.NnMgmtAuthorization.Localization
 @using Necnat.Abp.NnMgmtAuthorization.Models
 @using Necnat.Abp.NnMgmtAuthorization.Permissions
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.AspNetCore.Components
+@using Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations.ClientProxies
 @attribute [Authorize(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default)]
 @inject IStringLocalizer<NnLibCommonResource> NL
+@inject IHierarchicalAuthorizationService HierarchicalAuthorizationService
 @inject IHierarchicalStructureAppService AppService
 @inject IHierarchyAppService HierarchyAppService
 @inject SweetAlertService Swal
 @inherits AbpComponentBase
 
-@if (IsLoading)
-{
-    <LoadingSpinner Class="lspinner-right-auto" />
-}
-else
-{
-    <div class="container">
-        <h2 class="page-title">@NL["Edit"] @L["Hierarchical Structures"]</h2>
-        <Card>
-            <CardBody>
-                <Fields>
-                    <Field ColumnSize="ColumnSize.Is12.OnDesktop">
-                        <FieldLabel>@L["Hierarchy"]</FieldLabel>
-                        <HierarchySelectList @ref="@_hierarchySelectListRef" @bind-SelectedEntityDto="@SelectedHierarchy" Data="_lHierarchy" IsAutoSelectFirst="true" />
-                    </Field>
-                </Fields>
-                <hr />
-                @if (_lHierarchicalStructureNode != null && _lHierarchicalStructureNode.Count > 0)
-                {
-                    @foreach (var iHierarchicalStructureNode in _lHierarchicalStructureNode)
-                    {
-                        <HierarchicalStructureNodeInline HierarchicalStructureNode="iHierarchicalStructureNode"
-                                                         HierarchyComponentTypeList="_lHierarchyComponentType"
-                                                         SearchHierarchicalStructureNodeAsyncMethod="SearchHierarchicalStructureNodeAsync"
-                                                         OpenCreateModalAsyncMethod="OpenCreateModalAsync"
-                                                         DeleteAsyncMethod="DeleteAsync" />
-                    }
-                }
-                else
-                {
-                    <Span Class="ps-1">@L["This hierarchy has no components."]</Span>
-                    <Icon Class="ps-1" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.PlusCircle" Clicked="@(async () => await OpenCreateModalAsync(null))" />
-                }
-            </CardBody>
-        </Card>
-    </div>
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h2>@L["Hierarchical Structures"]</h2>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <Fields>
+            <Field ColumnSize="ColumnSize.Is12.OnDesktop">
+                <FieldLabel>@L["Hierarchy"]</FieldLabel>
+                <HierarchySelectList @ref="@_hierarchySelectListRef" @bind-SelectedEntityDto="@SelectedHierarchy" Data="_lHierarchy" IsAutoSelectFirst="true" />
+            </Field>
+        </Fields>
+        <hr />
+        @if (_lHierarchicalStructureNode != null && _lHierarchicalStructureNode.Count > 0)
+        {
+            @foreach (var iHierarchicalStructureNode in _lHierarchicalStructureNode)
+            {
+                <HierarchicalStructureNodeInline HierarchicalStructureNode="iHierarchicalStructureNode"
+                                                 HierarchyComponentTypeList="_lHierarchyComponentType"
+                                                 SearchHierarchicalStructureNodeAsyncMethod="SearchHierarchicalStructureNodeAsync"
+                                                 OpenCreateModalAsyncMethod="OpenCreateModalAsync"
+                                                 DeleteAsyncMethod="DeleteAsync" />
+            }
+        }
+        else
+        {
+            <Span Class="ps-1">@L["This hierarchy has no components."]</Span>
+            <Icon Class="ps-1" Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.PlusCircle" Clicked="@(async () => await OpenCreateModalAsync(null))" />
+        }
+    </CardBody>
+</Card>
 
-    <Modal @ref="@CreateModal">
-        <ModalContent Size="ModalSize.ExtraLarge" Centered="true">
-            <Form>
-                <ModalHeader>
-                    <ModalTitle>@NL["Add"] @L["Hierarchy Component"]</ModalTitle>
-                    <CloseButton Clicked="CloseCreateModalAsync" />
-                </ModalHeader>
-                <ModalBody>
-                    <Validations @ref="@CreateValidationsRef" Mode="ValidationMode.Manual" ValidateOnLoad="false">
-                        <Fields>
-                            <Validation Validator="@ValidateHierarchyComponent">
-                                <HierarchyComponentSelectList @ref="@hierarchyComponentSelectListRef" @bind-SelectedHierarchyComponent="hierarchyComponent" ListaHierarchyComponentType="_lHierarchyComponentType" ListaHierarchyComponent="_lHierarchyComponent" />
-                            </Validation>
-                        </Fields>
-                        <Blazorise.ValidationSummary />
-                    </Validations>
-                </ModalBody>
-                <ModalFooter>
-                    <Button Color="Color.Secondary"
-                            Clicked="CloseCreateModalAsync">
-                        @NL["Cancel"]
-                    </Button>
-                    <Button Color="Color.Primary"
-                            Type="@ButtonType.Submit"
-                            PreventDefaultOnSubmit="true"
-                            Clicked="CreateEntityAsync">
-                        @NL["Save"]
-                    </Button>
-                </ModalFooter>
-            </Form>
-        </ModalContent>
-    </Modal>
-}
+<Modal @ref="@CreateModal">
+    <ModalContent Size="ModalSize.ExtraLarge" Centered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@NL["Add"] @L["Hierarchy Component"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@CreateValidationsRef" Mode="ValidationMode.Manual" ValidateOnLoad="false">
+                    <Fields>
+                        <Validation Validator="@ValidateHierarchyComponent">
+                            <HierarchyComponentSelectList @ref="@hierarchyComponentSelectListRef" @bind-SelectedHierarchyComponent="hierarchyComponent" ListaHierarchyComponentType="_lHierarchyComponentType" ListaHierarchyComponent="_lHierarchyComponent" />
+                        </Validation>
+                    </Fields>
+                    <Blazorise.ValidationSummary />
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateModalAsync">
+                    @NL["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="CreateEntityAsync">
+                    @NL["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
 
 @namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Pages
 @code {
-
-    protected bool IsLoading = true;
 
     HierarchySelectList? _hierarchySelectListRef;
 
@@ -144,10 +143,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _lHierarchy = (await HierarchyAppService.GetListAsync(new HierarchyResultRequestDto { IsPaged = false })).Items.ToList();
-
-        await base.OnInitializedAsync();
-        IsLoading = false;
+        var lHierarchy = await HierarchicalAuthorizationService.GetListHierarchyComponentAsync(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default, 1);
+        _lHierarchy = (await HierarchyAppService.GetListAsync(new HierarchyResultRequestDto { IsPaged = false, IdList = lHierarchy.Select(x => x.Id).ToList() })).Items.ToList();
     }
 
     private async Task<List<HierarchicalStructureNode>> SearchHierarchicalStructureNodeAsync(HierarchicalStructureNode? hierarchicalStructureNode)
@@ -338,4 +335,4 @@ else
 
     #endregion
 
-} 
+}
