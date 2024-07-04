@@ -7,11 +7,15 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     public interface IHierarchicalStructureStore
     {
-        Task<List<Guid>> GetHierarchyComponentIdAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null);
-        Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId, int? hierarchyComponentType = null);
-        Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null);
-        Task<List<Guid>> GetListHierarchicalStructureIdRecursiveAsync(Guid hierarchicalStructureId);
-        Task<List<Guid>> GetListHierarchicalStructureIdRecursiveAsync(List<Guid> lHierarchicalStructureId);
-        Task<List<HS>> GetListHierarchicalStructureRecursiveAsync(Guid hierarchicalStructureId);
+        Task<bool> HasHierarchyComponentIdAsync(Guid id, Guid hierarchyComponentId);
+        Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId);
+
+
+        //Task<List<Guid>> GetHierarchyComponentIdAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null);
+        //Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId, int? hierarchyComponentType = null);
+        //Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null);
+        //Task<List<Guid>> GetListHierarchicalStructureIdRecursiveAsync(Guid hierarchicalStructureId);
+        //Task<List<Guid>> GetListHierarchicalStructureIdRecursiveAsync(List<Guid> lHierarchicalStructureId);
+        //Task<List<HS>> GetListHierarchicalStructureRecursiveAsync(Guid hierarchicalStructureId);
     }
 }

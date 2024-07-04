@@ -53,13 +53,14 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
 
         public virtual async Task<List<Guid>> SearchHierarchicalStructureIdWithHierarchyAsync(Guid userId, string permissionName)
         {
-            var lHierarchicalStructureId = await SearchHierarchicalStructureIdAsync(userId, permissionName);
+            throw new NotImplementedException();
+            //var lHierarchicalStructureId = await SearchHierarchicalStructureIdAsync(userId, permissionName);
 
-            var l = new List<Guid>();
-            foreach (var iHierarchicalStructureId in lHierarchicalStructureId)
-                l.AddRange(await _hierarchicalStructureRecursiveService.GetListHierarchicalStructureIdRecursiveAsync(iHierarchicalStructureId));
+            //var l = new List<Guid>();
+            //foreach (var iHierarchicalStructureId in lHierarchicalStructureId)
+            //    l.AddRange(await _hierarchicalStructureRecursiveService.GetListHierarchicalStructureIdRecursiveAsync(iHierarchicalStructureId));
 
-            return l.Distinct().ToList();
+            //return l.Distinct().ToList();
         }
 
         public virtual async Task<List<Guid>> SearchHierarchyComponentIdWithHierarchyAsync(Guid userId, string permissionName)

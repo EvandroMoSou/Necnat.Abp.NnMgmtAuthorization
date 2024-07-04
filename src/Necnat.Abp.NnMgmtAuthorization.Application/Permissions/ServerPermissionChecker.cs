@@ -1,4 +1,6 @@
-﻿using Necnat.Abp.NnMgmtAuthorization.Domains;
+﻿using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
+using Necnat.Abp.NnMgmtAuthorization.Domains;
+using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess;
 using System;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -16,8 +18,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
     [ExposeServices(typeof(IPermissionChecker), typeof(PermissionChecker))]
     public class ServerPermissionChecker : PermissionChecker, IPermissionChecker, ITransientDependency
     {
-        protected readonly IHierarchicalStructureStore _hierarchicalStructureRecursiveService;
-        protected readonly IMgmtAuthorizationService _mgmtAuthorizationService;
+        protected readonly IHierarchicalAccessStore _hierarchicalAccessStore;
+        protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
+        protected readonly INnRoleStore _nnRoleStore;
         protected readonly IPermissionStore _permissionStore;
 
         public virtual string Separator { get; set; } = "&";
@@ -28,12 +31,14 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
             ICurrentTenant currentTenant,
             IPermissionValueProviderManager permissionValueProviderManager,
             ISimpleStateCheckerManager<PermissionDefinition> stateCheckerManager,
-            IHierarchicalStructureStore hierarchicalStructureRecursiveService,
-            IMgmtAuthorizationService mgmtAuthorizationService,
+            IHierarchicalAccessStore hierarchicalAccessStore,
+            IHierarchicalStructureStore hierarchicalStructureStore,
+            INnRoleStore nnRoleStore,
             IPermissionStore permissionStore) : base(principalAccessor, permissionDefinitionManager, currentTenant, permissionValueProviderManager, stateCheckerManager)
         {
-            _hierarchicalStructureRecursiveService = hierarchicalStructureRecursiveService;
-            _mgmtAuthorizationService = mgmtAuthorizationService;
+            _hierarchicalAccessStore = hierarchicalAccessStore;
+            _hierarchicalStructureStore = hierarchicalStructureStore;
+            _nnRoleStore = nnRoleStore;
             _permissionStore = permissionStore;
         }
 
@@ -87,11 +92,15 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
             if (userId == null)
                 return false;
 
-            var hierarchicalStructureIdList = await _mgmtAuthorizationService.GetListHierarchicalStructureIdByUserIdAndPermissionNameAsync(new Guid(userId), permissionName);
-            foreach (var iHierarchicalStructureId in hierarchicalStructureIdList)
+            var userHierarchicalAccessList = await _hierarchicalAccessStore.GetListUserHierarchicalAccessByUserIdAsync(new Guid(userId));
+            foreach (var iUserHierarchicalAccess in userHierarchicalAccessList)
             {
-                var hierarchyComponentIdList = await _hierarchicalStructureRecursiveService.GetListHierarchyComponentIdRecursiveAsync((Guid)iHierarchicalStructureId!);
-                if (hierarchyComponentIdList.Contains((Guid)hierarchyComponentId!))
+                if (!await _nnRoleStore.HasPermissionNameAsync(iUserHierarchicalAccess.RId, permissionName))
+                    continue;
+
+                if (hierarchyComponentId == null)
+                    return true;
+                else if (await _hierarchicalStructureStore.HasHierarchyComponentIdAsync(iUserHierarchicalAccess.HSId, (Guid)hierarchyComponentId))
                     return true;
             }
 

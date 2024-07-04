@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.Users;
@@ -20,10 +22,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     {
         protected readonly ICurrentUser _currentUser;
         protected readonly IHierarchicalAccessRepository _hierarchicalAccessRepository;
-        protected readonly IHierarchicalStructureStore _hierarchicalStructureRecursiveService;
+        protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
         protected readonly IHierarchyComponentService _hierarchyComponentService;
         protected readonly IHttpContextAccessor _httpContextAccessor;
-        protected readonly IMgmtAuthorizationService _mgmtAuthorizationService;
         protected readonly INnRoleStore _nnRoleStore;
         protected readonly INecnatEndpointStore _necnatEndpointStore;
 
@@ -33,58 +34,16 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             IHierarchicalStructureStore hierarchicalStructureRecursiveService,
             IHierarchyComponentService hierarchyComponentService,
             IHttpContextAccessor httpContextAccessor,
-            IMgmtAuthorizationService mgmtAuthorizationService,
             INnRoleStore nnRoleStore,
             INecnatEndpointStore necnatEndpointStore)
         {
             _currentUser = currentUser;
             _hierarchicalAccessRepository = hierarchicalAccessRepository;
-            _hierarchicalStructureRecursiveService = hierarchicalStructureRecursiveService;
+            _hierarchicalStructureStore = hierarchicalStructureRecursiveService;
             _hierarchyComponentService = hierarchyComponentService;
             _httpContextAccessor = httpContextAccessor;
-            _mgmtAuthorizationService = mgmtAuthorizationService;
             _nnRoleStore = nnRoleStore;
             _necnatEndpointStore = necnatEndpointStore;
-        }
-
-        public virtual async Task<List<string>> GetListPermissionMyAsync()
-        {
-            return await _mgmtAuthorizationService.GetListPermissionByUserIdAsync((Guid)CurrentUser.Id!);
-        }
-
-        public virtual async Task<List<Guid?>> GetListHierarchyComponentIdByPermissionNameAndHierarchyComponentTypeAsync(string permissionName, int hierarchyComponentType)
-        {
-            var userId = CurrentUser.Id;
-            if (userId == null)
-                return new List<Guid?>();
-
-            var hierarchicalStructureIdList = await _mgmtAuthorizationService.GetListHierarchicalStructureIdByUserIdAndPermissionNameAsync((Guid)userId, permissionName);
-            var l = new List<Guid>();
-            foreach (var iHierarchicalStructureId in hierarchicalStructureIdList)
-                l.AddRange(await _hierarchicalStructureRecursiveService.GetListHierarchyComponentIdRecursiveAsync((Guid)iHierarchicalStructureId!, hierarchyComponentType));
-
-            return l.Distinct().Select(x => (Guid?)x).ToList();
-        }
-
-        public virtual async Task<List<string>> GetFromEndpointsPermissionListAsync()
-        {
-            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-
-            var permissionList = new List<string>();
-            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsAuthz == true))
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                    var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/mgmt-authorization/permission-my");
-                    if (!httpResponseMessage.IsSuccessStatusCode)
-                        throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
-
-                    permissionList.AddRange(JsonSerializer.Deserialize<List<string>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
-                }
-            }
-
-            return permissionList;
         }
 
         public async Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationMyAsync()
@@ -111,7 +70,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-                var httpResponseMessage = await client.GetAsync($"{authendpoint.Endpoint}/api/app/mgmt-authorization/authorization-info-two");
+                var httpResponseMessage = await client.PostAsJsonAsync($"{authendpoint.Endpoint}/api/app/mgmt-authorization/get-authorization-info-two", model.LHAC.SelectMany(x => x.LHSId));
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
@@ -144,7 +103,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             return model;
         }
 
-        public async Task<HierarchicalAuthorizationModel> GetAuthorizationInfoTwoMyAsync(List<Guid> hierarchicalStructureIdList)
+        [HttpPost]
+        public async Task<HierarchicalAuthorizationModel> GetAuthorizationInfoTwoAsync(List<Guid> hierarchicalStructureIdList)
         {
             var model = new HierarchicalAuthorizationModel();
 
@@ -153,11 +113,13 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             var allHierarchyComponentIdList = new List<Guid>();
             foreach (var iDbHierarchicalAccess in dbHierarchicalAccessList)
             {
-                var hierarchyComponentIdList = await _hierarchicalStructureRecursiveService.GetListHierarchyComponentIdRecursiveAsync(iDbHierarchicalAccess.HierarchicalStructureId);
+                if (model.LHS.Any(x => x.Id == iDbHierarchicalAccess.HierarchicalStructureId))
+                    continue;
+
+                var hierarchyComponentIdList = await _hierarchicalStructureStore.GetListHierarchyComponentIdRecursiveAsync(iDbHierarchicalAccess.HierarchicalStructureId);
                 allHierarchyComponentIdList.AddRange(hierarchyComponentIdList);
 
-                if (!model.LHS.Any(x => x.Id == iDbHierarchicalAccess.HierarchicalStructureId))
-                    model.LHS.Add(new HS { Id = iDbHierarchicalAccess.HierarchicalStructureId, LHCId = hierarchyComponentIdList });
+                model.LHS.Add(new HS { Id = iDbHierarchicalAccess.HierarchicalStructureId, LHCId = hierarchyComponentIdList });
             }
 
             var hierarchyComponentList = await _hierarchyComponentService.GetListHierarchyComponentAsync();
@@ -169,5 +131,45 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
             return model;
         }
+
+        //public virtual async Task<List<string>> GetListPermissionMyAsync()
+        //{
+        //    return await _mgmtAuthorizationService.GetListPermissionByUserIdAsync((Guid)CurrentUser.Id!);
+        //}
+
+        //public virtual async Task<List<Guid?>> GetListHierarchyComponentIdByPermissionNameAndHierarchyComponentTypeAsync(string permissionName, int hierarchyComponentType)
+        //{
+        //    var userId = CurrentUser.Id;
+        //    if (userId == null)
+        //        return new List<Guid?>();
+
+        //    var hierarchicalStructureIdList = await _mgmtAuthorizationService.GetListHierarchicalStructureIdByUserIdAndPermissionNameAsync((Guid)userId, permissionName);
+        //    var l = new List<Guid>();
+        //    foreach (var iHierarchicalStructureId in hierarchicalStructureIdList)
+        //        l.AddRange(await _hierarchicalStructureRecursiveService.GetListHierarchyComponentIdRecursiveAsync((Guid)iHierarchicalStructureId!, hierarchyComponentType));
+
+        //    return l.Distinct().Select(x => (Guid?)x).ToList();
+        //}
+
+        //public virtual async Task<List<string>> GetFromEndpointsPermissionListAsync()
+        //{
+        //    var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
+
+        //    var permissionList = new List<string>();
+        //    foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsAuthz == true))
+        //    {
+        //        using (HttpClient client = new HttpClient())
+        //        {
+        //            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
+        //            var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/mgmt-authorization/permission-my");
+        //            if (!httpResponseMessage.IsSuccessStatusCode)
+        //                throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+
+        //            permissionList.AddRange(JsonSerializer.Deserialize<List<string>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+        //        }
+        //    }
+
+        //    return permissionList;
+        //}
     }
 }

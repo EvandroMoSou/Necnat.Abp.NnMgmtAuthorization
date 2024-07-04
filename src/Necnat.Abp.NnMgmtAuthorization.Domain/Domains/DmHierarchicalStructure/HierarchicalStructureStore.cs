@@ -22,15 +22,53 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             _hierarchicalStructureRepository = hierarchicalStructureRepository;
         }
 
-        public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId, int? hierarchyComponentType = null)
+        public virtual async Task<bool> HasHierarchyComponentIdAsync(Guid id, Guid hierarchyComponentId)
         {
-            var q = (await GetListHierarchicalStructureRecursiveAsync(hierarchicalStructureId)).AsQueryable();
+            return (await GetListHierarchyComponentIdRecursiveAsync(id)).Contains(hierarchyComponentId);
+        }
 
-            var l = new List<Guid>();
-            foreach (var e in q.Select(x => x.LHCId))
-                l.AddRange(e);
+        public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid id)
+        {
+            return (await GetCacheItemAsync(id)).HS.LHCId;
+        }
+
+        private async Task<HierarchicalStructureRecursiveCacheItem> GetCacheItemAsync(Guid hierarchicalStructureId)
+        {
+            return (await _hierarchicalStructureRecursiveCache.GetOrAddAsync(
+                hierarchicalStructureId.ToString(), //Cache key
+                async () => await GetFromDatabaseAsync(hierarchicalStructureId),
+                () => new DistributedCacheEntryOptions { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1) }
+            ))!;
+        }
+
+        private async Task<HierarchicalStructureRecursiveCacheItem> GetFromDatabaseAsync(Guid hierarchicalStructureId)
+        {
+            var hierarchicalStructure = await _hierarchicalStructureRepository.GetAsync(hierarchicalStructureId);
+            var lHierarchicalStructure = await _hierarchicalStructureRepository.GetListAsync(x => x.HierarchyId == hierarchicalStructure.HierarchyId);
+
+            var hs = new HS { Id = hierarchicalStructureId };
+            hs.LHCId = GetRecursive(lHierarchicalStructure, lHierarchicalStructure.Where(x => x.Id == hierarchicalStructureId).First());
+
+            return new HierarchicalStructureRecursiveCacheItem { HS = hs };
+        }
+
+        private List<Guid> GetRecursive(List<HierarchicalStructure> lHierarchicalStructure, HierarchicalStructure hierarchicalStructure)
+        {
+            var l = new List<Guid> { hierarchicalStructure.HierarchyComponentId };
+
+            var lChild = lHierarchicalStructure.Where(x => x.HierarchicalStructureIdParent == hierarchicalStructure.Id).ToList();
+            foreach (var iChild in lChild)
+                l.AddRange(GetRecursive(lHierarchicalStructure, iChild));
 
             return l;
+        }
+
+
+
+        public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId, int? hierarchyComponentType = null)
+        {
+            var cache = await GetCacheItemAsync(hierarchicalStructureId);
+            return cache.HS.LHCId;
         }
 
         public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null)
@@ -45,7 +83,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
         public async Task<List<Guid>> GetListHierarchicalStructureIdRecursiveAsync(Guid hierarchicalStructureId)
         {
-            return (await GetListHierarchicalStructureRecursiveAsync(hierarchicalStructureId)).Select(x => x.Id).ToList();
+            throw new NotImplementedException();
+            //return (await GetListHierarchicalStructureRecursiveAsync(hierarchicalStructureId)).LHCId;
         }
 
         public async Task<List<Guid>> GetListHierarchicalStructureIdRecursiveAsync(List<Guid> lHierarchicalStructureId)
@@ -58,43 +97,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             return l.Distinct().ToList();
         }
 
-        public async Task<List<HS>> GetListHierarchicalStructureRecursiveAsync(Guid hierarchicalStructureId)
+        public async Task<HS> GetListHierarchicalStructureRecursiveAsync(Guid hierarchicalStructureId)
         {
-            return (await GetCacheItemAsync(hierarchicalStructureId)).LHSR;
-        }
-
-        private async Task<HierarchicalStructureRecursiveCacheItem> GetCacheItemAsync(Guid hierarchicalStructureId)
-        {
-            return (await _hierarchicalStructureRecursiveCache.GetOrAddAsync(
-                hierarchicalStructureId.ToString(), //Cache key
-                async () => await GetFromDatabaseAsync(hierarchicalStructureId),
-                () => new DistributedCacheEntryOptions { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1) }
-            ))!;
-        }
-
-        private async Task<HierarchicalStructureRecursiveCacheItem> GetFromDatabaseAsync(Guid hierarchicalStructureId)
-        {
-            var lHierarchicalStructure = await _hierarchicalStructureRepository.GetListAsync();
-            return new HierarchicalStructureRecursiveCacheItem { LHSR = GetRecursive(lHierarchicalStructure, lHierarchicalStructure.Where(x => x.Id == hierarchicalStructureId).First()) };
-        }
-
-        private List<HS> GetRecursive(List<HierarchicalStructure> lHierarchicalStructure, HierarchicalStructure hierarchicalStructure)
-        {
-            var l = new List<HS> { FromHierarchicalStructure(hierarchicalStructure) };
-
-            var lChild = lHierarchicalStructure.Where(x => x.HierarchicalStructureIdParent == hierarchicalStructure.Id).ToList();
-            foreach (var iChild in lChild)
-                l.AddRange(GetRecursive(lHierarchicalStructure, iChild));
-
-            return l;
-        }
-
-        private HS FromHierarchicalStructure(HierarchicalStructure eh)
-        {
-            return new HS
-            {
-                Id = eh.Id
-            };
+            return (await GetCacheItemAsync(hierarchicalStructureId)).HS;
         }
 
         public Task<List<Guid>> GetHierarchyComponentIdAsync(List<Guid> lHierarchicalStructureId, int? hierarchyComponentType = null)
