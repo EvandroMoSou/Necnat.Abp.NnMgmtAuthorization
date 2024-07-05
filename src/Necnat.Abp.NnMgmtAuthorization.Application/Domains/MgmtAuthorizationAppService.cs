@@ -53,7 +53,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
             var accessToken = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
             var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsAuthz == true))
+            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsAuthorization == true))
             {
                 using (HttpClient client = new HttpClient())
                 {
@@ -66,7 +66,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
                 }
             }
 
-            var authendpoint = necnatEndpointList.Where(x => x.IsUser == true).First();
+            var authendpoint = necnatEndpointList.Where(x => x.IsAuthServer == true).First();
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");

@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnMgmtAuthorization.Localization;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.DependencyInjection;
@@ -93,42 +97,66 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             foreach (var iHierarchyComponentGroup in lHierarchyComponentGroup)
                 l.Add(new HierarchyComponentModel { HierarchyComponentType = 2, Id = iHierarchyComponentGroup.Id, Name = iHierarchyComponentGroup.Name });
 
-            //var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-            //foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsAuthz == true))
-            //{
-            //    using (HttpClient client = new HttpClient())
-            //    {
-            //        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-            //        var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/mgmt-authorization/permission-my");
-            //        if (!httpResponseMessage.IsSuccessStatusCode)
-            //            throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
+            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsHierarchyComponent == true))
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
+                    var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
+                    if (!httpResponseMessage.IsSuccessStatusCode)
+                        throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
-            //        permissionList.AddRange(JsonSerializer.Deserialize<List<string>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
-            //    }
-            //}
+                    l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                }
+            }
 
             return l;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null)
         {
-            return new List<HierarchyComponentTypeModel>
+            var l = new List<HierarchyComponentTypeModel>();
+
+            l.Add(new HierarchyComponentTypeModel
             {
-                new HierarchyComponentTypeModel
+                Id = 1,
+                Name = L["Hierarchy"],
+                Icon = "fas fa-box"
+            });
+
+            l.Add(new HierarchyComponentTypeModel
+            {
+                Id = 2,
+                Name = L["Hierarchy Component Group"],
+                Icon = "fas fa-sitemap"
+            });
+
+            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
+            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsHierarchyComponent == true))
+            {
+                using (HttpClient client = new HttpClient())
                 {
-                    Id = 1,
-                    Name = L["Hierarchy"],
-                    Icon = "fas fa-box"
-                },
-                new HierarchyComponentTypeModel
-                {
-                    Id = 2,
-                    Name = L["Hierarchy Component Group"],
-                    Icon = "fas fa-sitemap"
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
+                    var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-type-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
+                    if (!httpResponseMessage.IsSuccessStatusCode)
+                        throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+
+                    l.Add(JsonSerializer.Deserialize<HierarchyComponentTypeModel>(await httpResponseMessage.Content.ReadAsStringAsync())!);
                 }
-            };
+            }
+
+            return l;
         }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+        public virtual Task<List<HierarchyComponentModel>> GetListHierarchyComponentContributorAsync(short hierarchyComponentTypeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual Task<HierarchyComponentTypeModel> GetHierarchyComponentTypeContributorAsync(short hierarchyComponentTypeId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

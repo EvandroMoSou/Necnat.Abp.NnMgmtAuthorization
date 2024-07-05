@@ -32,7 +32,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
         protected override async Task<HierarchicalStructureRecursiveCacheItem> GetDataAsync(Guid hierarchicalStructureId)
         {
             var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-            var authendpoint = necnatEndpointList.Where(x => x.IsUser == true).First();
+            var authendpoint = necnatEndpointList.Where(x => x.IsAuthServer == true).First();
 
             using (HttpClient client = new HttpClient())
             {
