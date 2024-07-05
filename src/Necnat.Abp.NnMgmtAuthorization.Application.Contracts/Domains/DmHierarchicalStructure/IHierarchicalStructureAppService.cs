@@ -12,7 +12,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             Guid,
             HierarchicalStructureResultRequestDto>
     {
-        Task<List<HierarchicalStructureNode>> SearchHierarchicalStructureNodeAsync(SearchHierarchicalStructureNodeResultRequestDto input);
+        Task<List<HierarchicalStructureNode>> GetListHierarchicalStructureNodeAsync(SearchHierarchicalStructureNodeResultRequestDto input);
         Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null);
         Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null);
         Task<List<HierarchyComponentModel>> GetListHierarchyComponentContributorAsync(short hierarchyComponentTypeId);

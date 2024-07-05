@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
-using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
 using System.Collections.Generic;
@@ -22,8 +21,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     {
         protected readonly ICurrentUser _currentUser;
         protected readonly IHierarchicalAccessRepository _hierarchicalAccessRepository;
+        protected readonly IHierarchicalStructureAppService _hierarchicalStructureAppService;
         protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
-        protected readonly IHierarchyComponentService _hierarchyComponentService;
         protected readonly IHttpContextAccessor _httpContextAccessor;
         protected readonly INnRoleStore _nnRoleStore;
         protected readonly INecnatEndpointStore _necnatEndpointStore;
@@ -31,16 +30,16 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         public MgmtAuthorizationAppService(
             ICurrentUser currentUser,
             IHierarchicalAccessRepository hierarchicalAccessRepository,
+            IHierarchicalStructureAppService hierarchicalStructureAppService,
             IHierarchicalStructureStore hierarchicalStructureRecursiveService,
-            IHierarchyComponentService hierarchyComponentService,
             IHttpContextAccessor httpContextAccessor,
             INnRoleStore nnRoleStore,
             INecnatEndpointStore necnatEndpointStore)
         {
             _currentUser = currentUser;
             _hierarchicalAccessRepository = hierarchicalAccessRepository;
+            _hierarchicalStructureAppService = hierarchicalStructureAppService;
             _hierarchicalStructureStore = hierarchicalStructureRecursiveService;
-            _hierarchyComponentService = hierarchyComponentService;
             _httpContextAccessor = httpContextAccessor;
             _nnRoleStore = nnRoleStore;
             _necnatEndpointStore = necnatEndpointStore;
@@ -119,7 +118,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
                 model.LHS.Add(new HS { Id = iHierarchicalStructureId, LHCId = hierarchyComponentIdList });
             }
 
-            var hierarchyComponentList = await _hierarchyComponentService.GetListHierarchyComponentAsync();
+            var hierarchyComponentList = await _hierarchicalStructureAppService.GetListHierarchyComponentAsync();
             foreach (var iHierarchyComponentId in allHierarchyComponentIdList.Distinct())
             {
                 var hierarchyComponent = hierarchyComponentList.Where(x => x.Id == iHierarchyComponentId).FirstOrDefault();

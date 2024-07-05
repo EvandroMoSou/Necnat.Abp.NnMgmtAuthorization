@@ -8,11 +8,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Samples;
 [Area(NnMgmtAuthorizationRemoteServiceConsts.ModuleName)]
 [RemoteService(Name = NnMgmtAuthorizationRemoteServiceConsts.RemoteServiceName)]
 [Route("api/NnMgmtAuthorization/sample")]
-public class SampleController : NnMgmtAuthorizationController, ISampleAppService
+public class HierarchicalStructureController : NnMgmtAuthorizationController, ISampleAppService
 {
     private readonly ISampleAppService _sampleAppService;
 
-    public SampleController(ISampleAppService sampleAppService)
+    public HierarchicalStructureController(ISampleAppService sampleAppService)
     {
         _sampleAppService = sampleAppService;
     }

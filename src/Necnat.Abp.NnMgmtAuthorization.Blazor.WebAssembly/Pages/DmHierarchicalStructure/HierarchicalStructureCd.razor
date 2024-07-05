@@ -149,7 +149,7 @@
 
     private async Task<List<HierarchicalStructureNode>> SearchHierarchicalStructureNodeAsync(HierarchicalStructureNode? hierarchicalStructureNode)
     {
-        var l = await AppService.SearchHierarchicalStructureNodeAsync(new SearchHierarchicalStructureNodeResultRequestDto { HierarchyId = SelectedHierarchy!.Id, HierarchicalStructureIdParent = hierarchicalStructureNode?.HierarchicalStructure.Id });
+        var l = await AppService.GetListHierarchicalStructureNodeAsync(new SearchHierarchicalStructureNodeResultRequestDto { HierarchyId = SelectedHierarchy!.Id, HierarchicalStructureIdParent = hierarchicalStructureNode?.HierarchicalStructure.Id });
         foreach (var iE in l)
             iE.HierarchicalStructure.HierarchyComponentName = _lHierarchyComponent!.Where(x => x.Id == iE.HierarchicalStructure.HierarchyComponentId).First()?.Name;
 

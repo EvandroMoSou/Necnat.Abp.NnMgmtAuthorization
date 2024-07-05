@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
+using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnLibCommon.Localization;
 using Necnat.Abp.NnLibCommon.Services;
 using Necnat.Abp.NnMgmtAuthorization.Models;
@@ -6,6 +9,8 @@ using Necnat.Abp.NnMgmtAuthorization.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Users;
@@ -21,15 +26,24 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             IHierarchicalStructureRepository>,
         IHierarchicalStructureAppService
     {
-        protected readonly IHierarchyComponentService _hierarchyComponentService;
+        protected readonly IHierarchyComponentGroupRepository _hierarchyComponentGroupRepository;
+        protected readonly IHierarchyRepository _hierarchyRepository;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
+        protected readonly INecnatEndpointStore _necnatEndpointStore;
 
         public HierarchicalStructureAppService(
             ICurrentUser currentUser,
             IStringLocalizer<NnLibCommonResource> necnatLocalizer,
             IHierarchicalStructureRepository repository,
-            IHierarchyComponentService hierarchyComponentService) : base(currentUser, necnatLocalizer, repository)
+            IHierarchyComponentGroupRepository hierarchyComponentGroupRepository,
+            IHierarchyRepository hierarchyRepository,
+            IHttpContextAccessor httpContextAccessor,
+            INecnatEndpointStore necnatEndpointStore) : base(currentUser, necnatLocalizer, repository)
         {
-            _hierarchyComponentService = hierarchyComponentService;
+            _hierarchyComponentGroupRepository = hierarchyComponentGroupRepository;
+            _hierarchyRepository = hierarchyRepository;
+            _httpContextAccessor = httpContextAccessor;
+            _necnatEndpointStore = necnatEndpointStore;
 
             GetPolicyName = NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default;
             GetListPolicyName = NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default;
@@ -52,7 +66,13 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             return q;
         }
 
-        public virtual async Task<List<HierarchicalStructureNode>> SearchHierarchicalStructureNodeAsync(SearchHierarchicalStructureNodeResultRequestDto input)
+        [RemoteService(false)]
+        public override Task<HierarchicalStructureDto> UpdateAsync(Guid id, HierarchicalStructureDto input)
+        {
+            return base.UpdateAsync(id, input);
+        }
+
+        public virtual async Task<List<HierarchicalStructureNode>> GetListHierarchicalStructureNodeAsync(SearchHierarchicalStructureNodeResultRequestDto input)
         {
             await CheckPolicyAsync(GetListPolicyName);
 
@@ -69,31 +89,80 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             return l;
         }
 
-        [RemoteService(false)]
-        public override Task<HierarchicalStructureDto> UpdateAsync(Guid id, HierarchicalStructureDto input)
-        {
-            return base.UpdateAsync(id, input);
-        }
-
         public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null)
         {
             await CheckPolicyAsync(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default);
-            return await _hierarchyComponentService.GetListHierarchyComponentAsync(hierarchyId);
+
+            var l = new List<HierarchyComponentModel>();
+
+            var lHierarchy = await _hierarchyRepository.GetListAsync();
+            foreach (var iHierarchy in lHierarchy)
+                l.Add(new HierarchyComponentModel { HierarchyComponentType = 1, Id = iHierarchy.Id, Name = iHierarchy.Name });
+
+            var lHierarchyComponentGroup = await _hierarchyComponentGroupRepository.GetListAsync();
+            foreach (var iHierarchyComponentGroup in lHierarchyComponentGroup)
+                l.Add(new HierarchyComponentModel { HierarchyComponentType = 2, Id = iHierarchyComponentGroup.Id, Name = iHierarchyComponentGroup.Name });
+
+            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
+            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsHierarchyComponent == true))
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
+                    var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
+                    if (!httpResponseMessage.IsSuccessStatusCode)
+                        throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+
+                    l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                }
+            }
+
+            return l;
         }
 
         public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null)
         {
-            return await _hierarchyComponentService.GetListHierarchyComponentTypeAsync(hierarchyId);
+            var l = new List<HierarchyComponentTypeModel>();
+
+            l.Add(new HierarchyComponentTypeModel
+            {
+                Id = 1,
+                Name = L["Hierarchy"],
+                Icon = "fas fa-box"
+            });
+
+            l.Add(new HierarchyComponentTypeModel
+            {
+                Id = 2,
+                Name = L["Hierarchy Component Group"],
+                Icon = "fas fa-sitemap"
+            });
+
+            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
+            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsHierarchyComponent == true))
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
+                    var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-type-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
+                    if (!httpResponseMessage.IsSuccessStatusCode)
+                        throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+
+                    l.Add(JsonSerializer.Deserialize<HierarchyComponentTypeModel>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                }
+            }
+
+            return l;
         }
 
-        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentContributorAsync(short hierarchyComponentTypeId)
+        public virtual Task<List<HierarchyComponentModel>> GetListHierarchyComponentContributorAsync(short hierarchyComponentTypeId)
         {
-            return await _hierarchyComponentService.GetListHierarchyComponentContributorAsync(hierarchyComponentTypeId);
+            throw new NotImplementedException();
         }
 
-        public virtual async Task<HierarchyComponentTypeModel> GetHierarchyComponentTypeContributorAsync(short hierarchyComponentTypeId)
+        public virtual Task<HierarchyComponentTypeModel> GetHierarchyComponentTypeContributorAsync(short hierarchyComponentTypeId)
         {
-            return await _hierarchyComponentService.GetHierarchyComponentTypeContributorAsync(hierarchyComponentTypeId);
+            throw new NotImplementedException();
         }
     }
 }

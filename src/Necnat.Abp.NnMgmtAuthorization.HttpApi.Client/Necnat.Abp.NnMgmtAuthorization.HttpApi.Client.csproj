@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>Necnat.Abp.NnMgmtAuthorization</RootNamespace>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.2.13</Version>
+    <Version>0.2.15</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
