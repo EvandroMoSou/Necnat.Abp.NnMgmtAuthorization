@@ -18,11 +18,16 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchy
             IHierarchyRepository>,
         IHierarchyAppService
     {
+        protected readonly IHierarchicalStructureRepository _hierarchicalStructureRepository;
+
         public HierarchyAppService(
             ICurrentUser currentUser,
             IStringLocalizer<NnLibCommonResource> necnatLocalizer,
-            IHierarchyRepository repository) : base(currentUser, necnatLocalizer, repository)
+            IHierarchyRepository repository,
+            IHierarchicalStructureRepository hierarchicalStructureRepository) : base(currentUser, necnatLocalizer, repository)
         {
+            _hierarchicalStructureRepository = hierarchicalStructureRepository;
+
             GetPolicyName = NnMgmtAuthorizationPermissions.PrmHierarchy.Default;
             GetListPolicyName = NnMgmtAuthorizationPermissions.PrmHierarchy.Default;
             CreatePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchy.Create;
@@ -51,6 +56,24 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchy
                 q = q.Where(x => x.IsActive == input.IsActive);
 
             return q;
+        }
+
+        protected override async Task<Hierarchy> CheckCreateInsertedEntityAsync(Hierarchy insertedEntity, HierarchyDto? input = null)
+        {
+            await _hierarchicalStructureRepository.InsertAsync(new HierarchicalStructure
+            {
+                HierarchyId = insertedEntity.Id,
+                HierarchyComponentType = 1,
+                HierarchyComponentId = insertedEntity.Id
+            });
+
+            return insertedEntity;
+        }
+
+        protected override async Task<Hierarchy> CheckDeleteDbEntityAsync(Hierarchy dbEntity)
+        {
+            await _hierarchicalStructureRepository.DeleteAllByHierarchyIdAsync(dbEntity.Id);
+            return dbEntity;
         }
     }
 }

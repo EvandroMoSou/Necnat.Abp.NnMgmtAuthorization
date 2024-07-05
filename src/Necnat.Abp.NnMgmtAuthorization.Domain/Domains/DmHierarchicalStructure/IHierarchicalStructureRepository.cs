@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
@@ -17,5 +16,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         Task<List<HierarchicalStructure>> SearchByHierarchyIdAndHierarchicalStructureIdParentAsync(Guid? hierarchyId, Guid? hierarchicalStructureIdParent);
         Task<bool> AnyByHierarchyIdAndHierarchicalStructureIdParentAsync(Guid? hierarchyId, Guid? hierarchicalStructureIdParent);
         Task<Dictionary<Guid, List<Guid>>> GetDictionaryHierarchyComponentIdToHierarchicalStructureIdListAsync(List<Guid> lHierarchyComponentId);
+        Task<int> DeleteAllByHierarchyIdAsync(Guid hierarchyId);
     }
 }

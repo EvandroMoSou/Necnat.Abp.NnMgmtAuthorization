@@ -97,5 +97,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 
             return dict;
         }
+
+        public async Task<int> DeleteAllByHierarchyIdAsync(Guid hierarchyId)
+        {
+            var dbSet = await GetDbSetAsync();
+            return await dbSet.Where(x => x.HierarchyId == hierarchyId).ExecuteDeleteAsync();
+        }
     }
 }
