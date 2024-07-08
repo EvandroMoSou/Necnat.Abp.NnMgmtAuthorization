@@ -89,31 +89,40 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             return l;
         }
 
-        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null)
+        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null, List<short>? hierarchyComponentTypeList = null)
         {
             await CheckPolicyAsync(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default);
 
             var l = new List<HierarchyComponentModel>();
 
-            var lHierarchy = await _hierarchyRepository.GetListAsync();
-            foreach (var iHierarchy in lHierarchy)
-                l.Add(new HierarchyComponentModel { HierarchyComponentType = 1, Id = iHierarchy.Id, Name = iHierarchy.Name });
+            if(hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(1))
+            {
+                var lHierarchy = await _hierarchyRepository.GetListAsync();
+                foreach (var iHierarchy in lHierarchy)
+                    l.Add(new HierarchyComponentModel { HierarchyComponentType = 1, Id = iHierarchy.Id, Name = iHierarchy.Name });
+            }
 
-            var lHierarchyComponentGroup = await _hierarchyComponentGroupRepository.GetListAsync();
-            foreach (var iHierarchyComponentGroup in lHierarchyComponentGroup)
-                l.Add(new HierarchyComponentModel { HierarchyComponentType = 2, Id = iHierarchyComponentGroup.Id, Name = iHierarchyComponentGroup.Name });
+            if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(2))
+            {
+                var lHierarchyComponentGroup = await _hierarchyComponentGroupRepository.GetListAsync();
+                foreach (var iHierarchyComponentGroup in lHierarchyComponentGroup)
+                    l.Add(new HierarchyComponentModel { HierarchyComponentType = 2, Id = iHierarchyComponentGroup.Id, Name = iHierarchyComponentGroup.Name });
+            }
 
             var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
             foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsHierarchyComponent == true))
             {
-                using (HttpClient client = new HttpClient())
+                if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains((short)iNecnatEndpoint.HierarchyComponentTypeId!))
                 {
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                    var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
-                    if (!httpResponseMessage.IsSuccessStatusCode)
-                        throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+                    using (HttpClient client = new HttpClient())
+                    {
+                        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
+                        var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
+                        if (!httpResponseMessage.IsSuccessStatusCode)
+                            throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
-                    l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                        l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                    }
                 }
             }
 

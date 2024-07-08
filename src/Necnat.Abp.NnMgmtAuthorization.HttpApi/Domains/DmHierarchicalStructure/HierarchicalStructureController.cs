@@ -33,9 +33,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
         [HttpGet]
         [Route("hierarchy-component")]
-        public virtual Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null)
+        public virtual Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null, List<short>? hierarchyComponentTypeList = null)
         {
-            return AppService.GetListHierarchyComponentAsync(hierarchyId);
+            return AppService.GetListHierarchyComponentAsync(hierarchyId, hierarchyComponentTypeList);
         }
 
         [HttpGet]
