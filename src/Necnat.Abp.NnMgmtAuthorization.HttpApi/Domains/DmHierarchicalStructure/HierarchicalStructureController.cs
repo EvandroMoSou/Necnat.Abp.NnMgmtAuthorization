@@ -19,6 +19,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         {
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public Task<HierarchicalStructureDto> UpdateAsync(Guid id, HierarchicalStructureDto input)
         {
             throw new NotImplementedException();
