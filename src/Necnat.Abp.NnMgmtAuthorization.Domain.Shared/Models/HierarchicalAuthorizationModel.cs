@@ -20,7 +20,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Models
     public class HAC
     {
         [JsonPropertyName("lhsId")]
-        public List<Guid> LHSId { get; set; } = new List<Guid>();
+        public List<Guid?> LHSId { get; set; } = new List<Guid?>();
         [JsonPropertyName("rId")]
         public Guid RId { get; set; }
         [JsonPropertyName("lpn")]

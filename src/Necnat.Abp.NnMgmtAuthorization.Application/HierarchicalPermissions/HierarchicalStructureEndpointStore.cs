@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.Caching;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Permissions
+namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
 {
     public class HierarchicalStructureEndpointStore : HierarchicalStructureStore, IHierarchicalStructureStore
     {
@@ -37,7 +37,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                var httpResponseMessage = await client.PostAsJsonAsync($"{authendpoint.Endpoint}/api/app/mgmt-authorization/get-list-hierarchy-component-id-recursive", hierarchicalStructureId );
+                var httpResponseMessage = await client.PostAsJsonAsync($"{authendpoint.Endpoint}/api/app/mgmt-authorization/get-list-hierarchy-component-id-recursive", hierarchicalStructureId);
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 

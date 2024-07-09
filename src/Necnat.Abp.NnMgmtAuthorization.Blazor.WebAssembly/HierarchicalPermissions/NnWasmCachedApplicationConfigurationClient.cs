@@ -10,11 +10,9 @@ using Volo.Abp.AspNetCore.Mvc.Client;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.MultiTenancy;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.Permissions
+namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissions
 {
-    [Dependency(ReplaceServices = true)]
-    [ExposeServices(typeof(ICachedApplicationConfigurationClient), typeof(WebAssemblyCachedApplicationConfigurationClient))]
-    public class NnWasmCachedApplicationConfigurationClient : WebAssemblyCachedApplicationConfigurationClient, ICachedApplicationConfigurationClient, ITransientDependency
+    public class NnWasmCachedApplicationConfigurationClient : WebAssemblyCachedApplicationConfigurationClient, ICachedApplicationConfigurationClient
     {
         protected readonly IMgmtAuthorizationAppService mgmtAuthorizationAppService;
 

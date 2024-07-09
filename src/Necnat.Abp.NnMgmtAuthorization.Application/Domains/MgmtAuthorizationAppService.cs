@@ -90,7 +90,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             {
                 var e = model.LHAC.Where(x => x.RId == iDbHierarchicalAccess.RoleId).FirstOrDefault();
                 if (e == null)
-                    model.LHAC.Add(new HAC { RId = iDbHierarchicalAccess.RoleId, LHSId = new List<Guid> { iDbHierarchicalAccess.HierarchicalStructureId } });
+                    model.LHAC.Add(new HAC { RId = iDbHierarchicalAccess.RoleId, LHSId = new List<Guid?> { iDbHierarchicalAccess.HierarchicalStructureId } });
                 else
                     e.LHSId.Add(iDbHierarchicalAccess.HierarchicalStructureId);
             }

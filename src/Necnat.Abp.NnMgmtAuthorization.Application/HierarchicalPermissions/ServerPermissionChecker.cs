@@ -7,16 +7,13 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Authorization.Permissions;
-using Volo.Abp.DependencyInjection;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Claims;
 using Volo.Abp.SimpleStateChecking;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Permissions
+namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
 {
-    [Dependency(ReplaceServices = true)]
-    [ExposeServices(typeof(IPermissionChecker), typeof(PermissionChecker))]
-    public class AppPermissionChecker : PermissionChecker, IPermissionChecker, ITransientDependency
+    public class ServerPermissionChecker : PermissionChecker, IPermissionChecker
     {
         protected readonly IHierarchicalAccessStore _hierarchicalAccessStore;
         protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
@@ -25,7 +22,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
 
         public const string _separator = "&";
 
-        public AppPermissionChecker(
+        public ServerPermissionChecker(
             ICurrentPrincipalAccessor principalAccessor,
             IPermissionDefinitionManager permissionDefinitionManager,
             ICurrentTenant currentTenant,
@@ -100,7 +97,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
 
                 if (hierarchyComponentId == null)
                     return true;
-                else if (await _hierarchicalStructureStore.HasHierarchyComponentIdAsync(iUserHierarchicalAccess.HSId, (Guid)hierarchyComponentId))
+                else if (iUserHierarchicalAccess.HSId == null)
+                    return true;
+                else if (await _hierarchicalStructureStore.HasHierarchyComponentIdAsync((Guid)iUserHierarchicalAccess.HSId, (Guid)hierarchyComponentId))
                     return true;
             }
 
@@ -111,7 +110,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Permissions
         {
             var multiplePermissionGrantResult = new MultiplePermissionGrantResult();
             foreach (var name in names)
-                multiplePermissionGrantResult.Result.Add(name, (await IsGrantedAsync(claimsPrincipal, name)) ? PermissionGrantResult.Granted : PermissionGrantResult.Prohibited);
+                multiplePermissionGrantResult.Result.Add(name, await IsGrantedAsync(claimsPrincipal, name) ? PermissionGrantResult.Granted : PermissionGrantResult.Prohibited);
 
             return multiplePermissionGrantResult;
         }
