@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations;
 using Volo.Abp.AspNetCore.Mvc.Client;
+using Volo.Abp.Data;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissions
 {
@@ -20,9 +21,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
             _configurationClient = configurationClient;
         }
 
-        public async Task<List<Guid?>> GetListHierarchicalStructureIdAsync(string permissionName)
+        public async Task<List<Guid>> GetListHierarchicalStructureIdAsync(string permissionName)
         {
-            var list = new List<Guid?>();
+            var list = new List<Guid>();
 
             foreach (var hac in await GetLHACAsync())
                 if (hac.LPN.Contains(permissionName))
@@ -43,7 +44,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
                 .Select(x => new HierarchyComponentDto { Id = x.Id, HierarchyComponentType = x.Tp, Name = x.Nm }).ToList();
         }
 
-        public async Task<List<Guid>> GetListHierarchyComponentIdAsync(List<Guid?> hierarchicalStructureIdList)
+        public async Task<List<Guid>> GetListHierarchyComponentIdAsync(List<Guid> hierarchicalStructureIdList)
         {
             var list = new List<Guid>();
 
@@ -92,7 +93,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
             if (_lhac != null)
                 return _lhac;
 
-            _lhac = JsonSerializer.Deserialize<List<HAC>>((await GetApplicationConfigurationAsync()).Setting.Values["ua:lhac"]!)!;
+            _lhac = JsonSerializer.Deserialize<List<HAC>>((await GetApplicationConfigurationAsync()).GetProperty<string>(NnMgmtAuthorizationConsts.UserAuthorizationLHAC)!)!;
             return _lhac;
         }
 
@@ -102,7 +103,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
             if (_lhs != null)
                 return _lhs;
 
-            _lhs = JsonSerializer.Deserialize<List<HS>>((await GetApplicationConfigurationAsync()).Setting.Values["ua:lhs"]!)!;
+            _lhs = JsonSerializer.Deserialize<List<HS>>((await GetApplicationConfigurationAsync()).GetProperty<string>(NnMgmtAuthorizationConsts.UserAuthorizationLHS)!)!;
             return _lhs;
         }
 
@@ -112,7 +113,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
             if (_lhc != null)
                 return _lhc;
 
-            _lhc = JsonSerializer.Deserialize<List<HC>>((await GetApplicationConfigurationAsync()).Setting.Values["ua:lhc"]!)!;
+            _lhc = JsonSerializer.Deserialize<List<HC>>((await GetApplicationConfigurationAsync()).GetProperty<string>(NnMgmtAuthorizationConsts.UserAuthorizationLHC)!)!;
             return _lhc;
         }
 

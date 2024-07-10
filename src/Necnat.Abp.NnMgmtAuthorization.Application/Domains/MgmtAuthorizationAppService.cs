@@ -51,13 +51,12 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             model.UserId = (Guid)CurrentUser.Id!;
 
             var accessToken = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsAuthorization == true))
+            foreach (var iEndpoint in await _necnatEndpointStore.GetListAuthorizationEndpointAsync())
             {
                 using (HttpClient client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-                    var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/mgmt-authorization/authorization-info-one-my");
+                    var httpResponseMessage = await client.GetAsync($"{iEndpoint}/api/app/mgmt-authorization/authorization-info-one-my");
                     if (!httpResponseMessage.IsSuccessStatusCode)
                         throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
@@ -65,11 +64,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
                 }
             }
 
-            var authendpoint = necnatEndpointList.Where(x => x.IsAuthServer == true).First();
+            var authServerEndpoint = await _necnatEndpointStore.FindAuthServerEndpointAsync();
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-                var httpResponseMessage = await client.PostAsJsonAsync($"{authendpoint.Endpoint}/api/app/mgmt-authorization/get-authorization-info-two", model.LHAC.SelectMany(x => x.LHSId));
+                var httpResponseMessage = await client.PostAsJsonAsync($"{authServerEndpoint}/api/app/mgmt-authorization/get-authorization-info-two", model.LHAC.SelectMany(x => x.LHSId));
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
@@ -90,7 +89,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             {
                 var e = model.LHAC.Where(x => x.RId == iDbHierarchicalAccess.RoleId).FirstOrDefault();
                 if (e == null)
-                    model.LHAC.Add(new HAC { RId = iDbHierarchicalAccess.RoleId, LHSId = new List<Guid?> { iDbHierarchicalAccess.HierarchicalStructureId } });
+                    model.LHAC.Add(new HAC { RId = iDbHierarchicalAccess.RoleId, LHSId = new List<Guid> { iDbHierarchicalAccess.HierarchicalStructureId } });
                 else
                     e.LHSId.Add(iDbHierarchicalAccess.HierarchicalStructureId);
             }

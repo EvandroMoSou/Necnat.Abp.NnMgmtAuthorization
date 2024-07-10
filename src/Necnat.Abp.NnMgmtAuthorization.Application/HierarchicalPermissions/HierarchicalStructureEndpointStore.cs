@@ -5,7 +5,6 @@ using Necnat.Abp.NnMgmtAuthorization.Domains;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -31,13 +30,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
 
         protected override async Task<HierarchicalStructureRecursiveCacheItem> GetDataAsync(Guid hierarchicalStructureId)
         {
-            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-            var authendpoint = necnatEndpointList.Where(x => x.IsAuthServer == true).First();
-
+            var authServerEndpoint = await _necnatEndpointStore.FindAuthServerEndpointAsync();
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                var httpResponseMessage = await client.PostAsJsonAsync($"{authendpoint.Endpoint}/api/app/mgmt-authorization/get-list-hierarchy-component-id-recursive", hierarchicalStructureId);
+                var httpResponseMessage = await client.PostAsJsonAsync($"{authServerEndpoint}/api/app/mgmt-authorization/get-list-hierarchy-component-id-recursive", hierarchicalStructureId);
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 

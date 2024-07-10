@@ -109,20 +109,21 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                     l.Add(new HierarchyComponentModel { HierarchyComponentType = 2, Id = iHierarchyComponentGroup.Id, Name = iHierarchyComponentGroup.Name });
             }
 
-            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsActive == true && x.IsHierarchyComponent == true))
-            {
-                if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains((short)iNecnatEndpoint.HierarchyComponentTypeId!))
+            foreach (var iEndpoint in await _necnatEndpointStore.GetListHierarchyComponentEndpointAsync())
+                if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(iEndpoint.Key))
                 {
                     using (HttpClient client = new HttpClient())
                     {
                         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                        var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
-                        if (httpResponseMessage.IsSuccessStatusCode)
-                            l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                        try
+                        {
+                            var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/app/hierarchy-component/hierarchy-component-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
+                            if (httpResponseMessage.IsSuccessStatusCode)
+                                l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                        }
+                        catch { }
                     }
                 }
-            }
 
             return l;
         }
@@ -145,13 +146,12 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                 Icon = "fas fa-sitemap"
             });
 
-            var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsHierarchyComponent == true))
+            foreach (var iEndpoint in await _necnatEndpointStore.GetListHierarchyComponentEndpointAsync())
             {
                 using (HttpClient client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                    var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-type-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
+                    var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/app/hierarchy-component/hierarchy-component-type-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
                     if (!httpResponseMessage.IsSuccessStatusCode)
                         throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 

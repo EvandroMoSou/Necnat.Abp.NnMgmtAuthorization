@@ -7,10 +7,10 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
 {
     public interface IHierarchicalAuthorizationService
     {
-        Task<List<Guid?>> GetListHierarchicalStructureIdAsync(string permissionName);
+        Task<List<Guid>> GetListHierarchicalStructureIdAsync(string permissionName);
         Task<List<HierarchyComponentDto>> GetListHierarchyComponentAsync(string permissionName, int? hierarchyComponentTypeId = null);
         Task<List<HierarchyComponentDto>> GetListHierarchyComponentAsync(List<Guid> hierarchyComponentIdList, int? hierarchyComponentTypeId = null);
-        Task<List<Guid>> GetListHierarchyComponentIdAsync(List<Guid?> hierarchicalStructureIdList);
+        Task<List<Guid>> GetListHierarchyComponentIdAsync(List<Guid> hierarchicalStructureIdList);
         Task<bool> IsGrantedAsync(string permissionName, Guid? hierarchyComponentId = null);
     }
 }
