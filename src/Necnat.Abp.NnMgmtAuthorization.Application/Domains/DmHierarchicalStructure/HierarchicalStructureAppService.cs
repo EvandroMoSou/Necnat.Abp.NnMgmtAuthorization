@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnLibCommon.Localization;
@@ -13,6 +14,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
@@ -72,9 +74,13 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             return base.UpdateAsync(id, input);
         }
 
+        #region GetListHierarchicalStructureNode
+
+        [HttpPost]
         public virtual async Task<List<HierarchicalStructureNode>> GetListHierarchicalStructureNodeAsync(SearchHierarchicalStructureNodeResultRequestDto input)
         {
-            await CheckPolicyAsync(GetListPolicyName);
+            await CheckGetListPolicyAsync();
+            input = await BeforeGetListHierarchicalStructureNodeAsync(input);
 
             var lHierarchicalStructure = await Repository.SearchByHierarchyIdAndHierarchicalStructureIdParentAsync(input.HierarchyId, input.HierarchicalStructureIdParent);
 
@@ -86,8 +92,21 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                     HasChild = await Repository.AnyByHierarchyIdAndHierarchicalStructureIdParentAsync(input.HierarchyId, iHierarchicalStructure.Id)
                 });
 
+            l = await AfterGetListHierarchicalStructureNodeAsync(l);
             return l;
         }
+
+        protected virtual Task<SearchHierarchicalStructureNodeResultRequestDto> BeforeGetListHierarchicalStructureNodeAsync(SearchHierarchicalStructureNodeResultRequestDto input)
+        {
+            return Task.FromResult(input);
+        }
+
+        protected virtual Task<List<HierarchicalStructureNode>> AfterGetListHierarchicalStructureNodeAsync(List<HierarchicalStructureNode> entityList)
+        {
+            return Task.FromResult(entityList);
+        }
+
+        #endregion
 
         public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null, List<short>? hierarchyComponentTypeList = null)
         {
@@ -117,7 +136,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
                         try
                         {
-                            var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-contributor/{iEndpoint.Key}");
+                            var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
                             if (httpResponseMessage.IsSuccessStatusCode)
                                 l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
                         }
@@ -151,7 +170,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                 using (HttpClient client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                    var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-type-contributor/{iEndpoint.Key}");
+                    var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-type-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
                     if (!httpResponseMessage.IsSuccessStatusCode)
                         throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
