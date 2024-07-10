@@ -117,7 +117,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
                         try
                         {
-                            var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/app/hierarchy-component/hierarchy-component-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
+                            var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
                             if (httpResponseMessage.IsSuccessStatusCode)
                                 l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
                         }
@@ -151,7 +151,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                 using (HttpClient client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                    var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/app/hierarchy-component/hierarchy-component-type-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
+                    var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-type-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
                     if (!httpResponseMessage.IsSuccessStatusCode)
                         throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 

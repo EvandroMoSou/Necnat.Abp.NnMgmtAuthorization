@@ -10,7 +10,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     [RemoteService(Name = NnMgmtAuthorizationRemoteServiceConsts.RemoteServiceName)]
     [Area(NnMgmtAuthorizationRemoteServiceConsts.ModuleName)]
     [ControllerName("HierarchicalAccess")]
-    [Route("api/NnMgmtAuthorization/HierarchicalAccess")]
+    [Route("api/nn-mgmt-authorization/hierarchical-access")]
     public class HierarchicalAccessController : NecnatControllerWithoutUpdate<IHierarchicalAccessAppService, HierarchicalAccessDto, Guid, HierarchicalAccessResultRequestDto>, IHierarchicalAccessAppService
     {
         public HierarchicalAccessController(IHierarchicalAccessAppService appService) : base(appService)

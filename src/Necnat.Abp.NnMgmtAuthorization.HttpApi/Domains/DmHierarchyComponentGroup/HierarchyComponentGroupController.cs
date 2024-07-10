@@ -9,7 +9,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     [RemoteService(Name = NnMgmtAuthorizationRemoteServiceConsts.RemoteServiceName)]
     [Area(NnMgmtAuthorizationRemoteServiceConsts.ModuleName)]
     [ControllerName("HierarchyComponentGroup")]
-    [Route("api/NnMgmtAuthorization/HierarchyComponentGroup")]
+    [Route("api/nn-mgmt-authorization/hierarchy-component-group")]
     public class HierarchyComponentGroupController : NecnatController<IHierarchyComponentGroupAppService, HierarchyComponentGroupDto, Guid, HierarchyComponentGroupResultRequestDto>, IHierarchyComponentGroupAppService
     {
         public HierarchyComponentGroupController(IHierarchyComponentGroupAppService appService) : base(appService)
