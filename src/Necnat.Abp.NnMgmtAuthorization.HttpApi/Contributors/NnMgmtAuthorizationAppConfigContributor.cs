@@ -22,8 +22,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Contributors
             context.ApplicationConfiguration.SetProperty(NnMgmtAuthorizationConsts.UserAuthorizationUserId, currentUser.Id.ToString());
 
             var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-            string path = httpContextAccessor.HttpContext!.Request.Path.Value!;
-            string basePath = path.Substring(0, path.IndexOf("/api/")) ;
+            string basePath = $"{httpContextAccessor.HttpContext!.Request.Scheme}://{httpContextAccessor.HttpContext!.Request.Host}";
             var accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
 
             HierarchicalAuthorizationModel? hierarchicalAuthorization = null;
