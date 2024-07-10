@@ -11,7 +11,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
     [RemoteService(Name = NnMgmtAuthorizationRemoteServiceConsts.RemoteServiceName)]
     [Area(NnMgmtAuthorizationRemoteServiceConsts.ModuleName)]
     [ControllerName("MgmtAuthorization")]
-    [Route("api/NnMgmtAuthorization/MgmtAuthorization")]
+    [Route("api/nn-mgmt-authorization/mgmt-authorization")]
     public class MgmtAuthorizationController : IMgmtAuthorizationAppService
     {
         protected IMgmtAuthorizationAppService AppService { get; }
@@ -29,17 +29,17 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         }
 
         [HttpGet]
-        [Route("authorization-info-one-my")]
-        public Task<HierarchicalAuthorizationModel> GetAuthorizationInfoOneMyAsync()
+        [Route("user-authz-info-my")]
+        public Task<HierarchicalAuthorizationModel> GetUserAuthzInfoMyAsync()
         {
-            return AppService.GetAuthorizationInfoOneMyAsync();
+            return AppService.GetUserAuthzInfoMyAsync();
         }
 
         [HttpPost]
-        [Route("get-authorization-info-two")]
-        public Task<HierarchicalAuthorizationModel> GetAuthorizationInfoTwoAsync(List<Guid> hierarchicalStructureIdList)
+        [Route("get-hierarchy-authz-info")]
+        public Task<HierarchicalAuthorizationModel> GetHierarchyAuthzInfoAsync(List<Guid> hierarchicalStructureIdList)
         {
-            return AppService.GetAuthorizationInfoTwoAsync(hierarchicalStructureIdList);
+            return AppService.GetHierarchyAuthzInfoAsync(hierarchicalStructureIdList);
         }
     }
 }

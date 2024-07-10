@@ -34,7 +34,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
 
         public async Task<List<HierarchyComponentDto>> GetListHierarchyComponentAsync(string permissionName, int? hierarchyComponentTypeId = null)
         {
-            return await GetListHierarchyComponentAsync(await GetListHierarchyComponentIdAsync(await GetListHierarchicalStructureIdAsync(permissionName)));
+            return await GetListHierarchyComponentAsync(await GetListHierarchyComponentIdAsync(await GetListHierarchicalStructureIdAsync(permissionName)), hierarchyComponentTypeId);
         }
 
         public async Task<List<HierarchyComponentDto>> GetListHierarchyComponentAsync(List<Guid> hierarchyComponentIdList, int? hierarchyComponentTypeId = null)

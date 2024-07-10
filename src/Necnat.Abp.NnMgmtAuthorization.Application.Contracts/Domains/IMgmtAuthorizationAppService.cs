@@ -9,11 +9,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     public interface IMgmtAuthorizationAppService : IApplicationService, IRemoteService
     {
-        //Task<List<string>> GetListPermissionMyAsync();
-        //Task<List<Guid?>> GetListHierarchyComponentIdByPermissionNameAndHierarchyComponentTypeAsync(string permissionName, int hierarchyComponentType);
-        //Task<List<string>> GetFromEndpointsPermissionListAsync();
         Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationMyAsync();
-        Task<HierarchicalAuthorizationModel> GetAuthorizationInfoOneMyAsync();
-        Task<HierarchicalAuthorizationModel> GetAuthorizationInfoTwoAsync(List<Guid> hierarchicalStructureIdList);
+        Task<HierarchicalAuthorizationModel> GetUserAuthzInfoMyAsync();
+        Task<HierarchicalAuthorizationModel> GetHierarchyAuthzInfoAsync(List<Guid> hierarchicalStructureIdList);
     }
 }

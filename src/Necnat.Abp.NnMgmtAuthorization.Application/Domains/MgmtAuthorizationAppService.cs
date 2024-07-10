@@ -12,37 +12,33 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     [Authorize]
     public class MgmtAuthorizationAppService : NnMgmtAuthorizationAppService, IMgmtAuthorizationAppService
     {
-        protected readonly ICurrentUser _currentUser;
         protected readonly IHierarchicalAccessRepository _hierarchicalAccessRepository;
         protected readonly IHierarchicalStructureAppService _hierarchicalStructureAppService;
         protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
         protected readonly IHttpContextAccessor _httpContextAccessor;
-        protected readonly INnRoleStore _nnRoleStore;
         protected readonly INecnatEndpointStore _necnatEndpointStore;
+        protected readonly INnRoleStore _nnRoleStore;
 
         public MgmtAuthorizationAppService(
-            ICurrentUser currentUser,
             IHierarchicalAccessRepository hierarchicalAccessRepository,
             IHierarchicalStructureAppService hierarchicalStructureAppService,
             IHierarchicalStructureStore hierarchicalStructureRecursiveService,
             IHttpContextAccessor httpContextAccessor,
-            INnRoleStore nnRoleStore,
-            INecnatEndpointStore necnatEndpointStore)
+            INecnatEndpointStore necnatEndpointStore,
+            INnRoleStore nnRoleStore)
         {
-            _currentUser = currentUser;
             _hierarchicalAccessRepository = hierarchicalAccessRepository;
             _hierarchicalStructureAppService = hierarchicalStructureAppService;
             _hierarchicalStructureStore = hierarchicalStructureRecursiveService;
             _httpContextAccessor = httpContextAccessor;
-            _nnRoleStore = nnRoleStore;
             _necnatEndpointStore = necnatEndpointStore;
+            _nnRoleStore = nnRoleStore;
         }
 
         public async Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationMyAsync()
@@ -50,17 +46,19 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             var model = new HierarchicalAuthorizationModel();
             model.UserId = (Guid)CurrentUser.Id!;
 
-            var accessToken = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+            var accessToken = await _httpContextAccessor.HttpContext!.GetTokenAsync("access_token");
             foreach (var iEndpoint in await _necnatEndpointStore.GetListAuthorizationEndpointAsync())
             {
                 using (HttpClient client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-                    var httpResponseMessage = await client.GetAsync($"{iEndpoint}/api/app/mgmt-authorization/authorization-info-one-my");
-                    if (!httpResponseMessage.IsSuccessStatusCode)
-                        throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
-
-                    model.LHAC.AddRange(JsonSerializer.Deserialize<HierarchicalAuthorizationModel>(await httpResponseMessage.Content.ReadAsStringAsync())!.LHAC);
+                    try
+                    {
+                        var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/mgmt-authorization/user-authz-info-my");
+                        if (httpResponseMessage.IsSuccessStatusCode)
+                            model.LHAC.AddRange(JsonSerializer.Deserialize<HierarchicalAuthorizationModel>(await httpResponseMessage.Content.ReadAsStringAsync())!.LHAC);
+                    }
+                    catch { }
                 }
             }
 
@@ -68,7 +66,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-                var httpResponseMessage = await client.PostAsJsonAsync($"{authServerEndpoint}/api/app/mgmt-authorization/get-authorization-info-two", model.LHAC.SelectMany(x => x.LHSId));
+                var httpResponseMessage = await client.PostAsJsonAsync($"{authServerEndpoint}/api/nn-mgmt-authorization/mgmt-authorization/get-hierarchy-authz-info", model.LHAC.SelectMany(x => x.LHSId));
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
@@ -80,7 +78,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             return model;
         }
 
-        public async Task<HierarchicalAuthorizationModel> GetAuthorizationInfoOneMyAsync()
+        public async Task<HierarchicalAuthorizationModel> GetUserAuthzInfoMyAsync()
         {
             var model = new HierarchicalAuthorizationModel();
 
@@ -101,7 +99,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         }
 
         [HttpPost]
-        public async Task<HierarchicalAuthorizationModel> GetAuthorizationInfoTwoAsync(List<Guid> hierarchicalStructureIdList)
+        public async Task<HierarchicalAuthorizationModel> GetHierarchyAuthzInfoAsync(List<Guid> hierarchicalStructureIdList)
         {
             var model = new HierarchicalAuthorizationModel();
 
