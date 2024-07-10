@@ -138,7 +138,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                         {
                             var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-contributor?hierarchyComponentTypeId={iEndpoint.Key}");
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                                l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!);
                         }
                         catch { }
                     }
@@ -174,7 +174,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                     if (!httpResponseMessage.IsSuccessStatusCode)
                         throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
-                    l.Add(JsonSerializer.Deserialize<HierarchyComponentTypeModel>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                    l.Add(JsonSerializer.Deserialize<HierarchyComponentTypeModel>(await httpResponseMessage.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!);
                 }
             }
 
