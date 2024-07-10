@@ -128,11 +128,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             return model;
         }
 
-        [HttpPost]
-        public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId)
-        {
-            return await _hierarchicalStructureStore.GetListHierarchyComponentIdRecursiveAsync(hierarchicalStructureId);
-        }
+        //[HttpPost]
+        //public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId)
+        //{
+        //    return await _hierarchicalStructureStore.GetListHierarchyComponentIdRecursiveAsync(hierarchicalStructureId);
+        //}
 
         //public virtual async Task<List<string>> GetListPermissionMyAsync()
         //{

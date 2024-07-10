@@ -95,7 +95,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 
             var l = new List<HierarchyComponentModel>();
 
-            if(hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(1))
+            if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(1))
             {
                 var lHierarchy = await _hierarchyRepository.GetListAsync();
                 foreach (var iHierarchy in lHierarchy)
@@ -110,7 +110,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             }
 
             var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
-            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsHierarchyComponent == true))
+            foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsActive == true && x.IsHierarchyComponent == true))
             {
                 if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains((short)iNecnatEndpoint.HierarchyComponentTypeId!))
                 {
@@ -118,10 +118,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                     {
                         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
                         var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/hierarchy-component/hierarchy-component-contributor?hierarchyComponentTypeId={iNecnatEndpoint.HierarchyComponentTypeId}");
-                        if (!httpResponseMessage.IsSuccessStatusCode)
-                            throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
-
-                        l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                        if (httpResponseMessage.IsSuccessStatusCode)
+                            l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
                     }
                 }
             }
