@@ -1,0 +1,54 @@
+﻿@using Blazorise
+@using Blazorise.Components
+@using Necnat.Abp.NnMgmtAuthorization.Domains
+@using Volo.Abp.AspNetCore.Components
+@inherits AllowedHierarchyComponentSelectBase
+
+@if (_isLoading)
+{
+    <div class="animated-background loading-input-height"></div>
+}
+else
+{
+    <Field Class="@(_dataCount == 1 ? "d-none" : "")" ColumnSize="ColumnSize.Is12">
+        <FieldLabel>@L[$"{Label ?? "Hierarchy Component"}"]</FieldLabel>
+        @if (_dataCount < 1)
+        {
+            <TextEdit Text="Você não possui acesso hierárquico para utilizar essa funcionalidade." Disabled="true" />
+        }
+        else if (_dataCount < 20)
+        {
+
+            <SelectList TItem="HierarchyComponentDto"
+                        TValue="Guid"
+                        Data="@Data"
+                        TextField="@((item) => item.Name)"
+                        ValueField="@((item) => item.Id)"
+                        SelectedValue="@_internalSelectedValue"
+                        SelectedValueChanged="@OnSelectedValueChangedAsync"
+                        DefaultItemText="@L["Select..."]"
+                        Disabled="@Disabled"
+                        DefaultItemValue="default(Guid)" />
+        }
+        else
+        {
+            <Autocomplete TItem="HierarchyComponentDto"
+                          TValue="Guid"
+                          Data="@Data"
+                          TextField="@((item) => item.Name)"
+                          ValueField="@((item) => item.Id)"
+                          SelectedValue="@_internalSelectedValue"
+                          SelectedValueChanged="@OnSelectedValueChangedAsync"
+                          Placeholder="@string.Format(L["Enter at least {0} character(s) to start the search..."], 3)"
+                          Disabled="@Disabled"
+                          Filter="AutocompleteFilter.Contains">
+                <NotFoundContent>@string.Format(L["Sorry... {0} was not found!"], context)</NotFoundContent>
+            </Autocomplete>
+        }
+    </Field>
+}
+
+@namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Components
+@code {
+
+}

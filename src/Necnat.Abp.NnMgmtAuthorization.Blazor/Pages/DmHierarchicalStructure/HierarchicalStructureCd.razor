@@ -34,10 +34,10 @@
     </CardHeader>
     <CardBody>
         <Fields>
-            <Field ColumnSize="ColumnSize.Is12.OnDesktop">
-                <FieldLabel>@L["Hierarchy"]</FieldLabel>
-                <HierarchySelectList @ref="@_hierarchySelectListRef" @bind-SelectedEntityDto="@SelectedHierarchy" Data="_lHierarchy" IsAutoSelectFirst="true" />
-            </Field>
+            <AllowedHierarchyComponentSelectSingle SelectedKey="@_selectedHierarchyId" SelectedKeyChanged="@OnSelectedHierarchyIdChanged"
+                                                   Label="Hierarquia"
+                                                   HierarchyComponentTypeId="1"
+                                                   PermissionName="@NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default" />
         </Fields>
         <hr />
         @if (_lHierarchicalStructureNode != null && _lHierarchicalStructureNode.Count > 0)
@@ -96,30 +96,15 @@
 @namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Pages
 @code {
 
-    HierarchySelectList? _hierarchySelectListRef;
-
-    List<HierarchyDto> _lHierarchy = new List<HierarchyDto>();
     List<HierarchyComponentModel> _lHierarchyComponent = new List<HierarchyComponentModel>();
     List<HierarchyComponentTypeModel> _lHierarchyComponentType = new List<HierarchyComponentTypeModel>();
     List<HierarchicalStructureNode> _lHierarchicalStructureNode = new List<HierarchicalStructureNode>();
     HierarchicalStructureNode? _selectedHierarchicalStructureNode;
 
-    HierarchyDto? _selectedHierarchy;
-    HierarchyDto? SelectedHierarchy
+    protected Guid? _selectedHierarchyId;
+    protected async Task OnSelectedHierarchyIdChanged()
     {
-        get => _selectedHierarchy;
-        set
-        {
-            if (_selectedHierarchy == value)
-                return;
-
-            _selectedHierarchy = value;
-            InvokeAsync(SelectedHierarchyIdChanged);
-        }
-    }
-    protected async Task SelectedHierarchyIdChanged()
-    {
-        if (_selectedHierarchy == null)
+        if (_selectedHierarchyId == null)
         {
             _lHierarchicalStructureNode = new List<HierarchicalStructureNode>();
             _lHierarchyComponent = new List<HierarchyComponentModel>();
@@ -127,8 +112,8 @@
         }
         else
         {
-            _lHierarchyComponent = await AppService.GetListHierarchyComponentAsync(_selectedHierarchy.Id);
-            _lHierarchyComponentType = await AppService.GetListHierarchyComponentTypeAsync(_selectedHierarchy.Id);
+            _lHierarchyComponent = await AppService.GetListHierarchyComponentAsync(_selectedHierarchyId);
+            _lHierarchyComponentType = await AppService.GetListHierarchyComponentTypeAsync(_selectedHierarchyId);
             _lHierarchicalStructureNode = await SearchHierarchicalStructureNodeAsync(null);
         }
 
@@ -140,15 +125,9 @@
         LocalizationResource = typeof(NnMgmtAuthorizationResource);
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        var lHierarchy = await HierarchicalAuthorizationService.GetListHierarchyComponentAsync(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default, 1);
-        _lHierarchy = (await HierarchyAppService.GetListAsync(new HierarchyResultRequestDto { IsPaged = false, IdList = lHierarchy.Select(x => x.Id).ToList() })).Items.ToList();
-    }
-
     private async Task<List<HierarchicalStructureNode>> SearchHierarchicalStructureNodeAsync(HierarchicalStructureNode? hierarchicalStructureNode)
     {
-        var l = await AppService.GetListHierarchicalStructureNodeAsync(new SearchHierarchicalStructureNodeResultRequestDto { HierarchyId = SelectedHierarchy!.Id, HierarchicalStructureIdParent = hierarchicalStructureNode?.HierarchicalStructure.Id });
+        var l = await AppService.GetListHierarchicalStructureNodeAsync(new SearchHierarchicalStructureNodeResultRequestDto { HierarchyId = (Guid)_selectedHierarchyId!, HierarchicalStructureIdParent = hierarchicalStructureNode?.HierarchicalStructure.Id });
         foreach (var iE in l)
             iE.HierarchicalStructure.HierarchyComponentName = _lHierarchyComponent!.Where(x => x.Id == iE.HierarchicalStructure.HierarchyComponentId).First()?.Name;
 
@@ -254,7 +233,7 @@
             {
                 await AuthorizationService.CheckAsync(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Create);
 
-                NewEntity!.HierarchyId = _selectedHierarchy!.Id;
+                NewEntity!.HierarchyId = _selectedHierarchyId;
                 NewEntity.HierarchyComponentType = (int)hierarchyComponent.HierarchyComponentType!;
                 NewEntity.HierarchyComponentId = (Guid)hierarchyComponent.Id!;
 
