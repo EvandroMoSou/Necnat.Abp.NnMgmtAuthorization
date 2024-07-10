@@ -6,7 +6,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.2.23</Version>
+    <Version>0.2.24</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,10 +16,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.Blazor\Necnat.Abp.NnMgmtAuthorization.Blazor.csproj" />
 		<ProjectReference Include="..\Necnat.Abp.NnMgmtAuthorization.HttpApi.Client\Necnat.Abp.NnMgmtAuthorization.HttpApi.Client.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Components\" />
 	</ItemGroup>
 
 </Project>
