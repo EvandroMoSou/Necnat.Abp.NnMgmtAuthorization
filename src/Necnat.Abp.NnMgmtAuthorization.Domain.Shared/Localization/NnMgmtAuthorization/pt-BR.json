@@ -4,6 +4,8 @@
     "MyAccount": "Minha conta",
     "SamplePageMessage": "Uma página de amostra para o módulo NnMgmtAuthorization",
 
+    "Are you sure you want to delete this record and all of its children?": "Tem certeza de que deseja excluir este registro e todos os seus filhos?",
+
     "Menu:NnMgmtAuthorization": "Autorização",
     "Menu:NnMgmtAuthorization:Configuration": "Configuração",
     "Menu:NnMgmtAuthorization:Configuration:Hierarchy": "Hierarquia",

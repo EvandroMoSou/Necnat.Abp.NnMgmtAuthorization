@@ -14,6 +14,7 @@
 @using Necnat.Abp.NnMgmtAuthorization.Localization
 @using Necnat.Abp.NnMgmtAuthorization.Models
 @using Necnat.Abp.NnMgmtAuthorization.Permissions
+@using System.Text.Json
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.AspNetCore.Components
 @attribute [Authorize(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default)]
@@ -102,8 +103,10 @@
     HierarchicalStructureNode? _selectedHierarchicalStructureNode;
 
     protected Guid? _selectedHierarchyId;
-    protected async Task OnSelectedHierarchyIdChanged()
+    protected async Task OnSelectedHierarchyIdChanged(Guid? value)
     {
+        _selectedHierarchyId = value;
+
         if (_selectedHierarchyId == null)
         {
             _lHierarchicalStructureNode = new List<HierarchicalStructureNode>();
@@ -138,12 +141,12 @@
     {
         var result = await Swal!.FireAsync(new SweetAlertOptions
             {
-                Title = L["Are you sure?"],
+                Title = NL["Are you sure?"],
                 Text = L["Are you sure you want to delete this record and all of its children?"],
                 Icon = SweetAlertIcon.Warning,
                 ShowCancelButton = true,
-                ConfirmButtonText = L["Yes, delete it."],
-                CancelButtonText = L["No, cancel."]
+                ConfirmButtonText = NL["Yes, delete it."],
+                CancelButtonText = NL["No, cancel."]
             });
 
         if (!string.IsNullOrEmpty(result.Value))
