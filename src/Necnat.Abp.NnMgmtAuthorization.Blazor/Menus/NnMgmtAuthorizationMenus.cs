@@ -12,5 +12,5 @@ public class NnMgmtAuthorizationMenus
     public const string Configuration_HierarchyComponentGroup = Configuration + ".HierarchyComponentGroup";
     public const string Configuration_HierarchicalStructure = Configuration + ".HierarchicalStructure";
 
-    public const string User = Prefix + ".User";
+    public const string HierarchicalAccesses = Prefix + ".HierarchicalAccess";
 }

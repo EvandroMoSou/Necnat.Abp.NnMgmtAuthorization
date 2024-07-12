@@ -1,4 +1,4 @@
-﻿@page "/NnMgmtAuthorization/Configuration/HierarchicalAccesses"
+﻿@* @page "/NnMgmtAuthorization/HierarchicalAccesses"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
 @using System.Collections.ObjectModel
@@ -58,12 +58,12 @@
                         </EntityActions>
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
-@*                 <DataGridColumn TItem="HierarchicalAccessDto"
+                <DataGridColumn TItem="HierarchicalAccessDto"
                                 Field="@nameof(HierarchicalAccessDto.Name)"
                                 Caption="@L[HierarchicalAccessConsts.NameDisplay]"></DataGridColumn>
                 <DataGridCheckColumn TItem="HierarchicalAccessDto"
                                      Field="@nameof(HierarchicalAccessDto.IsActive)"
-                                     Caption="@L[HierarchicalAccessConsts.IsActiveDisplay]"></DataGridCheckColumn> *@
+                                     Caption="@L[HierarchicalAccessConsts.IsActiveDisplay]"></DataGridCheckColumn>
             </DataGridColumns>
         </DataGrid>
     </CardBody>
@@ -78,8 +78,8 @@
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="true">
-@*                     <HierarchicalAccessWrapper @bind-Entity="NewEntity" />
- *@                </Validations>
+                     <HierarchicalAccessWrapper @bind-Entity="NewEntity" />
+                 </Validations>
             </ModalBody>
             <ModalFooter>
                 <Button Color="Color.Secondary"
@@ -106,8 +106,8 @@
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="@EditValidationsRef" Model="@EditingEntity" ValidateOnLoad="false">
-@*                     <HierarchicalAccessWrapper @bind-Entity="EditingEntity" />
- *@                </Validations>
+                     <HierarchicalAccessWrapper @bind-Entity="EditingEntity" />
+                 </Validations>
             </ModalBody>
             <ModalFooter>
                 <Button Color="Color.Secondary"
@@ -136,4 +136,4 @@
         UpdatePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchicalAccess.Update;
         DeletePolicyName = NnMgmtAuthorizationPermissions.PrmHierarchicalAccess.Delete;
     }
-}
+} *@

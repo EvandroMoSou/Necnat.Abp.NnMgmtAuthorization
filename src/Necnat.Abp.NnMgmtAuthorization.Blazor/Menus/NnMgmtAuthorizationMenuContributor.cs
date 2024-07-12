@@ -73,9 +73,9 @@ public class NnMgmtAuthorizationMenuContributor : IMenuContributor
         if (await context.IsGrantedAsync(IdentityPermissions.Users.Default))
         {
             authorizationMenu.AddItem(new ApplicationMenuItem(
-                NnMgmtAuthorizationMenus.User,
-                l["Menu:NnMgmtAuthorization:User"],
-                url: "/NnMgmtAuthorization/Users",
+                NnMgmtAuthorizationMenus.HierarchicalAccesses,
+                l["Menu:NnMgmtAuthorization:HierarchicalAccess"],
+                url: "/NnMgmtAuthorization/HierarchicalAccesses",
                 order: 2
             ));
             displayauthorizationMenu = true;

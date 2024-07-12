@@ -11,7 +11,7 @@
     "Menu:NnMgmtAuthorization:Configuration:Hierarchy": "Hierarquia",
     "Menu:NnMgmtAuthorization:Configuration:HierarchyComponentGroup": "Grupo de Componentes de Hierarquia",
     "Menu:NnMgmtAuthorization:Configuration:HierarchicalStructure": "Estrutura Hierárquica",
-    "Menu:NnMgmtAuthorization:User": "Usuário",
+    "Menu:NnMgmtAuthorization:HierarchicalAccess": "Acesso Hierárquico",
 
     "With Hierarchy": "Com Hierarquia",
     "WITH HIERARCHY": "COM HIERARQUIA",
