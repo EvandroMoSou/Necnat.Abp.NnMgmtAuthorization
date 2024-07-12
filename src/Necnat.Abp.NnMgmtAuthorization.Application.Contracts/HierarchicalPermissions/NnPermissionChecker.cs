@@ -5,13 +5,11 @@ using Volo.Abp.Authorization.Permissions;
 
 namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
 {
-    public class ClientPermissionChecker : IPermissionChecker
+    public class NnPermissionChecker : IPermissionChecker
     {
         protected IHierarchicalAuthorizationService HierarchicalAuthorizationService { get; }
 
-        public const string _separator = "&";
-
-        public ClientPermissionChecker(
+        public NnPermissionChecker(
             IHierarchicalAuthorizationService hierarchicalAuthorizationService)
         {
             HierarchicalAuthorizationService = hierarchicalAuthorizationService;

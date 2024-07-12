@@ -13,6 +13,7 @@ using Volo.Abp.Caching;
 
 namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
 {
+    //ETODO - EndpoinitManager para chamar API so se necessario.
     public class HierarchicalStructureEndpointStore : HierarchicalStructureStore, IHierarchicalStructureStore
     {
         protected readonly IHttpContextAccessor _httpContextAccessor;
