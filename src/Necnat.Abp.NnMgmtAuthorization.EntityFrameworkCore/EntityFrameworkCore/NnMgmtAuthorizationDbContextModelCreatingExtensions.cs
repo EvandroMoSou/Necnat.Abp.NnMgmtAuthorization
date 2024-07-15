@@ -40,8 +40,6 @@ public static class NnMgmtAuthorizationDbContextModelCreatingExtensions
             b.ConfigureByConvention(); //auto configure for the base class props
 
             b.HasOne<IdentityRole>().WithMany().HasForeignKey(ur => ur.RoleId).IsRequired();
-            b.HasOne<IdentityUser>().WithMany().HasForeignKey(ur => ur.UserId).IsRequired();
-            b.HasOne<HierarchicalStructure>().WithMany().HasForeignKey(ur => ur.HierarchicalStructureId).IsRequired();
 
             b.HasIndex(ur => new { ur.UserId, ur.RoleId, ur.HierarchicalStructureId }).IsUnique();
         });

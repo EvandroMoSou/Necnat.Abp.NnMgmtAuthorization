@@ -25,7 +25,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
         protected readonly IPermissionStore _permissionStore;
         protected readonly ISimpleStateCheckerManager<PermissionDefinition> _stateCheckerManager;
 
-
         public HierarchicalAuthorizationService(
             ICurrentClient currentClient,
             ICurrentTenant currentTenant,

@@ -21,23 +21,26 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         protected readonly IHierarchicalAccessRepository _hierarchicalAccessRepository;
         protected readonly IHierarchicalStructureAppService _hierarchicalStructureAppService;
         protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
+        protected readonly IHttpClientFactory _httpClientFactory;
         protected readonly IHttpContextAccessor _httpContextAccessor;
-        protected readonly INecnatEndpointStore _necnatEndpointStore;
+        protected readonly INnEndpointStore _nnEndpointStore;
         protected readonly INnRoleStore _nnRoleStore;
 
         public MgmtAuthorizationAppService(
             IHierarchicalAccessRepository hierarchicalAccessRepository,
             IHierarchicalStructureAppService hierarchicalStructureAppService,
             IHierarchicalStructureStore hierarchicalStructureRecursiveService,
+            IHttpClientFactory httpClientFactory,
             IHttpContextAccessor httpContextAccessor,
-            INecnatEndpointStore necnatEndpointStore,
+            INnEndpointStore nnEndpointStore,
             INnRoleStore nnRoleStore)
         {
             _hierarchicalAccessRepository = hierarchicalAccessRepository;
             _hierarchicalStructureAppService = hierarchicalStructureAppService;
             _hierarchicalStructureStore = hierarchicalStructureRecursiveService;
+            _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
-            _necnatEndpointStore = necnatEndpointStore;
+            _nnEndpointStore = nnEndpointStore;
             _nnRoleStore = nnRoleStore;
         }
 
@@ -47,14 +50,15 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             model.UserId = (Guid)CurrentUser.Id!;
 
             var accessToken = await _httpContextAccessor.HttpContext!.GetTokenAsync("access_token");
-            foreach (var iEndpoint in await _necnatEndpointStore.GetListAuthorizationEndpointAsync())
+            var userAuthzNnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagGetUserAuthzInfoMy);
+            foreach (var iEndpoint in userAuthzNnEndpointList)
             {
                 using (HttpClient client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
                     try
                     {
-                        var httpResponseMessage = await client.GetAsync($"{iEndpoint.Value}/api/nn-mgmt-authorization/mgmt-authorization/user-authz-info-my");
+                        var httpResponseMessage = await client.GetAsync($"{iEndpoint.UrlUri}/api/nn-mgmt-authorization/mgmt-authorization/user-authz-info-my");
                         if (httpResponseMessage.IsSuccessStatusCode)
                             model.LHAC.AddRange(JsonSerializer.Deserialize<HierarchicalAuthorizationModel>(await httpResponseMessage.Content.ReadAsStringAsync())!.LHAC);
                     }
@@ -62,11 +66,12 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
                 }
             }
 
-            var authServerEndpoint = await _necnatEndpointStore.FindAuthServerEndpointAsync();
+            var hierarchyAuthzNnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagGetHierarchyAuthzInfo);
+            var hierarchyAuthzNnEndpoint = hierarchyAuthzNnEndpointList.First();
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-                var httpResponseMessage = await client.PostAsJsonAsync($"{authServerEndpoint}/api/nn-mgmt-authorization/mgmt-authorization/get-hierarchy-authz-info", model.LHAC.SelectMany(x => x.LHSId));
+                var httpResponseMessage = await client.PostAsJsonAsync($"{hierarchyAuthzNnEndpoint}/api/nn-mgmt-authorization/mgmt-authorization/get-hierarchy-authz-info", model.LHAC.SelectMany(x => x.LHSId));
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
@@ -152,15 +157,15 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
         //public virtual async Task<List<string>> GetFromEndpointsPermissionListAsync()
         //{
-        //    var necnatEndpointList = await _necnatEndpointStore.GetListAsync();
+        //    var nnEndpointList = await _nnEndpointStore.GetListAsync();
 
         //    var permissionList = new List<string>();
-        //    foreach (var iNecnatEndpoint in necnatEndpointList.Where(x => x.IsAuthz == true))
+        //    foreach (var iNnEndpoint in nnEndpointList.Where(x => x.IsAuthz == true))
         //    {
         //        using (HttpClient client = new HttpClient())
         //        {
         //            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-        //            var httpResponseMessage = await client.GetAsync($"{iNecnatEndpoint.Endpoint}/api/app/mgmt-authorization/permission-my");
+        //            var httpResponseMessage = await client.GetAsync($"{iNnEndpoint.Endpoint}/api/app/mgmt-authorization/permission-my");
         //            if (!httpResponseMessage.IsSuccessStatusCode)
         //                throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
