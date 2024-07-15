@@ -17,16 +17,16 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
     //ETODO - EndpoinitManager para chamar API so se necessario.
     public class HierarchicalStructureEndpointStore : HierarchicalStructureStore, IHierarchicalStructureStore
     {
-        protected readonly IHttpContextAccessor _httpContextAccessor;
+        protected readonly IHttpClientFactory _httpClientFactory;
         protected readonly INnEndpointStore _nnEndpointStore;
 
         public HierarchicalStructureEndpointStore(
             IDistributedCache<HierarchicalStructureRecursiveCacheItem> hierarchicalStructureRecursiveCache,
             IHierarchicalStructureRepository hierarchicalStructureRepository,
-            IHttpContextAccessor httpContextAccessor,
+            IHttpClientFactory httpClientFactory,
             INnEndpointStore nnEndpointStore) : base(hierarchicalStructureRecursiveCache, hierarchicalStructureRepository)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _httpClientFactory = httpClientFactory;
             _nnEndpointStore = nnEndpointStore;
         }
 
@@ -34,10 +34,10 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
         {
             var endpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagGetListHierarchyComponentIdRecursive);
             var endpoint = endpointList.First();
-            using (HttpClient client = new HttpClient())
+
+            using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
-                var httpResponseMessage = await client.PostAsJsonAsync($"{endpoint}/api/app/mgmt-authorization/get-list-hierarchy-component-id-recursive", hierarchicalStructureId);
+                var httpResponseMessage = await client.PostAsJsonAsync($"{endpoint.UrlUri}/api/app/mgmt-authorization/get-list-hierarchy-component-id-recursive", hierarchicalStructureId);
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 

@@ -39,7 +39,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Contributors
         //    var accessToken = await httpContextAccessor.HttpContext.GetTokenAsync("access_token");
 
         //    HierarchicalAuthorizationModel? hierarchicalAuthorization = null;
-        //    using (HttpClient client = new HttpClient())
+        //    using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
         //    {
         //        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         //        var httpResponseMessage = await client.GetAsync($"{basePath}/api/nn-mgmt-authorization/mgmt-authorization/hierarchical-authorization-my");

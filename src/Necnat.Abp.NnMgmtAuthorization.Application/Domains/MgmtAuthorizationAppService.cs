@@ -53,9 +53,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             var userAuthzNnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagGetUserAuthzInfoMy);
             foreach (var iEndpoint in userAuthzNnEndpointList)
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
                 {
-                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
                     try
                     {
                         var httpResponseMessage = await client.GetAsync($"{iEndpoint.UrlUri}/api/nn-mgmt-authorization/mgmt-authorization/user-authz-info-my");
@@ -68,7 +67,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
             var hierarchyAuthzNnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagGetHierarchyAuthzInfo);
             var hierarchyAuthzNnEndpoint = hierarchyAuthzNnEndpointList.First();
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
                 var httpResponseMessage = await client.PostAsJsonAsync($"{hierarchyAuthzNnEndpoint}/api/nn-mgmt-authorization/mgmt-authorization/get-hierarchy-authz-info", model.LHAC.SelectMany(x => x.LHSId));
@@ -162,7 +161,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         //    var permissionList = new List<string>();
         //    foreach (var iNnEndpoint in nnEndpointList.Where(x => x.IsAuthz == true))
         //    {
-        //        using (HttpClient client = new HttpClient())
+        //        using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
         //        {
         //            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
         //            var httpResponseMessage = await client.GetAsync($"{iNnEndpoint.Endpoint}/api/app/mgmt-authorization/permission-my");
