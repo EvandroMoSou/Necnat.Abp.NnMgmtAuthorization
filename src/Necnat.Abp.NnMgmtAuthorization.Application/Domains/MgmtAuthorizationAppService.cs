@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Necnat.Abp.NnLibCommon.Domains;
@@ -68,7 +67,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             var hierarchyAuthzNnEndpoint = hierarchyAuthzNnEndpointList.First();
             using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
             {
-                var httpResponseMessage = await client.PostAsJsonAsync($"{hierarchyAuthzNnEndpoint}/api/nn-mgmt-authorization/mgmt-authorization/get-hierarchy-authz-info", model.LHAC.SelectMany(x => x.LHSId));
+                var httpResponseMessage = await client.PostAsJsonAsync($"{hierarchyAuthzNnEndpoint.UrlUri}/api/nn-mgmt-authorization/mgmt-authorization/get-hierarchy-authz-info", model.LHAC.SelectMany(x => x.LHSId));
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
@@ -104,6 +103,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         public async Task<HierarchicalAuthorizationModel> GetHierarchyAuthzInfoAsync(List<Guid> hierarchicalStructureIdList)
         {
             var model = new HierarchicalAuthorizationModel();
+
+            hierarchicalStructureIdList.RemoveAll(x => x == Guid.Empty);
 
             var allHierarchyComponentIdList = new List<Guid>();
             foreach (var iHierarchicalStructureId in hierarchicalStructureIdList)
