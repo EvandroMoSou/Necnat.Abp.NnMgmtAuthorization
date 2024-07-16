@@ -49,7 +49,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             var model = new HierarchicalAuthorizationModel();
             model.UserId = (Guid)CurrentUser.Id!;
 
-            var accessToken = await _httpContextAccessor.HttpContext!.GetTokenAsync("access_token");
             var userAuthzNnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagGetUserAuthzInfoMy);
             foreach (var iEndpoint in userAuthzNnEndpointList)
             {
@@ -69,7 +68,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             var hierarchyAuthzNnEndpoint = hierarchyAuthzNnEndpointList.First();
             using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
                 var httpResponseMessage = await client.PostAsJsonAsync($"{hierarchyAuthzNnEndpoint}/api/nn-mgmt-authorization/mgmt-authorization/get-hierarchy-authz-info", model.LHAC.SelectMany(x => x.LHSId));
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
@@ -163,7 +161,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         //    {
         //        using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
         //        {
-        //            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await _httpContextAccessor.HttpContext.GetTokenAsync("access_token")}");
         //            var httpResponseMessage = await client.GetAsync($"{iNnEndpoint.Endpoint}/api/app/mgmt-authorization/permission-my");
         //            if (!httpResponseMessage.IsSuccessStatusCode)
         //                throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());

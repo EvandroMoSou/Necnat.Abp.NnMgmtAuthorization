@@ -84,11 +84,17 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 
             var l = new List<HierarchicalStructureNode>();
             foreach (var iHierarchicalStructure in lHierarchicalStructure)
+            {
+                var hierarchicalStructure = MapToGetOutputDto(iHierarchicalStructure);
+
+
                 l.Add(new HierarchicalStructureNode
                 {
-                    HierarchicalStructure = MapToGetOutputDto(iHierarchicalStructure),
+                    HierarchicalStructure = hierarchicalStructure,
                     HasChild = await Repository.AnyByHierarchyIdAndHierarchicalStructureIdParentAsync(input.HierarchyId, iHierarchicalStructure.Id)
                 });
+            }
+
 
             l = await AfterGetListHierarchicalStructureNodeAsync(l);
             return l;
@@ -138,7 +144,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                     {
                         var httpResponseMessage = await client.GetAsync(
                             iNnEndpoint.IsUrl()
-                            ? $"{iNnEndpoint.UrlUri}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-contributor?hierarchyComponentTypeId={iNnEndpoint.GetParameter(1)}"
+                            ? $"{iNnEndpoint.UrlUri}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-contributor?hierarchyComponentTypeId={iNnEndpoint.GetParameter(2)}"
                             : iNnEndpoint.UrlUri);
 
                         if (httpResponseMessage.IsSuccessStatusCode)
@@ -181,7 +187,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                     {
                         var httpResponseMessage = await client.GetAsync(
                             iNnEndpoint.IsUrl()
-                            ? $"{iNnEndpoint.UrlUri}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-type-contributor?hierarchyComponentTypeId={iNnEndpoint.GetParameter(1)}"
+                            ? $"{iNnEndpoint.UrlUri}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-type-contributor?hierarchyComponentTypeId={iNnEndpoint.GetParameter(2)}"
                             : iNnEndpoint.UrlUri);
 
                         if (httpResponseMessage.IsSuccessStatusCode)
