@@ -78,9 +78,14 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             return await ((await GetDbSetAsync()).Where(x => x.HierarchyId == hierarchyId && x.HierarchicalStructureIdParent == hierarchicalStructureIdParent)).ToListAsync();
         }
 
-        public virtual async Task<bool> AnyByHierarchyIdAndHierarchicalStructureIdParentAsync(Guid? hierarchyId, Guid? hierarchicalStructureIdParent)
+        public virtual async Task<bool> AnyByHierarchyIdAndHierarchicalStructureIdParentAsync(Guid hierarchyId, Guid? hierarchicalStructureIdParent)
         {
             return (await GetDbSetAsync()).Any(x => x.HierarchyId == hierarchyId && x.HierarchicalStructureIdParent == hierarchicalStructureIdParent);
+        }
+
+        public virtual async Task<bool> AnyByHierarchyIdAndHierarchicalComponentIdAsync(Guid hierarchyId, Guid hierarchicalComponentId)
+        {
+            return (await GetDbSetAsync()).Any(x => x.HierarchyId == hierarchyId && x.HierarchyComponentId == hierarchicalComponentId);
         }
 
         public virtual async Task<Dictionary<Guid, List<Guid>>> GetDictionaryHierarchyComponentIdToHierarchicalStructureIdListAsync(List<Guid> lHierarchyComponentId)

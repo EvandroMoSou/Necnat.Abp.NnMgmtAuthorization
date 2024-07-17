@@ -14,7 +14,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         Task<List<HierarchicalStructure>> SearchByHierarchicalStructureIdParentAsync(Guid? hierarchicalStructureIdParent);
         Task<List<HierarchicalStructure>> SearchByHierarchicalStructureIdParentAndHierarchyComponentTypeAndNotInHierarchyComponentIdAsync(Guid? hierarchicalStructureIdParent, int hierarchyComponentType, List<Guid> lHierarchyComponentId);
         Task<List<HierarchicalStructure>> SearchByHierarchyIdAndHierarchicalStructureIdParentAsync(Guid? hierarchyId, Guid? hierarchicalStructureIdParent);
-        Task<bool> AnyByHierarchyIdAndHierarchicalStructureIdParentAsync(Guid? hierarchyId, Guid? hierarchicalStructureIdParent);
+        Task<bool> AnyByHierarchyIdAndHierarchicalStructureIdParentAsync(Guid hierarchyId, Guid? hierarchicalStructureIdParent);
+        Task<bool> AnyByHierarchyIdAndHierarchicalComponentIdAsync(Guid hierarchyId, Guid hierarchicalComponentId);
         Task<Dictionary<Guid, List<Guid>>> GetDictionaryHierarchyComponentIdToHierarchicalStructureIdListAsync(List<Guid> lHierarchyComponentId);
         Task<int> DeleteAllByHierarchyIdAsync(Guid hierarchyId);
     }
