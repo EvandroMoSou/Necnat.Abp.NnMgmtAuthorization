@@ -170,9 +170,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                 {
                     Id = 1,
                     Name = L["Hierarchy"],
-                    Icon = "fas fa-box"
+                    Icon = "fa-solid fa-sitemap"
+                    //Icon = "fas fa-box"
                 });
             }
+
 
             if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(2))
             {
@@ -180,7 +182,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                 {
                     Id = 2,
                     Name = L["Hierarchy Component Group"],
-                    Icon = "fas fa-sitemap"
+                    Icon = "fa-solid fa-object-group"
+                    //Icon = "fas fa-sitemap"
                 });
             }
 
