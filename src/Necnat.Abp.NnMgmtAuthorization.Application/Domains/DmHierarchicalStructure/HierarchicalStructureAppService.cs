@@ -135,6 +135,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             var nnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagHierarchyComponentContributor);
             foreach (var iNnEndpoint in nnEndpointList)
             {
+                if (hierarchyComponentTypeList != null && !hierarchyComponentTypeList.Contains(short.Parse(iNnEndpoint.GetParameter(2))))
+                    continue;
+
                 if (!iNnEndpoint.HasParameter())
                     continue;
 
@@ -157,27 +160,36 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             return l;
         }
 
-        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null)
+        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null, List<short>? hierarchyComponentTypeList = null)
         {
             var l = new List<HierarchyComponentTypeModel>();
 
-            l.Add(new HierarchyComponentTypeModel
+            if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(1))
             {
-                Id = 1,
-                Name = L["Hierarchy"],
-                Icon = "fas fa-box"
-            });
+                l.Add(new HierarchyComponentTypeModel
+                {
+                    Id = 1,
+                    Name = L["Hierarchy"],
+                    Icon = "fas fa-box"
+                });
+            }
 
-            l.Add(new HierarchyComponentTypeModel
+            if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(2))
             {
-                Id = 2,
-                Name = L["Hierarchy Component Group"],
-                Icon = "fas fa-sitemap"
-            });
+                l.Add(new HierarchyComponentTypeModel
+                {
+                    Id = 2,
+                    Name = L["Hierarchy Component Group"],
+                    Icon = "fas fa-sitemap"
+                });
+            }
 
             var nnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagHierarchyComponentTypeContributor);
             foreach (var iNnEndpoint in nnEndpointList)
             {
+                if (hierarchyComponentTypeList != null && !hierarchyComponentTypeList.Contains(short.Parse(iNnEndpoint.GetParameter(2))))
+                    continue;
+
                 if (!iNnEndpoint.HasParameter())
                     continue;
 
