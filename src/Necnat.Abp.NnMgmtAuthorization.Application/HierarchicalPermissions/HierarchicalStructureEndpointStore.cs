@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Necnat.Abp.NnLibCommon.Domains;
+﻿using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnMgmtAuthorization.Domains;
-using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,23 +11,24 @@ using Volo.Abp.Caching;
 
 namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
 {
-    //ETODO - EndpoinitManager para chamar API so se necessario.
+    //ETODO - EndpointManager para chamar API so se necessario.
     public class HierarchicalStructureEndpointStore : HierarchicalStructureStore, IHierarchicalStructureStore
     {
         protected readonly IHttpClientFactory _httpClientFactory;
         protected readonly INnEndpointStore _nnEndpointStore;
 
         public HierarchicalStructureEndpointStore(
-            IDistributedCache<HierarchicalStructureRecursiveCacheItem> hierarchicalStructureRecursiveCache,
+            IDistributedCache<HierarchyComponentIdRecursiveCacheItem> hierarchyComponentIdRecursiveCache,
+            IDistributedCache<HierarchicalStructureIdRecursiveCacheItem> hierarchicalStructureIdRecursiveCache,
             IHierarchicalStructureRepository hierarchicalStructureRepository,
             IHttpClientFactory httpClientFactory,
-            INnEndpointStore nnEndpointStore) : base(hierarchicalStructureRecursiveCache, hierarchicalStructureRepository)
+            INnEndpointStore nnEndpointStore) : base(hierarchyComponentIdRecursiveCache, hierarchicalStructureIdRecursiveCache, hierarchicalStructureRepository)
         {
             _httpClientFactory = httpClientFactory;
             _nnEndpointStore = nnEndpointStore;
         }
 
-        protected override async Task<HierarchicalStructureRecursiveCacheItem> GetDataAsync(Guid hierarchicalStructureId)
+        protected override async Task<HierarchyComponentIdRecursiveCacheItem> GetHierarchyComponentIdRecursiveData(Guid hierarchicalStructureId)
         {
             var endpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagGetListHierarchyComponentIdRecursive);
             var endpoint = endpointList.First();
@@ -41,10 +39,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
                 if (!httpResponseMessage.IsSuccessStatusCode)
                     throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
 
-                var hs = new HS { Id = hierarchicalStructureId };
-                hs.LHCId = JsonSerializer.Deserialize<List<Guid>>(await httpResponseMessage.Content.ReadAsStringAsync())!;
-
-                return new HierarchicalStructureRecursiveCacheItem { HS = hs };
+                return new HierarchyComponentIdRecursiveCacheItem { HierarchyComponentIdList = JsonSerializer.Deserialize<List<Guid>>(await httpResponseMessage.Content.ReadAsStringAsync())! };
             }
         }
     }
