@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
+using Volo.Abp.Identity;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
@@ -127,6 +129,28 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
             return model;
         }
+
+        public async Task<Dictionary<string, List<IdentityRoleDto>>> GetDictEndpointRoleAsync()
+        {
+            var dict = new Dictionary<string, List<IdentityRoleDto>>();
+
+            var userAuthzNnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagGetUserAuthzInfoMy);
+            foreach (var iEndpoint in userAuthzNnEndpointList)
+            {
+                using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
+                {
+                    try
+                    {
+                        var httpResponseMessage = await client.PostAsJsonAsync($"{iEndpoint.UrlUri}/api/nn-lib-common/nn-identity-role/get-list", new NnIdentityRoleResultRequestDto { IsPaged = false });
+                        if (httpResponseMessage.IsSuccessStatusCode)
+                            dict.Add(iEndpoint.DisplayName, JsonSerializer.Deserialize<PagedResultDto<IdentityRoleDto>>(await httpResponseMessage.Content.ReadAsStringAsync())!.Items.ToList());
+                    }
+                    catch { }
+                }
+            }
+
+            return dict;
+        }        
 
         //[HttpPost]
         //public async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid hierarchicalStructureId)
