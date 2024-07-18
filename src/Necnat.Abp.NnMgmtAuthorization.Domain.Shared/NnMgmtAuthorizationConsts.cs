@@ -1,6 +1,4 @@
-﻿using Necnat.Abp.NnLibCommon.Domains;
-
-namespace Necnat.Abp.NnMgmtAuthorization
+﻿namespace Necnat.Abp.NnMgmtAuthorization
 {
     public static class NnMgmtAuthorizationConsts
     {
@@ -11,7 +9,10 @@ namespace Necnat.Abp.NnMgmtAuthorization
 
         public const string HttpClientName = "NnMgmtAuthorization";
 
-        public const string NnEndpointTagGetListUser = "NnEndpoint:GetListUser";
+        public const string UserEndpointTag = "UserEndpoint";
+
+
+
         public const string NnEndpointTagGetListHierarchyComponentIdRecursive = "NnEndpoint:GetListHierarchyComponentIdRecursive";
         public const string NnEndpointTagGetUserAuthzInfoMy = "NnEndpoint:GetUserAuthzInfoMy";
         public const string NnEndpointTagGetHierarchyAuthzInfo = "NnEndpoint:GetHierarchyAuthzInfo";

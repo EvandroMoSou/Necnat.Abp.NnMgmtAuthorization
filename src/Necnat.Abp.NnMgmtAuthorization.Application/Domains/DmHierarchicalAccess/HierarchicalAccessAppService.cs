@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
+using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnLibCommon.Localization;
 using Necnat.Abp.NnLibCommon.Services;
 using Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions;
@@ -24,7 +25,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
     {
         protected readonly IHierarchicalAuthorizationService _hierarchicalAuthorizationService;
         protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
-
+        protected readonly INnIdentityRoleRepository _nnIdentityRoleRepository;
 
         public HierarchicalAccessAppService(
             ICurrentUser currentUser,
@@ -80,10 +81,22 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
             var lHierarchicalStructureId = await _hierarchicalAuthorizationService.GetListHierarchicalStructureIdAsync(GetPolicyName!);
             var lHierarchicalStructureIdRecursive = await _hierarchicalStructureStore.GetListHierarchicalStructureIdRecursiveAsync(lHierarchicalStructureId);
 
-            if (!lHierarchicalStructureIdRecursive.Contains((Guid)e.HierarchicalStructureId!))            
+            if (!lHierarchicalStructureIdRecursive.Contains((Guid)e.HierarchicalStructureId!))
                 throw new UnauthorizedAccessException($"[HierarchicalStructureId] {e.HierarchicalStructureId}");
-            
+
             return e;
+        }
+
+        protected override async Task<List<HierarchicalAccessDto>> AfterGetListAsync(List<HierarchicalAccessDto> entityDtoList)
+        {
+            if (entityDtoList.Count < 1)
+                return entityDtoList;
+
+            var roleList = await _nnIdentityRoleRepository.GetListAsync();
+            foreach (var iEntityDto in entityDtoList)
+                iEntityDto.RoleName = roleList.Where(x => x.Id == iEntityDto.RoleId).First().Name;
+
+            return entityDtoList;
         }
 
         [RemoteService(false)]
