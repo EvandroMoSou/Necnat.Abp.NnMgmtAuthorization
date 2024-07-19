@@ -1,6 +1,7 @@
 ﻿using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnMgmtAuthorization.Domains;
 using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess;
+using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,7 +123,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
 
                 if (hierarchyComponentId == null)
                     return true;
-                else if (await _hierarchicalStructureStore.HasHierarchyComponentIdAsync((Guid)iUserHierarchicalAccess.HSId, (Guid)hierarchyComponentId))
+                else if (await _hierarchicalStructureStore.HasHierarchyComponentIdRecursiveAsync((Guid)iUserHierarchicalAccess.HSId, (Guid)hierarchyComponentId))
                     return true;
             }
 

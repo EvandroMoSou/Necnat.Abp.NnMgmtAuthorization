@@ -1,4 +1,4 @@
-﻿namespace Necnat.Abp.NnMgmtAuthorization.Models
+﻿namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
     public class HierarchyComponentTypeModel
     {

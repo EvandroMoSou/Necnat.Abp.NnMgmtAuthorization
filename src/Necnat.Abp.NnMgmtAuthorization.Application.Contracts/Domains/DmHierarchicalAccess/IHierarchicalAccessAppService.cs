@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Necnat.Abp.NnMgmtAuthorization.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
@@ -9,6 +12,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             Guid,
             HierarchicalAccessResultRequestDto>
     {
-
+        Task<List<HA>> GetListHaMyAsync();
     }
 }

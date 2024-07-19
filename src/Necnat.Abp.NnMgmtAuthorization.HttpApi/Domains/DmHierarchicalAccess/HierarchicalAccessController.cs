@@ -1,7 +1,9 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Necnat.Abp.NnLibCommon.Controllers;
+using Necnat.Abp.NnMgmtAuthorization.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 
@@ -22,6 +24,13 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
         public Task<HierarchicalAccessDto> UpdateAsync(Guid id, HierarchicalAccessDto input)
         {
             throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        [Route("get-list-my")]
+        public Task<List<HA>> GetListHaMyAsync()
+        {
+            return AppService.GetListHaMyAsync();
         }
     }
 }

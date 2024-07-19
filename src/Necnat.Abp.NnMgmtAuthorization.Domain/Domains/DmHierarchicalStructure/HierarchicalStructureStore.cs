@@ -25,15 +25,16 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
         #region HierarchyComponentIdRecursive
 
-        public virtual async Task<bool> HasHierarchyComponentIdAsync(Guid id, Guid hierarchyComponentId)
-        {
-            return (await GetListHierarchyComponentIdRecursiveAsync(id)).Contains(hierarchyComponentId);
-        }
-
         public virtual async Task<List<Guid>> GetListHierarchyComponentIdRecursiveAsync(Guid id)
         {
             return (await GetHierarchyComponentIdRecursiveCacheItem(id)).HierarchyComponentIdList;
         }
+
+        public virtual async Task<bool> HasHierarchyComponentIdRecursiveAsync(Guid id, Guid hierarchyComponentId)
+        {
+            return (await GetListHierarchyComponentIdRecursiveAsync(id)).Contains(hierarchyComponentId);
+        }
+
 
         protected virtual async Task<HierarchyComponentIdRecursiveCacheItem> GetHierarchyComponentIdRecursiveCacheItem(Guid id)
         {
@@ -67,11 +68,6 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
 
         #region HierarchicalStructureIdRecursive
 
-        public virtual async Task<bool> HasHierarchicalStructureIdAsync(Guid id, Guid hierarchicalStructureId)
-        {
-            return (await GetListHierarchicalStructureIdRecursiveAsync(id)).Contains(hierarchicalStructureId);
-        }
-
         public virtual async Task<List<Guid>> GetListHierarchicalStructureIdRecursiveAsync(Guid id)
         {
             return (await GetHierarchicalStructureIdRecursiveCacheItem(id)).HierarchicalStructureIdList;
@@ -85,6 +81,20 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
                 l.AddRange(await GetListHierarchicalStructureIdRecursiveAsync(id));
 
             return l;
+        }
+
+        public virtual async Task<bool> HasHierarchicalStructureIdRecursiveAsync(Guid id, Guid hierarchicalStructureId)
+        {
+            return (await GetListHierarchicalStructureIdRecursiveAsync(id)).Contains(hierarchicalStructureId);
+        }
+
+        public virtual async Task<bool> HasHierarchicalStructureIdRecursiveAsync(List<Guid> idList, Guid hierarchicalStructureId)
+        {
+            foreach (var id in idList)
+                if (await HasHierarchicalStructureIdRecursiveAsync(id, hierarchicalStructureId))
+                    return true;
+
+            return false;
         }
 
         protected virtual async Task<HierarchicalStructureIdRecursiveCacheItem> GetHierarchicalStructureIdRecursiveCacheItem(Guid id)

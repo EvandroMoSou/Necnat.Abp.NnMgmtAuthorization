@@ -87,13 +87,13 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
             return _applicationConfiguration;
         }
 
-        List<HAC>? _lhac;
-        public async Task<List<HAC>> GetLHACAsync()
+        List<HA>? _lhac;
+        public async Task<List<HA>> GetLHACAsync()
         {
             if (_lhac != null)
                 return _lhac;
 
-            _lhac = JsonSerializer.Deserialize<List<HAC>>((await GetApplicationConfigurationAsync()).GetProperty<string>(NnMgmtAuthorizationConsts.UserAuthorizationLHAC)!)!;
+            _lhac = JsonSerializer.Deserialize<List<HA>>((await GetApplicationConfigurationAsync()).GetProperty<string>(NnMgmtAuthorizationConsts.UserAuthorizationLHA)!)!;
             return _lhac;
         }
 

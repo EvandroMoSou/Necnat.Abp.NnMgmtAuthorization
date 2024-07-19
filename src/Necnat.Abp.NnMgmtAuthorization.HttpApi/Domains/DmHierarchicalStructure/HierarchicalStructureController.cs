@@ -33,32 +33,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             return AppService.GetListHierarchicalStructureNodeAsync(input);
         }
 
-        [HttpGet]
-        [Route("hierarchy-component")]
-        public virtual Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null, List<short>? hierarchyComponentTypeList = null)
+        [HttpPost]
+        [Route("get-list-my")]
+        public Task<List<HS>> GetListHsAsync(List<Guid> hierarchicalStructureIdList)
         {
-            return AppService.GetListHierarchyComponentAsync(hierarchyId, hierarchyComponentTypeList);
-        }
-
-        [HttpGet]
-        [Route("hierarchy-component-type")]
-        public virtual Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null, List<short>? hierarchyComponentTypeList = null)
-        {
-            return AppService.GetListHierarchyComponentTypeAsync(hierarchyId, hierarchyComponentTypeList);
-        }
-
-        [HttpGet]
-        [Route("hierarchy-component-contributor")]
-        public virtual Task<List<HierarchyComponentModel>> GetListHierarchyComponentContributorAsync(short hierarchyComponentTypeId)
-        {
-            return AppService.GetListHierarchyComponentContributorAsync(hierarchyComponentTypeId);
-        }
-
-        [HttpGet]
-        [Route("hierarchy-component-type-contributor")]
-        public virtual Task<HierarchyComponentTypeModel> GetHierarchyComponentTypeContributorAsync(short hierarchyComponentTypeId)
-        {
-            return AppService.GetHierarchyComponentTypeContributorAsync(hierarchyComponentTypeId);
+            return AppService.GetListHsAsync(hierarchicalStructureIdList);
         }
     }
 }

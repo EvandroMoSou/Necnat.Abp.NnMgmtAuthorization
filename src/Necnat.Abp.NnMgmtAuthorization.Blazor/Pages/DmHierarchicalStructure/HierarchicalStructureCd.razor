@@ -22,6 +22,7 @@
 @inject IHierarchicalAuthorizationService HierarchicalAuthorizationService
 @inject IHierarchicalStructureAppService AppService
 @inject IHierarchyAppService HierarchyAppService
+@inject IHierarchyComponentAppService HierarchyComponentAppService
 @inject SweetAlertService Swal
 @inherits AbpComponentBase
 
@@ -97,8 +98,8 @@
 @namespace Necnat.Abp.NnMgmtAuthorization.Blazor.Pages
 @code {
 
-    List<HierarchyComponentModel> _lHierarchyComponent = new List<HierarchyComponentModel>();
-    List<HierarchyComponentTypeModel> _lHierarchyComponentType = new List<HierarchyComponentTypeModel>();
+    List<HierarchyComponentDto> _lHierarchyComponent = new List<HierarchyComponentDto>();
+    List<HierarchyComponentTypeDto> _lHierarchyComponentType = new List<HierarchyComponentTypeDto>();
     List<HierarchicalStructureNode> _lHierarchicalStructureNode = new List<HierarchicalStructureNode>();
     HierarchicalStructureNode? _selectedHierarchicalStructureNode;
 
@@ -110,13 +111,13 @@
         if (_selectedHierarchyId == null)
         {
             _lHierarchicalStructureNode = new List<HierarchicalStructureNode>();
-            _lHierarchyComponent = new List<HierarchyComponentModel>();
-            _lHierarchyComponentType = new List<HierarchyComponentTypeModel>();
+            _lHierarchyComponent = new List<HierarchyComponentDto>();
+            _lHierarchyComponentType = new List<HierarchyComponentTypeDto>();
         }
         else
         {
-            _lHierarchyComponent = await AppService.GetListHierarchyComponentAsync(_selectedHierarchyId);
-            _lHierarchyComponentType = await AppService.GetListHierarchyComponentTypeAsync(_selectedHierarchyId);
+            _lHierarchyComponent = (await HierarchyComponentAppService.GetListAsync(new HierarchyComponentResultRequestDto { HierarchyId = _selectedHierarchyId, IsPaged = false })).Items.ToList();
+            _lHierarchyComponentType = await HierarchyComponentAppService.GetListTypeAsync(new HierarchyComponentTypeResultRequestDto { HierarchyId = _selectedHierarchyId });
             _lHierarchicalStructureNode = await SearchHierarchicalStructureNodeAsync(null);
         }
 
@@ -180,7 +181,7 @@
     protected Validations? CreateValidationsRef;
     protected HierarchicalStructureDto? NewEntity;
 
-    HierarchyComponentModel hierarchyComponent = new HierarchyComponentModel();
+    HierarchyComponentDto hierarchyComponent = new HierarchyComponentDto();
 
     protected virtual async Task OpenCreateModalAsync(HierarchicalStructureNode? hierarchicalStructureNode)
     {

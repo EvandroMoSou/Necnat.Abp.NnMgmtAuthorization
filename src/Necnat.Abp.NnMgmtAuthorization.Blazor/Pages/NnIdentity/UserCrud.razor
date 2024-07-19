@@ -1,4 +1,4 @@
-﻿@page "/NnMgmtAuthorization/Users"
+﻿@* @page "/NnMgmtAuthorization/Users"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
 @using System.Collections.ObjectModel
@@ -13,7 +13,7 @@
 @using Volo.Abp.BlazoriseUI.Components
 @using Volo.Abp.Identity
 @attribute [Authorize(IdentityPermissions.Users.Default)]
-@inherits AbpCrudPageBase<INnIdentityUserAppService, IdentityUserDto, Guid, NnIdentityUserResultRequestDto>
+@inherits AbpCrudPageBase<INnIdentityUserAppService, NnIdentityUserDto, Guid, NnIdentityUserResultRequestDto>
 @inject IStringLocalizer<NnLibCommonResource> NL
 @inject IIdentityUserAppService AppService
 @inject IMgmtAuthorizationAppService MgmtAuthorizationAppService
@@ -24,7 +24,7 @@
             <Column ColumnSize="ColumnSize.IsAuto">
                 <h2>@L["Users"]</h2>
             </Column>
-            @*             <Column ColumnSize="ColumnSize.IsAuto">
+                         <Column ColumnSize="ColumnSize.IsAuto">
             @if (HasCreatePermission)
             {
             <Button Color="Color.Primary"
@@ -32,11 +32,11 @@
             @NL["New"]
             </Button>
             }
-            </Column> *@
+            </Column> 
         </Row>
     </CardHeader>
     <CardBody>
-        <DataGrid TItem="IdentityUserDto"
+        <DataGrid TItem="NnIdentityUserDto"
                   Data="Entities"
                   ReadData="OnDataGridReadAsync"
                   CurrentPage="CurrentPage"
@@ -44,10 +44,10 @@
                   ShowPager="true"
                   PageSize="PageSize">
             <DataGridColumns>
-                <DataGridEntityActionsColumn TItem="IdentityUserDto" @ref="@EntityActionsColumn">
+                <DataGridEntityActionsColumn TItem="NnIdentityUserDto" @ref="@EntityActionsColumn">
                     <DisplayTemplate>
-                        <EntityActions TItem="IdentityUserDto" EntityActionsColumn="@EntityActionsColumn">
-                            @*<EntityAction TItem="IdentityUserDto"
+                        <EntityActions TItem="NnIdentityUserDto" EntityActionsColumn="@EntityActionsColumn">
+                            <EntityAction TItem="IdentityUserDto"
                             Text="@NL["Edit"]"
                             Visible=HasUpdatePermission
                             Clicked="() => OpenEditModalAsync(context)" />
@@ -55,14 +55,14 @@
                             Text="@NL["Delete"]"
                             Visible=HasDeletePermission
                             Clicked="() => DeleteEntityAsync(context)"
-                            ConfirmationMessage="()=>GetDeleteConfirmationMessage(context)" />*@
+                            ConfirmationMessage="()=>GetDeleteConfirmationMessage(context)" />
                         </EntityActions>
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
-                <DataGridColumn TItem="IdentityUserDto"
+                <DataGridColumn TItem="NnIdentityUserDto"
                                 Field="@nameof(IdentityUserDto.UserName)"
                                 Caption="@L["UserName"]"></DataGridColumn>
-                <DataGridColumn TItem="IdentityUserDto"
+                <DataGridColumn TItem="NnIdentityUserDto"
                                 Field="@nameof(IdentityUserDto.Name)"
                                 Caption="@L["Name"]"></DataGridColumn>
             </DataGridColumns>
@@ -135,4 +135,4 @@
         UpdatePolicyName = IdentityPermissions.Users.Update;
         DeletePolicyName = IdentityPermissions.Users.Delete;
     }
-}
+} *@

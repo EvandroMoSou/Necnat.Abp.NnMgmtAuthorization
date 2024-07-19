@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Necnat.Abp.NnLibCommon.Domains;
+using Necnat.Abp.NnLibCommon.Domains.DmDistributedService;
 using Necnat.Abp.NnLibCommon.Localization;
 using Necnat.Abp.NnLibCommon.Services;
-using Necnat.Abp.NnMgmtAuthorization.Debug;
 using Necnat.Abp.NnMgmtAuthorization.Models;
 using Necnat.Abp.NnMgmtAuthorization.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -26,24 +28,30 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
             IHierarchicalStructureRepository>,
         IHierarchicalStructureAppService
     {
-        protected readonly IHierarchyComponentGroupRepository _hierarchyComponentGroupRepository;
-        protected readonly IHierarchyRepository _hierarchyRepository;
-        protected readonly IHttpClientFactory _httpClientFactory;
-        protected readonly INnEndpointStore _nnEndpointStore;
+        protected readonly IConfiguration _configuration;
+        protected readonly IDistributedServiceStore _distributedServiceStore;
+        protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
+        protected readonly IHttpClientFactory _httpClientFactory;        
+
+        protected string _applicationName;
+        protected const string _controllerbase = "nn-mgmt-authorization/hierarchical-access";
 
         public HierarchicalStructureAppService(
             ICurrentUser currentUser,
             IStringLocalizer<NnLibCommonResource> necnatLocalizer,
             IHierarchicalStructureRepository repository,
-            IHierarchyComponentGroupRepository hierarchyComponentGroupRepository,
-            IHierarchyRepository hierarchyRepository,
-            IHttpClientFactory httpClientFactory,
-            INnEndpointStore nnEndpointStore) : base(currentUser, necnatLocalizer, repository)
+
+            IConfiguration configuration,
+            IDistributedServiceStore distributedServiceStore,
+            IHierarchicalStructureStore hierarchicalStructureStore,
+            IHttpClientFactory httpClientFactory) : base(currentUser, necnatLocalizer, repository)
         {
-            _hierarchyComponentGroupRepository = hierarchyComponentGroupRepository;
-            _hierarchyRepository = hierarchyRepository;
+            _configuration = configuration;
+            _distributedServiceStore = distributedServiceStore;
+            _hierarchicalStructureStore = hierarchicalStructureStore;
             _httpClientFactory = httpClientFactory;
-            _nnEndpointStore = nnEndpointStore;
+
+            _applicationName = _configuration["DistributedService:ApplicationName"]!;
 
             GetPolicyName = NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default;
             GetListPolicyName = NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default;
@@ -70,6 +78,49 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
         public override Task<HierarchicalStructureDto> UpdateAsync(Guid id, HierarchicalStructureDto input)
         {
             return base.UpdateAsync(id, input);
+        }
+
+        public virtual async Task<List<HS>> GetListHsAsync(List<Guid> hierarchicalStructureIdList)
+        {
+            var l = new List<HS>();
+
+            var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchicalStructureTag);
+            foreach (var iDistributedService in distributedServiceList)
+            {
+                if (iDistributedService.ApplicationName == _applicationName)
+                {
+                    try
+                    {
+                        var allHierarchyComponentIdList = new List<Guid>();
+                        foreach (var iHierarchicalStructureId in hierarchicalStructureIdList)
+                        {
+                            if (l.Any(x => x.Id == iHierarchicalStructureId))
+                                continue;
+
+                            var hierarchyComponentIdList = await _hierarchicalStructureStore.GetListHierarchyComponentIdRecursiveAsync(iHierarchicalStructureId);
+                            allHierarchyComponentIdList.AddRange(hierarchyComponentIdList);
+
+                            l.Add(new HS { Id = iHierarchicalStructureId, LHCId = hierarchyComponentIdList });
+                        }
+                    }
+                    catch { }
+                }
+                else
+                {
+                    using (HttpClient client = _httpClientFactory.CreateClient(NnLibCommonDistributedServiceConsts.HttpClientName))
+                    {
+                        try
+                        {
+                            var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list-hs", hierarchicalStructureIdList);
+                            if (httpResponseMessage.IsSuccessStatusCode)
+                                l.AddRange(JsonSerializer.Deserialize<List<HS>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            return l;
         }
 
         #region GetListHierarchicalStructureNode
@@ -111,118 +162,5 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
         }
 
         #endregion
-
-        public virtual async Task<List<HierarchyComponentModel>> GetListHierarchyComponentAsync(Guid? hierarchyId = null, List<short>? hierarchyComponentTypeList = null)
-        {
-            await CheckPolicyAsync(NnMgmtAuthorizationPermissions.PrmHierarchicalStructure.Default);
-
-            var l = new List<HierarchyComponentModel>();
-
-            if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(1))
-            {
-                var lHierarchy = await _hierarchyRepository.GetListAsync();
-                foreach (var iHierarchy in lHierarchy)
-                    l.Add(new HierarchyComponentModel { HierarchyComponentType = 1, Id = iHierarchy.Id, Name = iHierarchy.Name });
-            }
-
-            if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(2))
-            {
-                var lHierarchyComponentGroup = await _hierarchyComponentGroupRepository.GetListAsync();
-                foreach (var iHierarchyComponentGroup in lHierarchyComponentGroup)
-                    l.Add(new HierarchyComponentModel { HierarchyComponentType = 2, Id = iHierarchyComponentGroup.Id, Name = iHierarchyComponentGroup.Name });
-            }
-
-            var nnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagHierarchyComponentContributor);
-            foreach (var iNnEndpoint in nnEndpointList)
-            {
-                if (hierarchyComponentTypeList != null && !hierarchyComponentTypeList.Contains(short.Parse(iNnEndpoint.GetParameter(2))))
-                    continue;
-
-                if (!iNnEndpoint.HasParameter())
-                    continue;
-
-                using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
-                {
-                    try
-                    {
-                        var httpResponseMessage = await client.GetAsync(
-                            iNnEndpoint.IsUrl()
-                            ? $"{iNnEndpoint.UrlUri}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-contributor?hierarchyComponentTypeId={iNnEndpoint.GetParameter(2)}"
-                            : iNnEndpoint.UrlUri);
-
-                        if (httpResponseMessage.IsSuccessStatusCode)
-                            l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentModel>>(await httpResponseMessage.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!);
-                    }
-                    catch { }
-                }
-            }
-
-            return l;
-        }
-
-        public virtual async Task<List<HierarchyComponentTypeModel>> GetListHierarchyComponentTypeAsync(Guid? hierarchyId = null, List<short>? hierarchyComponentTypeList = null)
-        {
-            var l = new List<HierarchyComponentTypeModel>();
-
-            if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(1))
-            {
-                l.Add(new HierarchyComponentTypeModel
-                {
-                    Id = 1,
-                    Name = L["Hierarchy"],
-                    Icon = "fa-solid fa-sitemap"
-                    //Icon = "fas fa-box"
-                });
-            }
-
-
-            if (hierarchyComponentTypeList == null || hierarchyComponentTypeList.Contains(2))
-            {
-                l.Add(new HierarchyComponentTypeModel
-                {
-                    Id = 2,
-                    Name = L["Hierarchy Component Group"],
-                    Icon = "fa-solid fa-object-group"
-                    //Icon = "fas fa-sitemap"
-                });
-            }
-
-            var nnEndpointList = await _nnEndpointStore.GetListByTagAsync(NnMgmtAuthorizationConsts.NnEndpointTagHierarchyComponentTypeContributor);
-            foreach (var iNnEndpoint in nnEndpointList)
-            {
-                if (hierarchyComponentTypeList != null && !hierarchyComponentTypeList.Contains(short.Parse(iNnEndpoint.GetParameter(2))))
-                    continue;
-
-                if (!iNnEndpoint.HasParameter())
-                    continue;
-
-                using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationConsts.HttpClientName))
-                {
-                    try
-                    {
-                        var httpResponseMessage = await client.GetAsync(
-                            iNnEndpoint.IsUrl()
-                            ? $"{iNnEndpoint.UrlUri}/api/nn-mgmt-authorization/hierarchical-structure/hierarchy-component-type-contributor?hierarchyComponentTypeId={iNnEndpoint.GetParameter(2)}"
-                            : iNnEndpoint.UrlUri);
-
-                        if (httpResponseMessage.IsSuccessStatusCode)
-                            l.Add(JsonSerializer.Deserialize<HierarchyComponentTypeModel>(await httpResponseMessage.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!);
-                    }
-                    catch { }
-                }
-            }
-
-            return l;
-        }
-
-        public virtual Task<List<HierarchyComponentModel>> GetListHierarchyComponentContributorAsync(short hierarchyComponentTypeId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Task<HierarchyComponentTypeModel> GetHierarchyComponentTypeContributorAsync(short hierarchyComponentTypeId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -21,7 +21,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Contributors
             var mgmtAuthorizationAppService = context.ServiceProvider.GetRequiredService<IMgmtAuthorizationAppService>();
             var hierarchicalAuthorization = await mgmtAuthorizationAppService.GetHierarchicalAuthorizationMyAsync();
 
-            context.ApplicationConfiguration.SetProperty(NnMgmtAuthorizationConsts.UserAuthorizationLHAC, JsonSerializer.Serialize(hierarchicalAuthorization!.LHAC));
+            context.ApplicationConfiguration.SetProperty(NnMgmtAuthorizationConsts.UserAuthorizationLHA, JsonSerializer.Serialize(hierarchicalAuthorization!.LHA));
             context.ApplicationConfiguration.SetProperty(NnMgmtAuthorizationConsts.UserAuthorizationLHS, JsonSerializer.Serialize(hierarchicalAuthorization.LHS));
             context.ApplicationConfiguration.SetProperty(NnMgmtAuthorizationConsts.UserAuthorizationLHC, JsonSerializer.Serialize(hierarchicalAuthorization.LHC));
         }

@@ -55,7 +55,7 @@
     public HierarchicalStructureNode HierarchicalStructureNode { get; set; } = new HierarchicalStructureNode();
 
     [Parameter]
-    public List<HierarchyComponentTypeModel> HierarchyComponentTypeList { get; set; } = new List<HierarchyComponentTypeModel>();
+    public List<HierarchyComponentTypeDto> HierarchyComponentTypeList { get; set; } = new List<HierarchyComponentTypeDto>();
 
     [Parameter]
     public Func<HierarchicalStructureNode, Task<List<HierarchicalStructureNode>>>? SearchHierarchicalStructureNodeAsyncMethod { get; set; }

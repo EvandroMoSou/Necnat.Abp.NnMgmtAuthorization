@@ -1,6 +1,7 @@
 ﻿@using Blazorise.Components
 @using Microsoft.Extensions.Localization
 @using Necnat.Abp.NnLibCommon.Localization
+@using Necnat.Abp.NnMgmtAuthorization.Domains
 @using Necnat.Abp.NnMgmtAuthorization.Localization
 @using Necnat.Abp.NnMgmtAuthorization.Models
 @using Volo.Abp.AspNetCore.Components
@@ -16,7 +17,7 @@ else
     <Fields>
         <Field ColumnSize="ColumnSize.Is4.OnDesktop">
             <FieldLabel>@L["Hierarchy Component Type"]</FieldLabel>
-            <SelectList TItem="HierarchyComponentTypeModel"
+            <SelectList TItem="HierarchyComponentTypeDto"
                         TValue="int?"
                         Data="@ListaHierarchyComponentType"
                         TextField="@((item)=> L[item.Name!])"
@@ -31,7 +32,7 @@ else
                 <FieldLabel>@L["Hierarchy Component"]</FieldLabel>
                 @if (listaFilteredHierarchyComponent.Count < 20)
                 {
-                    <SelectList TItem="HierarchyComponentModel"
+                    <SelectList TItem="HierarchyComponentDto"
                                 TValue="Guid?"
                                 Data="@listaFilteredHierarchyComponent"
                                 TextField="@((item)=>item.Name)"
@@ -42,7 +43,7 @@ else
                 }
                 else
                 {
-                    <Autocomplete TItem="HierarchyComponentModel"
+                    <Autocomplete TItem="HierarchyComponentDto"
                                   TValue="Guid?"
                                   Data="@listaFilteredHierarchyComponent"
                                   TextField="@(( item ) => item.Name)"
@@ -62,16 +63,16 @@ else
 @code {
 
     [Parameter]
-    public HierarchyComponentModel? SelectedHierarchyComponent { get; set; }
+    public HierarchyComponentDto? SelectedHierarchyComponent { get; set; }
 
     [Parameter]
-    public EventCallback<HierarchyComponentModel?> SelectedHierarchyComponentChanged { get; set; }
+    public EventCallback<HierarchyComponentDto?> SelectedHierarchyComponentChanged { get; set; }
 
     [Parameter]
-    public List<HierarchyComponentTypeModel>? ListaHierarchyComponentType { get; set; }
+    public List<HierarchyComponentTypeDto>? ListaHierarchyComponentType { get; set; }
 
     [Parameter]
-    public List<HierarchyComponentModel>? ListaHierarchyComponent { get; set; }
+    public List<HierarchyComponentDto>? ListaHierarchyComponent { get; set; }
 
     int? _selectedHierarchyComponentTypeId;
     int? SelectedHierarchyComponentTypeId
@@ -101,7 +102,7 @@ else
         }
     }
 
-    List<HierarchyComponentModel>? listaFilteredHierarchyComponent;
+    List<HierarchyComponentDto>? listaFilteredHierarchyComponent;
 
     public HierarchyComponentSelectList()
     {

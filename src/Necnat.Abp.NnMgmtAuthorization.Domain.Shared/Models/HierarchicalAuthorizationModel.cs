@@ -9,15 +9,15 @@ namespace Necnat.Abp.NnMgmtAuthorization.Models
     {
         [JsonPropertyName("userId")]
         public Guid UserId { get; set; }
-        [JsonPropertyName("lhac")]
-        public List<HAC> LHAC { get; set; } = new List<HAC>();
+        [JsonPropertyName("lha")]
+        public List<HA> LHA { get; set; } = new List<HA>();
         [JsonPropertyName("lhs")]
         public List<HS> LHS { get; set; } = new List<HS>();
         [JsonPropertyName("lhc")]
         public List<HC> LHC { get; set; } = new List<HC>();
     }
 
-    public class HAC
+    public class HA
     {
         [JsonPropertyName("lhsId")]
         public List<Guid> LHSId { get; set; } = new List<Guid>();

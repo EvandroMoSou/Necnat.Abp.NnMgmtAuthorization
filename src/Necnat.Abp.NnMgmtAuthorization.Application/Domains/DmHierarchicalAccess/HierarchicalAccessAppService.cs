@@ -1,15 +1,24 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Localization;
+using Necnat.Abp.NnLibCommon.Domains;
+using Necnat.Abp.NnLibCommon.Domains.DmDistributedService;
 using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnLibCommon.Localization;
 using Necnat.Abp.NnLibCommon.Services;
 using Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions;
+using Necnat.Abp.NnMgmtAuthorization.Models;
 using Necnat.Abp.NnMgmtAuthorization.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Users;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
@@ -23,19 +32,36 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
             IHierarchicalAccessRepository>,
         IHierarchicalAccessAppService
     {
+        protected readonly IConfiguration _configuration;
+        protected readonly IDistributedServiceStore _distributedServiceStore;
         protected readonly IHierarchicalAuthorizationService _hierarchicalAuthorizationService;
         protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
-        protected readonly INnIdentityRoleRepository _nnIdentityRoleRepository;
+        protected readonly IHttpClientFactory _httpClientFactory;
+        protected readonly INnRoleStore _nnRoleStore;
+
+        protected string _applicationName;
+        protected const string _controllerbase = "nn-mgmt-authorization/hierarchical-access";
 
         public HierarchicalAccessAppService(
             ICurrentUser currentUser,
             IStringLocalizer<NnLibCommonResource> necnatLocalizer,
             IHierarchicalAccessRepository repository,
+
+            IConfiguration configuration,
+            IDistributedServiceStore distributedServiceStore,
             IHierarchicalAuthorizationService hierarchicalAuthorizationService,
-            IHierarchicalStructureStore hierarchicalStructureStore) : base(currentUser, necnatLocalizer, repository)
+            IHierarchicalStructureStore hierarchicalStructureStore,
+            IHttpClientFactory httpClientFactory,
+            INnRoleStore nnRoleStore) : base(currentUser, necnatLocalizer, repository)
         {
+            _configuration = configuration;
+            _distributedServiceStore = distributedServiceStore;
             _hierarchicalAuthorizationService = hierarchicalAuthorizationService;
             _hierarchicalStructureStore = hierarchicalStructureStore;
+            _httpClientFactory = httpClientFactory;
+            _nnRoleStore = nnRoleStore;
+
+            _applicationName = _configuration["DistributedService:ApplicationName"]!;
 
             GetPolicyName = NnMgmtAuthorizationPermissions.PrmHierarchicalAccess.Default;
             GetListPolicyName = NnMgmtAuthorizationPermissions.PrmHierarchicalAccess.Default;
@@ -76,15 +102,76 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
 
         public override async Task<HierarchicalAccessDto> GetAsync(Guid id)
         {
-            var e = await base.GetAsync(id);
+            var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchicalAccessTag);
+            foreach (var iDistributedService in distributedServiceList)
+            {
+                if (iDistributedService.ApplicationName == _applicationName)
+                {
+                    try
+                    {
+                        var result = await base.GetAsync(id);
 
-            var lHierarchicalStructureId = await _hierarchicalAuthorizationService.GetListHierarchicalStructureIdAsync(GetPolicyName!);
-            var lHierarchicalStructureIdRecursive = await _hierarchicalStructureStore.GetListHierarchicalStructureIdRecursiveAsync(lHierarchicalStructureId);
+                        var lHierarchicalStructureId = await _hierarchicalAuthorizationService.GetListHierarchicalStructureIdAsync(GetPolicyName!);
+                        if (!await _hierarchicalStructureStore.HasHierarchicalStructureIdRecursiveAsync(lHierarchicalStructureId, (Guid)result.HierarchicalStructureId!))
+                            throw new UnauthorizedAccessException($"[HierarchicalStructureId] {result.HierarchicalStructureId}");
 
-            if (!lHierarchicalStructureIdRecursive.Contains((Guid)e.HierarchicalStructureId!))
-                throw new UnauthorizedAccessException($"[HierarchicalStructureId] {e.HierarchicalStructureId}");
+                        result.DistributedAppName = _applicationName;
+                        return result;
+                    }
+                    catch { }
+                }
+                else
+                {
+                    using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationDistributedServiceConsts.HierarchicalAccessTag))
+                    {
+                        try
+                        {
+                            var httpResponseMessage = await client.GetAsync($"{iDistributedService.Url}/api/{_controllerbase}/{id}");
+                            if (httpResponseMessage.IsSuccessStatusCode)
+                                return JsonSerializer.Deserialize<HierarchicalAccessDto>(await httpResponseMessage.Content.ReadAsStringAsync())!;
+                        }
+                        catch { }
+                    }
+                }
+            }
 
-            return e;
+            throw new EntityNotFoundException(typeof(HierarchicalAccessDto), id);
+        }
+
+        public override async Task<PagedResultDto<HierarchicalAccessDto>> GetListAsync(HierarchicalAccessResultRequestDto input)
+        {
+            var l = new List<PagedResultDto<HierarchicalAccessDto>>();
+
+            var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchicalAccessTag);
+            foreach (var iDistributedService in distributedServiceList)
+            {
+                if (iDistributedService.ApplicationName == _applicationName)
+                {
+                    try
+                    {
+                        var result = await base.GetListAsync(input);
+                        var items = result.Items.ToList();
+                        items.ForEach(x => x.DistributedAppName = _applicationName);
+                        l.Add(new PagedResultDto<HierarchicalAccessDto>(result.TotalCount, items));
+                    }
+                    catch { }
+                }
+                else
+                {
+                    using (HttpClient client = _httpClientFactory.CreateClient(NnLibCommonDistributedServiceConsts.HttpClientName))
+                    {
+                        try
+                        {
+                            var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list", input);
+                            if (httpResponseMessage.IsSuccessStatusCode)
+                                l.Add(JsonSerializer.Deserialize<PagedResultDto<HierarchicalAccessDto>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            return new PagedResultDto<HierarchicalAccessDto>(l.Sum(x => x.TotalCount), l.SelectMany(x => x.Items).ToList());
         }
 
         protected override async Task<List<HierarchicalAccessDto>> AfterGetListAsync(List<HierarchicalAccessDto> entityDtoList)
@@ -92,17 +179,135 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
             if (entityDtoList.Count < 1)
                 return entityDtoList;
 
-            var roleList = await _nnIdentityRoleRepository.GetListAsync();
             foreach (var iEntityDto in entityDtoList)
-                iEntityDto.RoleName = roleList.Where(x => x.Id == iEntityDto.RoleId).First().Name;
+                iEntityDto.RoleName = await _nnRoleStore.GetNameByIdAsync((Guid)iEntityDto.RoleId!);
 
             return entityDtoList;
+        }
+
+        public virtual async Task<List<HA>> GetListHaMyAsync()
+        {
+            var l = new List<HA>();
+
+            var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchicalAccessTag);
+            foreach (var iDistributedService in distributedServiceList)
+            {
+                if (iDistributedService.ApplicationName == _applicationName)
+                {
+                    try
+                    {
+                        var hierarchicalAccessList = await Repository.GetListByUserIdAsync((Guid)CurrentUser.Id!);
+                        foreach (var iHierarchicalAccessList in hierarchicalAccessList)
+                        {
+                            var ha = l.Where(x => x.RId == iHierarchicalAccessList.RoleId).FirstOrDefault();
+                            if (ha == null)
+                                l.Add(new HA { RId = iHierarchicalAccessList.RoleId, LHSId = new List<Guid> { iHierarchicalAccessList.HierarchicalStructureId } });
+                            else
+                                ha.LHSId.Add(iHierarchicalAccessList.HierarchicalStructureId);
+                        }
+
+                        foreach (var iE in l)
+                            iE.LPN = await _nnRoleStore.GetPermissionListByIdAsync(iE.RId);
+                    }
+                    catch { }
+                }
+                else
+                {
+                    using (HttpClient client = _httpClientFactory.CreateClient(NnLibCommonDistributedServiceConsts.HttpClientName))
+                    {
+                        try
+                        {
+                            var httpResponseMessage = await client.GetAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list-ha-my");
+                            if (httpResponseMessage.IsSuccessStatusCode)
+                                l.AddRange(JsonSerializer.Deserialize<List<HA>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            return l;
+        }
+
+        public override async Task<HierarchicalAccessDto> CreateAsync(HierarchicalAccessDto input)
+        {
+            var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchicalAccessTag);
+            foreach (var iDistributedService in distributedServiceList)
+            {
+                if (iDistributedService.ApplicationName == _applicationName)
+                {
+                    try
+                    {
+                        var lHierarchicalStructureId = await _hierarchicalAuthorizationService.GetListHierarchicalStructureIdAsync(GetPolicyName!);
+                        if (!await _hierarchicalStructureStore.HasHierarchicalStructureIdRecursiveAsync(lHierarchicalStructureId, (Guid)input.HierarchicalStructureId!))
+                            throw new UnauthorizedAccessException($"[HierarchicalStructureId] {input.HierarchicalStructureId}");
+
+                        var result = await base.CreateAsync(input);
+                        result.DistributedAppName = _applicationName;
+                        return result;
+                    }
+                    catch { }
+                }
+                else
+                {
+                    using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationDistributedServiceConsts.HierarchicalAccessTag))
+                    {
+                        try
+                        {
+                            var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}", input);
+                            if (httpResponseMessage.IsSuccessStatusCode)
+                                return JsonSerializer.Deserialize<HierarchicalAccessDto>(await httpResponseMessage.Content.ReadAsStringAsync())!;
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            throw new ArgumentException($"[DistributedAppName] {input.DistributedAppName}");
         }
 
         [RemoteService(false)]
         public override Task<HierarchicalAccessDto> UpdateAsync(Guid id, HierarchicalAccessDto input)
         {
             throw new NotImplementedException();
+        }
+
+        public override async Task DeleteAsync(Guid id)
+        {
+            var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchicalAccessTag);
+            foreach (var iDistributedService in distributedServiceList)
+            {
+                if (iDistributedService.ApplicationName == _applicationName)
+                {
+                    try
+                    {
+                        var result = await Repository.GetAsync(id);
+
+                        var lHierarchicalStructureId = await _hierarchicalAuthorizationService.GetListHierarchicalStructureIdAsync(GetPolicyName!);
+                        if (!await _hierarchicalStructureStore.HasHierarchicalStructureIdRecursiveAsync(lHierarchicalStructureId, (Guid)result.HierarchicalStructureId!))
+                            throw new UnauthorizedAccessException($"[HierarchicalStructureId] {result.HierarchicalStructureId}");
+
+                        await Repository.DeleteAsync(result);
+                        return;
+                    }
+                    catch { }
+                }
+                else
+                {
+                    using (HttpClient client = _httpClientFactory.CreateClient(NnMgmtAuthorizationDistributedServiceConsts.HierarchicalAccessTag))
+                    {
+                        try
+                        {
+                            var httpResponseMessage = await client.DeleteAsync($"{iDistributedService.Url}/api/{_controllerbase}/{id}");
+                            if (httpResponseMessage.IsSuccessStatusCode)
+                                return;
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            throw new ArgumentException();
         }
     }
 }
