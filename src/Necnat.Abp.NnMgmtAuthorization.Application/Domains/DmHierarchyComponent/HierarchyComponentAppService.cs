@@ -71,7 +71,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                     {
                         try
                         {
-                            var httpResponseMessage = await client.GetAsync($"{iDistributedService.Url}/api/{_controllerbase}/{id}");
+                            var httpResponseMessage = await client.GetAsync($"{iDistributedService.Url}/api/{_controllerbase}/{id}{(hierarchyComponentType == null ? string.Empty : $"?hierarchyComponentType={hierarchyComponentType}")}");
                             if (httpResponseMessage.IsSuccessStatusCode)
                                 return JsonSerializer.Deserialize<HierarchyComponentDto>(await httpResponseMessage.Content.ReadAsStringAsync())!;
                         }
