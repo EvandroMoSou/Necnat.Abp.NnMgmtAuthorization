@@ -1,7 +1,6 @@
 ﻿using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnMgmtAuthorization.Domains;
 using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess;
-using Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +45,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
             _permissionDefinitionManager = permissionDefinitionManager;
             _permissionStore = permissionStore;
             _stateCheckerManager = stateCheckerManager;
+        }
+
+        public Task<string> GetHierarchyComponentNameByHierarchyComponentIdAsync(Guid hierarchyComponentId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<Guid>> GetListHierarchicalStructureIdAsync(string permissionName)
