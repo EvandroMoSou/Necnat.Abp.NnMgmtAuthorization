@@ -6,7 +6,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>0.2.58</Version>
+		<Version>0.2.59</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

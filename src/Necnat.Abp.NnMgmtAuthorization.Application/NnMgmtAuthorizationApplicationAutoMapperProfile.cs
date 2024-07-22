@@ -11,7 +11,11 @@ public class NnMgmtAuthorizationApplicationAutoMapperProfile : Profile
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
 
-        CreateMap<HierarchicalAccess, HierarchicalAccessDto>();
+        CreateMap<HierarchicalAccess, HierarchicalAccessDto>()
+            .ForMember(x => x.UserName, opt => opt.Ignore())
+            .ForMember(x => x.RoleName, opt => opt.Ignore())
+            .ForMember(x => x.HierarchyComponentId, opt => opt.Ignore())
+            .ForMember(x => x.DistributedAppName, opt => opt.Ignore());
         CreateMap<HierarchicalAccessDto, HierarchicalAccess>()
             .ForMember(x => x.TenantId, opt => opt.Ignore())
             .ForMember(x => x.LastModificationTime, opt => opt.Ignore())
