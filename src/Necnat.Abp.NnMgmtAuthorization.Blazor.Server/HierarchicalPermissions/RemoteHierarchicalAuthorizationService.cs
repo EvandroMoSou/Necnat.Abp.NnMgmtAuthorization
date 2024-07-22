@@ -10,22 +10,27 @@ using Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations;
 using Volo.Abp.AspNetCore.Mvc.Client;
 using Volo.Abp.Data;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissions
+namespace Necnat.Abp.NnMgmtAuthorization.Blazor
 {
-    public class RemoteHierarchicalAuthorizationService : IHierarchicalAuthorizationService
+    public class HierarchicalAuthorizationService : IHierarchicalAuthorizationService
     {
         protected readonly ICachedApplicationConfigurationClient _configurationClient;
 
-        public RemoteHierarchicalAuthorizationService(ICachedApplicationConfigurationClient configurationClient)
+        public HierarchicalAuthorizationService(ICachedApplicationConfigurationClient configurationClient)
         {
             _configurationClient = configurationClient;
+        }
+
+        public async Task<string> GetHierarchyComponentNameByHierarchyComponentIdAsync(Guid hierarchyComponentId)
+        {
+            return (await GetLHCAsync()).First(x => x.Id == hierarchyComponentId).Nm!;
         }
 
         public async Task<List<Guid>> GetListHierarchicalStructureIdAsync(string permissionName)
         {
             var list = new List<Guid>();
 
-            foreach (var hac in await GetLHACAsync())
+            foreach (var hac in await GetLHAAsync())
                 if (hac.LPN.Contains(permissionName))
                     list.AddRange(hac.LHSId);
 
@@ -59,7 +64,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
 
         public async Task<bool> IsGrantedAsync(string permissionName, Guid? hierarchyComponentId = null)
         {
-            foreach (var hac in await GetLHACAsync())
+            foreach (var hac in await GetLHAAsync())
             {
                 if (!hac.LPN.Contains(permissionName))
                     continue;
@@ -88,7 +93,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
         }
 
         List<HA>? _lhac;
-        public async Task<List<HA>> GetLHACAsync()
+        public async Task<List<HA>> GetLHAAsync()
         {
             if (_lhac != null)
                 return _lhac;

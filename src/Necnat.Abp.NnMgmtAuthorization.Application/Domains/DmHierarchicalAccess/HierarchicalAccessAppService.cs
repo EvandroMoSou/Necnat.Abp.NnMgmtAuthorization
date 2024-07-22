@@ -35,8 +35,10 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
         protected readonly IConfiguration _configuration;
         protected readonly IDistributedServiceStore _distributedServiceStore;
         protected readonly IHierarchicalAuthorizationService _hierarchicalAuthorizationService;
+        protected readonly IHierarchicalStructureAppService _hierarchicalStructureAppService;
         protected readonly IHierarchicalStructureStore _hierarchicalStructureStore;
         protected readonly IHttpClientFactory _httpClientFactory;
+        protected readonly INnIdentityUserAppService _nnIdentityUserAppService;
         protected readonly INnRoleStore _nnRoleStore;
 
         protected string _applicationName;
@@ -50,15 +52,19 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
             IConfiguration configuration,
             IDistributedServiceStore distributedServiceStore,
             IHierarchicalAuthorizationService hierarchicalAuthorizationService,
+            IHierarchicalStructureAppService hierarchicalStructureAppService,
             IHierarchicalStructureStore hierarchicalStructureStore,
             IHttpClientFactory httpClientFactory,
+            INnIdentityUserAppService nnIdentityUserAppService,
             INnRoleStore nnRoleStore) : base(currentUser, necnatLocalizer, repository)
         {
             _configuration = configuration;
             _distributedServiceStore = distributedServiceStore;
             _hierarchicalAuthorizationService = hierarchicalAuthorizationService;
+            _hierarchicalStructureAppService = hierarchicalStructureAppService;
             _hierarchicalStructureStore = hierarchicalStructureStore;
             _httpClientFactory = httpClientFactory;
+            _nnIdentityUserAppService = nnIdentityUserAppService;
             _nnRoleStore = nnRoleStore;
 
             _applicationName = _configuration["DistributedService:ApplicationName"]!;
@@ -179,8 +185,15 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
             if (entityDtoList.Count < 1)
                 return entityDtoList;
 
+            var userList = await _nnIdentityUserAppService.GetListAsync(new NnIdentityUserResultRequestDto { IdList = entityDtoList.Select(x => (Guid)x.UserId!).ToList(), IsPaged = false });
+            var hierarchicalStructureList = await _hierarchicalStructureAppService.GetListAsync(new HierarchicalStructureResultRequestDto { IdList = entityDtoList.Select(x => (Guid)x.HierarchicalStructureId!).ToList(), IsPaged = false });
+
             foreach (var iEntityDto in entityDtoList)
+            {
+                iEntityDto.UserName = userList.Items.First(x => x.Id == (Guid)iEntityDto.UserId!).Name;
                 iEntityDto.RoleName = await _nnRoleStore.GetNameByIdAsync((Guid)iEntityDto.RoleId!);
+                iEntityDto.HierarchyComponentId = hierarchicalStructureList.Items.First(x => x.Id == (Guid)iEntityDto.HierarchicalStructureId!).HierarchyComponentId;
+            }
 
             return entityDtoList;
         }

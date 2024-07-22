@@ -10,7 +10,7 @@ using Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations;
 using Volo.Abp.AspNetCore.Mvc.Client;
 using Volo.Abp.Data;
 
-namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissions
+namespace Necnat.Abp.NnMgmtAuthorization.Blazor
 {
     public class HierarchicalAuthorizationService : IHierarchicalAuthorizationService
     {
@@ -19,6 +19,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor.WebAssembly.HierarchicalPermissi
         public HierarchicalAuthorizationService(ICachedApplicationConfigurationClient configurationClient)
         {
             _configurationClient = configurationClient;
+        }
+
+        public async Task<string> GetHierarchyComponentNameByHierarchyComponentIdAsync(Guid hierarchyComponentId)
+        {
+            return (await GetLHCAsync()).First(x => x.Id == hierarchyComponentId).Nm!;
         }
 
         public async Task<List<Guid>> GetListHierarchicalStructureIdAsync(string permissionName)

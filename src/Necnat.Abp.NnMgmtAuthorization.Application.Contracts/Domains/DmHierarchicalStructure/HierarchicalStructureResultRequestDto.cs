@@ -3,7 +3,7 @@ using System;
 
 namespace Necnat.Abp.NnMgmtAuthorization.Domains
 {
-    public class HierarchicalStructureResultRequestDto : OptionalPagedAndSortedResultRequestDto
+    public class HierarchicalStructureResultRequestDto : IdListOptionalPagedAndSortedResultRequestDto<Guid>
     {
         public bool UseParentId { get; set; }
         public Guid? ParentId { get; set; }

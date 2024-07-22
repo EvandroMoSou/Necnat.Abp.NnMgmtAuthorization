@@ -65,6 +65,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
 
             var q = await ReadOnlyRepository.GetQueryableAsync();
 
+            if (input.IdList != null)
+                q = q.Where(x => input.IdList.Contains(x.Id));
+
             if (input.UseParentId)
                 q = q.Where(x => x.HierarchicalStructureIdParent == input.ParentId);
 

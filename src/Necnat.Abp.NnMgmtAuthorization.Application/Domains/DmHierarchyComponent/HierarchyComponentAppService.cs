@@ -41,7 +41,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
             _applicationName = _configuration["DistributedService:ApplicationName"]!;
         }
 
-        public async Task<HierarchyComponentDto> GetAsync(Guid id, int? hierarchyComponentType = null)
+        public virtual async Task<HierarchyComponentDto> GetAsync(Guid id, int? hierarchyComponentType = null)
         {
             var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchyComponentTag);
             foreach (var iDistributedService in distributedServiceList)
@@ -83,7 +83,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
             throw new EntityNotFoundException(typeof(HierarchyComponentDto), id);
         }
 
-        public async Task<PagedResultDto<HierarchyComponentDto>> GetListAsync(HierarchyComponentResultRequestDto input)
+        public virtual async Task<PagedResultDto<HierarchyComponentDto>> GetListAsync(HierarchyComponentResultRequestDto input)
         {
             var l = new List<PagedResultDto<HierarchyComponentDto>>();
 
@@ -156,7 +156,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
             return new PagedResultDto<HierarchyComponentDto>(l.Sum(x => x.TotalCount), l.SelectMany(x => x.Items).ToList());
         }
 
-        public async Task<HierarchyComponentTypeDto> GetTypeAsync(int id)
+        public virtual async Task<HierarchyComponentTypeDto> GetTypeAsync(int id)
         {
             var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchyComponentTag);
             foreach (var iDistributedService in distributedServiceList)
@@ -190,7 +190,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
             throw new EntityNotFoundException(typeof(HierarchyComponentTypeDto), id);
         }
 
-        public async Task<List<HierarchyComponentTypeDto>> GetListTypeAsync(HierarchyComponentTypeResultRequestDto input)
+        public virtual async Task<List<HierarchyComponentTypeDto>> GetListTypeAsync(HierarchyComponentTypeResultRequestDto input)
         {
             var l = new List<HierarchyComponentTypeDto>();
 
