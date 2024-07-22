@@ -21,6 +21,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor
             _configurationClient = configurationClient;
         }
 
+        public string GetHierarchyComponentNameByHierarchyComponentId(Guid hierarchyComponentId)
+        {
+            return _lhc!.First(x => x.Id == hierarchyComponentId).Nm!;
+        }
+
         public async Task<string> GetHierarchyComponentNameByHierarchyComponentIdAsync(Guid hierarchyComponentId)
         {
             return (await GetLHCAsync()).First(x => x.Id == hierarchyComponentId).Nm!;
@@ -30,7 +35,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor
         {
             var list = new List<Guid>();
 
-            foreach (var hac in await GetLHACAsync())
+            foreach (var hac in await GetLHAAsync())
                 if (hac.LPN.Contains(permissionName))
                     list.AddRange(hac.LHSId);
 
@@ -64,7 +69,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor
 
         public async Task<bool> IsGrantedAsync(string permissionName, Guid? hierarchyComponentId = null)
         {
-            foreach (var hac in await GetLHACAsync())
+            foreach (var hac in await GetLHAAsync())
             {
                 if (!hac.LPN.Contains(permissionName))
                     continue;
@@ -93,7 +98,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor
         }
 
         List<HA>? _lhac;
-        public async Task<List<HA>> GetLHACAsync()
+        public async Task<List<HA>> GetLHAAsync()
         {
             if (_lhac != null)
                 return _lhac;
@@ -121,6 +126,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor
             _lhc = JsonSerializer.Deserialize<List<HC>>((await GetApplicationConfigurationAsync()).GetProperty<string>(NnMgmtAuthorizationConsts.UserAuthorizationLHC)!)!;
             return _lhc;
         }
+
+
 
         #endregion
     }

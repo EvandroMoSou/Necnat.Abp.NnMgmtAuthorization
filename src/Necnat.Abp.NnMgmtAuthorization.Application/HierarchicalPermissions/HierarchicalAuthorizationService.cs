@@ -47,6 +47,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.HierarchicalPermissions
             _stateCheckerManager = stateCheckerManager;
         }
 
+        public string GetHierarchyComponentNameByHierarchyComponentId(Guid hierarchyComponentId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<string> GetHierarchyComponentNameByHierarchyComponentIdAsync(Guid hierarchyComponentId)
         {
             throw new NotImplementedException();

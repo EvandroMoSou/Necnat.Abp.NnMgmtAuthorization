@@ -21,6 +21,11 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor
             _configurationClient = configurationClient;
         }
 
+        public string GetHierarchyComponentNameByHierarchyComponentId(Guid hierarchyComponentId)
+        {
+            return _lhc!.First(x => x.Id == hierarchyComponentId).Nm!;            
+        }
+
         public async Task<string> GetHierarchyComponentNameByHierarchyComponentIdAsync(Guid hierarchyComponentId)
         {
             return (await GetLHCAsync()).First(x => x.Id == hierarchyComponentId).Nm!;
@@ -121,6 +126,8 @@ namespace Necnat.Abp.NnMgmtAuthorization.Blazor
             _lhc = JsonSerializer.Deserialize<List<HC>>((await GetApplicationConfigurationAsync()).GetProperty<string>(NnMgmtAuthorizationConsts.UserAuthorizationLHC)!)!;
             return _lhc;
         }
+
+
 
         #endregion
     }
