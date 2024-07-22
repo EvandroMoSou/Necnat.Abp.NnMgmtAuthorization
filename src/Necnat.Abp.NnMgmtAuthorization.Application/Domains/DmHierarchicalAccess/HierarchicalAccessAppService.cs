@@ -134,7 +134,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
                         {
                             var httpResponseMessage = await client.GetAsync($"{iDistributedService.Url}/api/{_controllerbase}/{id}");
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                return JsonSerializer.Deserialize<HierarchicalAccessDto>(await httpResponseMessage.Content.ReadAsStringAsync())!;
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<HierarchicalAccessDto>()!;
                         }
                         catch { }
                     }
@@ -170,7 +170,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
                         {
                             var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list", input);
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                l.Add(JsonSerializer.Deserialize<PagedResultDto<HierarchicalAccessDto>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<PagedResultDto<HierarchicalAccessDto>>()!;
                         }
                         catch { }
                     }
@@ -232,7 +232,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
                         {
                             var httpResponseMessage = await client.GetAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list-ha-my");
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                l.AddRange(JsonSerializer.Deserialize<List<HA>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<List<HA>>()!;
                         }
                         catch { }
                     }
@@ -269,7 +269,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalAccess
                         {
                             var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}", input);
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                return JsonSerializer.Deserialize<HierarchicalAccessDto>(await httpResponseMessage.Content.ReadAsStringAsync())!;
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<HierarchicalAccessDto>()!;
                         }
                         catch { }
                     }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnLibCommon.Domains.DmDistributedService;
+using Necnat.Abp.NnLibCommon.Domains.NnIdentity;
 using Necnat.Abp.NnLibCommon.Extensions;
+using Necnat.Abp.NnLibCommon.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,7 +75,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                         {
                             var httpResponseMessage = await client.GetAsync($"{iDistributedService.Url}/api/{_controllerbase}/{id}{(hierarchyComponentType == null ? string.Empty : $"?hierarchyComponentType={hierarchyComponentType}")}");
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                return JsonSerializer.Deserialize<HierarchyComponentDto>(await httpResponseMessage.Content.ReadAsStringAsync())!;
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<HierarchyComponentDto>()!;
                         }
                         catch { }
                     }
@@ -88,8 +90,18 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
             var l = new List<PagedResultDto<HierarchyComponentDto>>();
 
             var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchyComponentTag);
+            
+            if (input.HierarchyComponentTypeList == null)
+                input.HierarchyComponentTypeList = distributedServiceList.Select(x => int.Parse(x.GetParameter(1))).ToList();
+
             foreach (var iDistributedService in distributedServiceList)
             {
+                if (!input.HierarchyComponentTypeList!.Contains(int.Parse(iDistributedService.GetParameter(1))))
+                    continue;
+
+                var filteredInput = JsonUtil.Clone(input);
+                filteredInput.HierarchyComponentTypeList = new List<int> { int.Parse(iDistributedService.GetParameter(1)) };
+
                 if (iDistributedService.ApplicationName == _applicationName)
                 {
                     try
@@ -109,7 +121,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                         {
                             var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list", input);
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                l.Add(JsonSerializer.Deserialize<PagedResultDto<HierarchyComponentDto>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<PagedResultDto<HierarchyComponentDto>>()!;
                         }
                         catch { }
                     }
@@ -180,7 +192,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                         {
                             var httpResponseMessage = await client.GetAsync($"{iDistributedService.Url}/api/{_controllerbase}/type/{id}");
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                return JsonSerializer.Deserialize<HierarchyComponentTypeDto>(await httpResponseMessage.Content.ReadAsStringAsync())!;
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<HierarchyComponentTypeDto>()!;
                         }
                         catch { }
                     }
@@ -195,8 +207,18 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
             var l = new List<HierarchyComponentTypeDto>();
 
             var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchyComponentTag);
+
+            if (input.IdList == null)
+                input.IdList = distributedServiceList.Select(x => int.Parse(x.GetParameter(1))).ToList();
+
             foreach (var iDistributedService in distributedServiceList)
             {
+                if (!input.IdList.Contains(int.Parse(iDistributedService.GetParameter(1))))
+                    continue;
+
+                var filteredInput = JsonUtil.Clone(input);
+                filteredInput.IdList = new List<int> { int.Parse(iDistributedService.GetParameter(1)) };
+
                 if (iDistributedService.ApplicationName == _applicationName)
                 {
                     try
@@ -207,16 +229,13 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                 }
                 else
                 {
-                    if (input.IdList != null && !input.IdList.Contains(int.Parse(iDistributedService.GetParameter(1))))
-                        continue;
-
                     using (HttpClient client = _httpClientFactory.CreateClient(NnLibCommonDistributedServiceConsts.HttpClientName))
                     {
                         try
                         {
                             var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list-type", input);
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                l.AddRange(JsonSerializer.Deserialize<List<HierarchyComponentTypeDto>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<List<HierarchyComponentTypeDto>>()!;
                         }
                         catch { }
                     }

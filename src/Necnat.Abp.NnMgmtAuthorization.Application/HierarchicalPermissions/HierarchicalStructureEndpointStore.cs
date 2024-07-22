@@ -38,6 +38,7 @@
 //                var httpResponseMessage = await client.PostAsJsonAsync($"{endpoint.UrlUri}/api/app/mgmt-authorization/get-list-hierarchy-component-id-recursive", hierarchicalStructureId);
 //                if (!httpResponseMessage.IsSuccessStatusCode)
 //                    throw new Exception(await httpResponseMessage.Content.ReadAsStringAsync());
+//                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<List<HS>>()!;
 
 //                return new HierarchyComponentIdRecursiveCacheItem { HierarchyComponentIdList = JsonSerializer.Deserialize<List<Guid>>(await httpResponseMessage.Content.ReadAsStringAsync())! };
 //            }

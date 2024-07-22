@@ -116,7 +116,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                         {
                             var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list-hs", hierarchicalStructureIdList);
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                l.AddRange(JsonSerializer.Deserialize<List<HS>>(await httpResponseMessage.Content.ReadAsStringAsync())!);
+                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<List<HS>>()!;
                         }
                         catch { }
                     }
