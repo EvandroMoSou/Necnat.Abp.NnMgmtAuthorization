@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Necnat.Abp.NnLibCommon.Domains;
 using Necnat.Abp.NnLibCommon.Domains.DmDistributedService;
+using Necnat.Abp.NnLibCommon.Extensions;
 using Necnat.Abp.NnLibCommon.Localization;
 using Necnat.Abp.NnLibCommon.Services;
 using Necnat.Abp.NnMgmtAuthorization.Models;
@@ -116,7 +117,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchicalStructure
                         {
                             var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list-hs", hierarchicalStructureIdList);
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<List<HS>>()!;
+                                l.AddRange((await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<List<HS>>()!);
                         }
                         catch { }
                     }

@@ -23,18 +23,18 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains
             _hierarchicalStructureAppService = hierarchicalStructureAppService;
         }
 
-        public async Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationMyAsync()
+        public virtual async Task<HierarchicalAuthorizationModel> GetHierarchicalAuthorizationMyAsync()
         {
             var model = new HierarchicalAuthorizationModel();
             model.UserId = (Guid)CurrentUser.Id!;
 
             model.LHA = await _hierarchicalAccessAppService.GetListHaMyAsync();
 
-            var allHierarchyComponentIdList = model.LHA.SelectMany(x => x.LHSId).ToList();
+            var allHierarchyComponentIdList = model.LHA.SelectMany(x => x.LHSId).Distinct().ToList();
             model.LHS = await _hierarchicalStructureAppService.GetListHsAsync(allHierarchyComponentIdList);
 
             var hierarchyComponentList = (await _hierarchyComponentAppService.GetListAsync(new HierarchyComponentResultRequestDto { IsPaged = false })).Items;
-            foreach (var iHierarchyComponentId in allHierarchyComponentIdList.Distinct())
+            foreach (var iHierarchyComponentId in model.LHS.SelectMany(x => x.LHCId).Distinct())
             {
                 var hierarchyComponent = hierarchyComponentList.Where(x => x.Id == iHierarchyComponentId).FirstOrDefault();
                 model.LHC.Add(new HC { Id = iHierarchyComponentId, Tp = hierarchyComponent?.HierarchyComponentType, Nm = hierarchyComponent?.Name });

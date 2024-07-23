@@ -90,7 +90,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
             var l = new List<PagedResultDto<HierarchyComponentDto>>();
 
             var distributedServiceList = await _distributedServiceStore.GetListAsync(tag: NnMgmtAuthorizationDistributedServiceConsts.HierarchyComponentTag);
-            
+
             if (input.HierarchyComponentTypeList == null)
                 input.HierarchyComponentTypeList = distributedServiceList.Select(x => int.Parse(x.GetParameter(1))).ToList();
 
@@ -106,22 +106,19 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                 {
                     try
                     {
-                        l.Add(await GetListHierarchyComponentAsync(input));
+                        l.Add(await GetListHierarchyComponentAsync(filteredInput));
                     }
                     catch { }
                 }
                 else
                 {
-                    if (input.HierarchyComponentTypeList != null && !input.HierarchyComponentTypeList.Contains(int.Parse(iDistributedService.GetParameter(1))))
-                        continue;
-
                     using (HttpClient client = _httpClientFactory.CreateClient(NnLibCommonDistributedServiceConsts.HttpClientName))
                     {
                         try
                         {
-                            var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list", input);
+                            var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list", filteredInput);
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<PagedResultDto<HierarchyComponentDto>>()!;
+                                l.Add((await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<PagedResultDto<HierarchyComponentDto>>()!);
                         }
                         catch { }
                     }
@@ -162,7 +159,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                     SkipCount = input.SkipCount,
                     Sorting = input.Sorting
                 });
-                l.Add(new PagedResultDto<HierarchyComponentDto>(result.TotalCount, result.Items.Select(x => new HierarchyComponentDto { HierarchyComponentType = 1, Id = x.Id, Name = x.Name }).ToList()));
+                l.Add(new PagedResultDto<HierarchyComponentDto>(result.TotalCount, result.Items.Select(x => new HierarchyComponentDto { HierarchyComponentType = 2, Id = x.Id, Name = x.Name }).ToList()));
             }
 
             return new PagedResultDto<HierarchyComponentDto>(l.Sum(x => x.TotalCount), l.SelectMany(x => x.Items).ToList());
@@ -223,7 +220,7 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                 {
                     try
                     {
-                        l.AddRange(GetListHierarchyComponentType(input));
+                        l.AddRange(GetListHierarchyComponentType(filteredInput));
                     }
                     catch { }
                 }
@@ -233,9 +230,9 @@ namespace Necnat.Abp.NnMgmtAuthorization.Domains.DmHierarchyComponent
                     {
                         try
                         {
-                            var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list-type", input);
+                            var httpResponseMessage = await client.PostAsJsonAsync($"{iDistributedService.Url}/api/{_controllerbase}/get-list-type", filteredInput);
                             if (httpResponseMessage.IsSuccessStatusCode)
-                                return (await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<List<HierarchyComponentTypeDto>>()!;
+                                l.AddRange((await httpResponseMessage.Content.ReadAsStringAsync()).DeserializeCaseInsensitive<List<HierarchyComponentTypeDto>>()!);
                         }
                         catch { }
                     }
